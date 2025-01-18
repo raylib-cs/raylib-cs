@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Raylib_cs;
 
 /// <summary>
-/// Transform, vectex transformation data
+/// Transform, vertex transformation data
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public partial struct Transform
