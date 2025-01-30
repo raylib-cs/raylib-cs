@@ -14,7 +14,7 @@
     <Title>Raylib-cs</Title>
     <Description>C# bindings for raylib - A simple and easy-to-use library to learn videogames programming</Description>
     <RepositoryUrl>https://github.com/chrisdill/raylib-cs/</RepositoryUrl>
-    <Authors>chrisdill</Authors>
+    <Authors>raylib-cs team</Authors>
     <PackageLicenseExpression>Zlib</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>raylib-cs_64x64.png</PackageIcon>
