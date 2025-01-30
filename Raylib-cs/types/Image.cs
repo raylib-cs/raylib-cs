@@ -59,6 +59,21 @@ public enum PixelFormat
     UncompressedR32G32B32A32,
 
     /// <summary>
+    /// 16 bpp (1 channel - half float)
+    /// </summary>
+    UncompressedR16,
+
+    /// <summary>
+    /// 16*3 bpp (3 channels - half float)
+    /// </summary>
+    UncompressedR16G16B16,
+
+    /// <summary>
+    /// 16*4 bpp (4 channels - half float)
+    /// </summary>
+    UncompressedR16G16B16A16,
+
+    /// <summary>
     /// 4 bpp (no alpha)
     /// </summary>
     CompressedDxt1Rgb,
