@@ -13,7 +13,7 @@
   <PropertyGroup>
     <Title>Raylib-cs</Title>
     <Description>C# bindings for raylib - A simple and easy-to-use library to learn videogames programming</Description>
-    <RepositoryUrl>https://github.com/chrisdill/raylib-cs/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/raylib-cs/raylib-cs/</RepositoryUrl>
     <Authors>raylib-cs</Authors>
     <PackageLicenseExpression>Zlib</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>

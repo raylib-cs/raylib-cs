@@ -4,11 +4,11 @@
 
 C# bindings for raylib, a simple and easy-to-use library to learn videogames programming (www.raylib.com)
 
-[![GitHub contributors](https://img.shields.io/github/contributors/chrisdill/raylib-cs)](https://github.com/chrisdill/raylib-cs/graphs/contributors)
+[![GitHub contributors](https://img.shields.io/github/contributors/raylib-cs/raylib-cs)](https://github.com/raylib-cs/raylib-cs/graphs/contributors)
 [![License](https://img.shields.io/badge/license-zlib%2Flibpng-blue.svg)](LICENSE)
 [![Chat on Discord](https://img.shields.io/discord/426912293134270465.svg?logo=discord)](https://discord.gg/raylib)
-[![GitHub stars](https://img.shields.io/github/stars/chrisdill/raylib-cs?style=social)](https://github.com/chrisdill/raylib-cs/stargazers)
-[![Build](https://github.com/chrisdill/raylib-cs/workflows/Build/badge.svg)](https://github.com/chrisdill/raylib-cs/actions?query=workflow%3ABuild)
+[![GitHub stars](https://img.shields.io/github/stars/raylib-cs/raylib-cs?style=social)](https://github.com/raylib-cs/raylib-cs/stargazers)
+[![Build](https://github.com/raylib-cs/raylib-cs/workflows/Build/badge.svg)](https://github.com/raylib-cs/raylib-cs/actions?query=workflow%3ABuild)
 
 Raylib-cs targets net6.0 and uses the [official 5.5 release](https://github.com/raysan5/raylib/releases/tag/5.5) to build the native libraries.
 
@@ -83,7 +83,7 @@ class Program
 
 ## Contributing
 
-Feel free to open an issue. If you'd like to contribute, please fork the repository and make 
+Feel free to open an issue. If you'd like to contribute, please fork the repository and make
 changes as you'd like. Pull requests are welcome.
 
 If you want to request features or report bugs related to raylib directly (in contrast to this binding), please refer to the [author's project repo](https://github.com/raysan5/raylib).
