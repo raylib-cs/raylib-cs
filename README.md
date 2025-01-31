@@ -46,7 +46,7 @@ the command won't work.
 
 2. Add [Raylib-cs/Raylib-cs.csproj](Raylib-cs/Raylib-cs.csproj) to your project as an existing project.
 
-3. Download/build the native libraries for the platforms you want using the [official 5.0 release](https://github.com/raysan5/raylib/releases/tag/5.0).
+3. Download/build the native libraries for the platforms you want using the [official 5.5 release](https://github.com/raysan5/raylib/releases/tag/5.5).
    **NOTE: the MSVC version is required for Windows platforms**
 
 4. Setup the native libraries so they are in the same directory as the executable/can be found in the [search path](https://www.mono-project.com/docs/advanced/pinvoke/).
