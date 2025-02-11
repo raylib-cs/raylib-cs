@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       version: ${{ steps.version.outputs.version }}
       pkgversion: ${{ steps.version.outputs.pkgversion }}
@@ -26,7 +26,7 @@ jobs:
           echo "pkgversion=$(sed -n 's/.*<PackageVersion>\(.*\)<\/PackageVersion>.*/\1/p' Raylib-cs/Build.props)">> ${GITHUB_OUTPUT}
 
   build-linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: build
     steps:
       - name: checkout repository
@@ -130,7 +130,7 @@ jobs:
           if-no-files-found: error
 
   build-publish:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs:
       - build-linux
       - build-osx
