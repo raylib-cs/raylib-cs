@@ -1,8 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk" InitialTargets="ConfigureNative">
   <PropertyGroup>
     <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <SkipCopyBuildProduct>true</SkipCopyBuildProduct>
+    <DebugType>none</DebugType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDependencyFile>False</GenerateDependencyFile>
   </PropertyGroup>
 
   <Import Project="../Raylib-cs/Build.props" />
