@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk" InitialTargets="ConfigureNative">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <SkipCopyBuildProduct>true</SkipCopyBuildProduct>
     <DebugType>none</DebugType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateDependencyFile>False</GenerateDependencyFile>
@@ -65,7 +64,7 @@
 
     <Unzip SourceFiles="$(BaseIntermediateOutputPath)raylib.zip" DestinationFolder="$(BaseIntermediateOutputPath)" OverwriteReadOnlyFiles="true" Condition="!Exists('$(BaseIntermediateOutputPath)raylib-$(TargetRaylibTag)')" />
 
-    <Exec Command="cmake @(CMakeArgs, ' ') $(CMakeExtraArgs)" Condition="!Exists('$(BaseIntermediateOutputPath)native/CMakeCache.txt')" />
+    <Exec Command="cmake @(CMakeArgs, ' ') $(CMakeExtraArgs)" Condition="!Exists('$(OutputPath)native/CMakeCache.txt')" />
 
     <Exec Command="cmake --build $(OutputPath)native --config $(Configuration)" />
   </Target>
