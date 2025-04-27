@@ -529,7 +529,13 @@ public static unsafe partial class Raymath
     /// as described in the GLTF 2.0 specification: https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#interpolation-cubic
     /// </summary>
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern Quaternion QuaternionCubicHermiteSpline(Quaternion q1, Quaternion outTangent1, Quaternion q2, Quaternion inTangent2, float t);
+    public static extern Quaternion QuaternionCubicHermiteSpline(
+        Quaternion q1,
+        Quaternion outTangent1,
+        Quaternion q2,
+        Quaternion inTangent2,
+        float t
+    );
 
     /// <summary>Calculate quaternion based on the rotation from one vector to another</summary>
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
@@ -575,4 +581,13 @@ public static unsafe partial class Raymath
     /// <summary>Check whether two given quaternions are almost equal</summary>
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
     public static extern int QuaternionEquals(Quaternion p, Quaternion q);
+
+    /// <summary>Decompose a transformation matrix into its rotational, translational and scaling components</summary>
+    [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
+    public static extern void MatrixDecompose(
+        Matrix4x4 mat,
+        Vector3* translation,
+        Quaternion* rotation,
+        Vector3* scale
+    );
 }
