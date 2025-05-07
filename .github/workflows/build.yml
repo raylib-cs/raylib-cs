@@ -1,9 +1,9 @@
 name: Build
 on:
   push:
-    branches: master
+    branches: ["master"]
   pull_request:
-    branches: "*"
+    branches: ["*"]
     paths-ignore:
       - "README.md"
       - ".github/ISSUE_TEMPLATE/**"
@@ -35,7 +35,9 @@ jobs:
       - name: setup dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: |
+            6.0.x
+            8.0.x
 
       - name: setup dependencies
         run: |
@@ -81,7 +83,9 @@ jobs:
       - name: setup dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: |
+            6.0.x
+            8.0.x
 
       - name: build projects
         run: dotnet build -c Release /p:BuildArch=${{ matrix.arch }}
@@ -114,7 +118,9 @@ jobs:
       - name: setup dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: |
+            6.0.x
+            8.0.x
 
       - name: build projects
         run: dotnet build -c Release /p:BuildArch=${{ matrix.arch }}
@@ -167,7 +173,9 @@ jobs:
       - name: setup dotnet
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: |
+            6.0.x
+            8.0.x
 
       - name: create NuGet Package
         run: dotnet pack Raylib-cs -c Release --output nuget
