@@ -1,6 +1,6 @@
-using System;
-using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Numerics;
+using System;
 
 namespace Raylib_cs;
 
@@ -9,14 +9,14 @@ public static unsafe partial class Raylib
     /// <summary>Initialize window and OpenGL context</summary>
     public static void InitWindow(int width, int height, string title)
     {
-        using var str1 = title.ToUtf8Buffer();
+        using Utf8Buffer str1 = title.ToUtf8Buffer();
         InitWindow(width, height, str1.AsPointer());
     }
 
     /// <summary>Set title for window (only PLATFORM_DESKTOP)</summary>
     public static void SetWindowTitle(string title)
     {
-        using var str1 = title.ToUtf8Buffer();
+        using Utf8Buffer str1 = title.ToUtf8Buffer();
         SetWindowTitle(str1.AsPointer());
     }
 
@@ -35,94 +35,94 @@ public static unsafe partial class Raylib
     /// <summary>Set clipboard text content</summary>
     public static void SetClipboardText(string text)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         SetClipboardText(str1.AsPointer());
     }
 
     /// <summary>Open URL with default system browser (if available)</summary>
     public static void OpenURL(string url)
     {
-        using var str1 = url.ToUtf8Buffer();
+        using Utf8Buffer str1 = url.ToUtf8Buffer();
         OpenURL(str1.AsPointer());
     }
 
     /// <summary>Set internal gamepad mappings (SDL_GameControllerDB)</summary>
     public static int SetGamepadMappings(string mappings)
     {
-        using var str1 = mappings.ToUtf8Buffer();
+        using Utf8Buffer str1 = mappings.ToUtf8Buffer();
         return SetGamepadMappings(str1.AsPointer());
     }
 
     /// <summary>Load shader from files and bind default locations</summary>
     public static Shader LoadShader(string vsFileName, string fsFileName)
     {
-        using var str1 = vsFileName.ToAnsiBuffer();
-        using var str2 = fsFileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = vsFileName.ToAnsiBuffer();
+        using AnsiBuffer str2 = fsFileName.ToAnsiBuffer();
         return LoadShader(str1.AsPointer(), str2.AsPointer());
     }
 
     /// <summary>Load shader from code string and bind default locations</summary>
     public static Shader LoadShaderFromMemory(string vsCode, string fsCode)
     {
-        using var str1 = vsCode.ToUtf8Buffer();
-        using var str2 = fsCode.ToUtf8Buffer();
+        using Utf8Buffer str1 = vsCode.ToUtf8Buffer();
+        using Utf8Buffer str2 = fsCode.ToUtf8Buffer();
         return LoadShaderFromMemory(str1.AsPointer(), str2.AsPointer());
     }
 
     /// <summary>Get shader uniform location</summary>
     public static int GetShaderLocation(Shader shader, string uniformName)
     {
-        using var str1 = uniformName.ToUtf8Buffer();
+        using Utf8Buffer str1 = uniformName.ToUtf8Buffer();
         return GetShaderLocation(shader, str1.AsPointer());
     }
 
     /// <summary>Get shader attribute location</summary>
     public static int GetShaderLocationAttrib(Shader shader, string attribName)
     {
-        using var str1 = attribName.ToUtf8Buffer();
+        using Utf8Buffer str1 = attribName.ToUtf8Buffer();
         return GetShaderLocationAttrib(shader, str1.AsPointer());
     }
 
     /// <summary>Takes a screenshot of current screen (saved a .png)</summary>
     public static void TakeScreenshot(string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         TakeScreenshot(str1.AsPointer());
     }
 
     /// <summary>Check file extension</summary>
     public static CBool IsFileExtension(string fileName, string ext)
     {
-        using var str1 = fileName.ToAnsiBuffer();
-        using var str2 = ext.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str2 = ext.ToAnsiBuffer();
         return IsFileExtension(str1.AsPointer(), str2.AsPointer());
     }
 
     /// <summary>Get file modification time (last write time)</summary>
     public static long GetFileModTime(string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return GetFileModTime(str1.AsPointer());
     }
 
     /// <summary>Load image from file into CPU memory (RAM)</summary>
     public static Image LoadImage(string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return LoadImage(str1.AsPointer());
     }
 
     /// <summary>Load image from RAW file data</summary>
     public static Image LoadImageRaw(string fileName, int width, int height, PixelFormat format, int headerSize)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return LoadImageRaw(str1.AsPointer(), width, height, format, headerSize);
     }
 
     /// <summary>Load image sequence from file (frames appended to image.data)</summary>
     public static Image LoadImageAnim(string fileName, out int frames)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         fixed (int* p = &frames)
         {
             return LoadImageAnim(str1.AsPointer(), p);
@@ -134,7 +134,7 @@ public static unsafe partial class Raylib
     /// </summary>
     public static Image LoadImageFromMemory(string fileType, byte[] fileData)
     {
-        using var fileTypeNative = fileType.ToAnsiBuffer();
+        using AnsiBuffer fileTypeNative = fileType.ToAnsiBuffer();
         fixed (byte* fileDataNative = fileData)
         {
             Image image = LoadImageFromMemory(fileTypeNative.AsPointer(), fileDataNative, fileData.Length);
@@ -145,21 +145,21 @@ public static unsafe partial class Raylib
     /// <summary>Export image data to file</summary>
     public static CBool ExportImage(Image image, string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return ExportImage(image, str1.AsPointer());
     }
 
     /// <summary>Export image as code file defining an array of bytes</summary>
     public static CBool ExportImageAsCode(Image image, string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return ExportImageAsCode(image, str1.AsPointer());
     }
 
     /// <summary>Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR)</summary>
     public static void TraceLog(TraceLogLevel logLevel, string text)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         TraceLog(logLevel, str1.AsPointer());
     }
 
@@ -231,7 +231,7 @@ public static unsafe partial class Raylib
     /// <summary>Load file data as byte array (read)</summary>
     public static byte* LoadFileData(string fileName, ref int bytesRead)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         fixed (int* p = &bytesRead)
         {
             return LoadFileData(str1.AsPointer(), p);
@@ -241,10 +241,10 @@ public static unsafe partial class Raylib
     /// <summary>Get dropped files names (memory should be freed)</summary>
     public static string[] GetDroppedFiles()
     {
-        var filePathList = LoadDroppedFiles();
-        var files = new string[filePathList.Count];
+        FilePathList filePathList = LoadDroppedFiles();
+        string[] files = new string[filePathList.Count];
 
-        for (var i = 0; i < filePathList.Count; i++)
+        for (int i = 0; i < filePathList.Count; i++)
         {
             files[i] = Marshal.PtrToStringUTF8((IntPtr)filePathList.Paths[i]);
         }
@@ -426,21 +426,21 @@ public static unsafe partial class Raylib
     /// <summary>Generate image: grayscale image from text data</summary>
     public static Image GenImageText(int width, int height, string text)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         return GenImageText(width, height, str1.AsPointer());
     }
 
     /// <summary>Create an image from text (default font)</summary>
     public static Image ImageText(string text, int fontSize, Color color)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         return ImageText(str1.AsPointer(), fontSize, color);
     }
 
     /// <summary>Create an image from text (custom sprite font)</summary>
     public static Image ImageTextEx(Font font, string text, float fontSize, float spacing, Color tint)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         return ImageTextEx(font, str1.AsPointer(), fontSize, spacing, tint);
     }
 
@@ -749,6 +749,22 @@ public static unsafe partial class Raylib
         }
     }
 
+    public static void ImageDrawCircleLines(ref Image dst, int centerX, int centerY, int radius, Color color)
+    {
+        fixed (Image* p = &dst)
+        {
+            ImageDrawCircleLines(p, centerX, centerY, radius, color);
+        }
+    }
+
+    public static void ImageDrawCircleLinesV(ref Image dst, Vector2 center, int radius, Color color)
+    {
+        fixed (Image* p = &dst)
+        {
+            ImageDrawCircleLinesV(p, center, radius, color);
+        }
+    }
+
     /// <summary>Draw circle within an image (Vector version)</summary>
     public static void ImageDrawCircleV(ref Image dst, Vector2 center, int radius, Color color)
     {
@@ -857,7 +873,7 @@ public static unsafe partial class Raylib
     /// <summary>Draw text (using default font) within an image (destination)</summary>
     public static void ImageDrawText(ref Image dst, string text, int x, int y, int fontSize, Color color)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         fixed (Image* p = &dst)
         {
             ImageDrawText(p, str1.AsPointer(), x, y, fontSize, color);
@@ -875,7 +891,7 @@ public static unsafe partial class Raylib
         Color color
     )
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         fixed (Image* p = &dst)
         {
             ImageDrawTextEx(p, font, str1.AsPointer(), position, fontSize, spacing, color);
@@ -885,7 +901,7 @@ public static unsafe partial class Raylib
     /// <summary>Load texture from file into GPU memory (VRAM)</summary>
     public static Texture2D LoadTexture(string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return LoadTexture(str1.AsPointer());
     }
 
@@ -931,7 +947,7 @@ public static unsafe partial class Raylib
     /// <summary>Load font from file into GPU memory (VRAM)</summary>
     public static Font LoadFont(string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return LoadFont(str1.AsPointer());
     }
 
@@ -941,7 +957,7 @@ public static unsafe partial class Raylib
     /// </summary>
     public static Font LoadFontEx(string fileName, int fontSize, int[] codepoints, int codepointCount)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         fixed (int* p = codepoints)
         {
             return LoadFontEx(str1.AsPointer(), fontSize, p, codepointCount);
@@ -959,7 +975,7 @@ public static unsafe partial class Raylib
         int codepointCount
     )
     {
-        using var fileTypeNative = fileType.ToAnsiBuffer();
+        using AnsiBuffer fileTypeNative = fileType.ToAnsiBuffer();
         fixed (byte* fileDataNative = fileData)
         {
             fixed (int* fontCharsNative = codepoints)
@@ -972,7 +988,6 @@ public static unsafe partial class Raylib
                     fontCharsNative,
                     codepointCount
                 );
-
                 return font;
             }
         }
@@ -1017,7 +1032,7 @@ public static unsafe partial class Raylib
     /// <summary>Load model animations from file</summary>
     public static ModelAnimation* LoadModelAnimations(string fileName, ref int animCount)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         fixed (int* p = &animCount)
         {
             return LoadModelAnimations(str1.AsPointer(), p);
@@ -1126,21 +1141,14 @@ public static unsafe partial class Raylib
     /// <summary>Draw text (using default font)</summary>
     public static void DrawText(string text, int posX, int posY, int fontSize, Color color)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         DrawText(str1.AsPointer(), posX, posY, fontSize, color);
     }
 
     /// <summary>Draw text using font and additional parameters</summary>
-    public static void DrawTextEx(
-        Font font,
-        string text,
-        Vector2 position,
-        float fontSize,
-        float spacing,
-        Color tint
-    )
+    public static void DrawTextEx(Font font, string text, Vector2 position, float fontSize, float spacing, Color tint)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         DrawTextEx(font, str1.AsPointer(), position, fontSize, spacing, tint);
     }
 
@@ -1156,32 +1164,32 @@ public static unsafe partial class Raylib
         Color tint
     )
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         DrawTextPro(font, str1.AsPointer(), position, origin, rotation, fontSize, spacing, tint);
     }
 
     /// <summary>Measure string width for default font</summary>
     public static int MeasureText(string text, int fontSize)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         return MeasureText(str1.AsPointer(), fontSize);
     }
 
     /// <summary>Measure string size for Font</summary>
     public static Vector2 MeasureTextEx(Font font, string text, float fontSize, float spacing)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         return MeasureTextEx(font, str1.AsPointer(), fontSize, spacing);
     }
 
     /// <summary>Get all codepoints in a string, codepoints count returned by parameters</summary>
     public static int[] LoadCodepoints(string text, ref int count)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         fixed (int* c = &count)
         {
-            var pointsPtr = LoadCodepoints(str1.AsPointer(), c);
-            var codepoints = new ReadOnlySpan<int>(pointsPtr, count).ToArray();
+            int* pointsPtr = LoadCodepoints(str1.AsPointer(), c);
+            int[] codepoints = new ReadOnlySpan<int>(pointsPtr, count).ToArray();
             UnloadCodepoints(pointsPtr);
             return codepoints;
         }
@@ -1190,14 +1198,14 @@ public static unsafe partial class Raylib
     /// <summary>Get total number of codepoints in a UTF8 encoded string</summary>
     public static int GetCodepointCount(string text)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         return GetCodepointCount(str1.AsPointer());
     }
 
     /// <summary>Get next codepoint in a UTF-8 encoded string, 0x3f('?') is returned on failure</summary>
     public static int GetCodepoint(string text, ref int codepointSize)
     {
-        using var str1 = text.ToUtf8Buffer();
+        using Utf8Buffer str1 = text.ToUtf8Buffer();
         fixed (int* p = &codepointSize)
         {
             return GetCodepoint(str1.AsPointer(), p);
@@ -1209,7 +1217,7 @@ public static unsafe partial class Raylib
     {
         fixed (int* l1 = &utf8Size)
         {
-            var ptr = CodepointToUTF8(codepoint, l1);
+            sbyte* ptr = CodepointToUTF8(codepoint, l1);
             return Utf8StringUtils.GetUTF8String(ptr);
         }
     }
@@ -1219,8 +1227,8 @@ public static unsafe partial class Raylib
     {
         fixed (int* c1 = codepoints)
         {
-            var ptr = LoadUTF8(c1, length);
-            var text = Utf8StringUtils.GetUTF8String(ptr);
+            sbyte* ptr = LoadUTF8(c1, length);
+            string text = Utf8StringUtils.GetUTF8String(ptr);
             MemFree(ptr);
             return text;
         }
@@ -1229,21 +1237,21 @@ public static unsafe partial class Raylib
     /// <summary>Draw a model (with texture if set)</summary>
     public static Model LoadModel(string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return LoadModel(str1.AsPointer());
     }
 
     /// <summary>Export mesh data to file, returns true on success</summary>
     public static CBool ExportMesh(Mesh mesh, string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return ExportMesh(mesh, str1.AsPointer());
     }
 
     /// <summary>Export mesh as code file (.h) defining multiple arrays of vertex attributes</summary>
     public static CBool ExportMeshAsCode(Mesh mesh, string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return ExportMeshAsCode(mesh, str1.AsPointer());
     }
 
@@ -1268,19 +1276,16 @@ public static unsafe partial class Raylib
     /// <summary>Load wave data from file</summary>
     public static Wave LoadWave(string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return LoadWave(str1.AsPointer());
     }
 
     /// <summary>
     /// Load wave from managed memory, fileType refers to extension: i.e. "wav"
     /// </summary>
-    public static Wave LoadWaveFromMemory(
-        string fileType,
-        byte[] fileData
-    )
+    public static Wave LoadWaveFromMemory(string fileType, byte[] fileData)
     {
-        using var fileTypeNative = fileType.ToAnsiBuffer();
+        using AnsiBuffer fileTypeNative = fileType.ToAnsiBuffer();
 
         fixed (byte* fileDataNative = fileData)
         {
@@ -1297,28 +1302,28 @@ public static unsafe partial class Raylib
     /// <summary>Load sound from file</summary>
     public static Sound LoadSound(string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return LoadSound(str1.AsPointer());
     }
 
     /// <summary>Export wave data to file</summary>
     public static CBool ExportWave(Wave wave, string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return ExportWave(wave, str1.AsPointer());
     }
 
     /// <summary>Export wave sample data to code (.h)</summary>
     public static CBool ExportWaveAsCode(Wave wave, string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return ExportWaveAsCode(wave, str1.AsPointer());
     }
 
     /// <summary>Load music stream from file</summary>
     public static Music LoadMusicStream(string fileName)
     {
-        using var str1 = fileName.ToAnsiBuffer();
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
         return LoadMusicStream(str1.AsPointer());
     }
 
@@ -1330,7 +1335,7 @@ public static unsafe partial class Raylib
         byte[] fileData
     )
     {
-        using var fileTypeNative = fileType.ToAnsiBuffer();
+        using AnsiBuffer fileTypeNative = fileType.ToAnsiBuffer();
 
         fixed (byte* fileDataNative = fileData)
         {
@@ -1408,14 +1413,14 @@ public static unsafe partial class Raylib
     /// <summary>Load automation events list from file, NULL for empty list, capacity = MAX_AUTOMATION_EVENTS</summary>
     public static AutomationEventList LoadAutomationEventList(string fileName)
     {
-        using var str1 = fileName.ToUtf8Buffer();
+        using Utf8Buffer str1 = fileName.ToUtf8Buffer();
         return LoadAutomationEventList(str1.AsPointer());
     }
 
     /// <summary>Export automation events list as text file</summary>
     public static CBool ExportAutomationEventList(AutomationEventList list, string fileName)
     {
-        using var str1 = fileName.ToUtf8Buffer();
+        using Utf8Buffer str1 = fileName.ToUtf8Buffer();
         return ExportAutomationEventList(list, str1.AsPointer());
     }
 
@@ -1426,5 +1431,21 @@ public static unsafe partial class Raylib
         {
             SetAutomationEventList(p);
         }
+    }
+
+    public static int MakeDirectory(string path)
+    {
+        using AnsiBuffer pathBuffer = path.ToAnsiBuffer();
+        return MakeDirectory(pathBuffer.AsPointer());
+    }
+
+    public static string GetApplicationDirectoryString()
+    {
+        return new string(GetApplicationDirectory());
+    }
+
+    public static string GetWorkingDirectoryString()
+    {
+        return new string(GetWorkingDirectory());
     }
 }
