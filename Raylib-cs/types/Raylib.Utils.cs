@@ -228,6 +228,14 @@ public static unsafe partial class Raylib
         return (T*)MemAlloc(count * (uint)sizeof(T));
     }
 
+    /// <summary>Save data to file from an unmanaged type</summary>
+    /// <returns>True if the operation was successfully</returns>
+    public static CBool SaveFileData<T>(T data, string fileName) where T : unmanaged
+    {
+        using AnsiBuffer ansiBuffer = fileName.ToAnsiBuffer();
+        return SaveFileData(ansiBuffer.AsPointer(), &data, sizeof(T));
+    }
+
     /// <summary>Load file data as byte array (read)</summary>
     public static byte* LoadFileData(string fileName, ref int bytesRead)
     {
@@ -236,6 +244,29 @@ public static unsafe partial class Raylib
         {
             return LoadFileData(str1.AsPointer(), p);
         }
+    }
+
+    public static byte[] LoadFileData(string fileName)
+    {
+        int length = 0;
+        byte* data = LoadFileData(fileName, ref length);
+        byte[] arr = new byte[length];
+        Marshal.Copy((IntPtr)data, arr, 0, length);
+        UnloadFileData(data);
+        return arr;
+    }
+
+    /// <summary>
+    /// Load file data as an array of unmanaged types
+    /// </summary>
+    public static T[] LoadFileData<T>(string fileName) where T : unmanaged
+    {
+        int length = 0;
+        byte* data = LoadFileData(fileName, ref length);
+        Span<T> values = new Span<T>(data, length / sizeof(T));
+        T[] arr = values.ToArray();
+        UnloadFileData(data);
+        return arr;
     }
 
     /// <summary>Get dropped files names (memory should be freed)</summary>

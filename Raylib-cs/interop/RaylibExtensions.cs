@@ -17,7 +17,10 @@ public static class RaylibExtensions
     {
         using AnsiBuffer nameBuffer = fileName.ToAnsiBuffer();
         sbyte* data = Raylib.LoadFileText(nameBuffer.AsPointer());
-        return new string(data);
+        //string text = new string(data);
+        string text = System.Runtime.InteropServices.Marshal.PtrToStringUTF8((System.IntPtr)data);
+        Raylib.UnloadFileText(data);
+        return text;
     }
 
     #region Rectangle
@@ -130,9 +133,9 @@ public static class RaylibExtensions
         return CheckCollisionCircleRec(center, radius, rec);
     }
 
-    public static CBool CheckColllision(this Rectangle rec, Circle circle)
+    public static CBool CheckColllisionCircle(this Rectangle rec, Vector2 position, float radius)
     {
-        return CheckCollisionCircleRec(circle.position, circle.radius, rec);
+        return CheckCollisionCircleRec(position, radius, rec);
     }
 
     public static Rectangle GetCollisionRectangle(this Rectangle rectangle, Rectangle rectangle2)
@@ -142,182 +145,13 @@ public static class RaylibExtensions
 
     #endregion
 
-    #region Circle
-
-    public static void Draw(this Circle circle)
-    {
-        DrawCircleV(circle.position, circle.radius, circle.color);
-    }
-
-    public static void Draw(this Circle circle, Color colorOverride)
-    {
-        DrawCircleV(circle.position, circle.radius, colorOverride);
-    }
-
-    public static void DrawLines(this Circle circle)
-    {
-        DrawCircleLinesV(circle.position, circle.radius, circle.color);
-    }
-
-    public static void DrawLines(this Circle circle, Color colorOverride)
-    {
-        DrawCircleLinesV(circle.position, circle.radius, colorOverride);
-    }
-
-    public static void DrawGradient(this Circle circle, Color innerColor, Color outerColor)
-    {
-        int x = (int)circle.position.X;
-        int y = (int)circle.position.Y;
-        DrawCircleGradient(x, y, circle.radius, innerColor, outerColor);
-    }
-
-    public static void DrawSector(this Circle circle, float startAngle, float endAngle)
-    {
-        circle.DrawSector(startAngle, endAngle, 36);
-    }
-
-    public static void DrawSector(this Circle circle, float startAngle, float endAngle, int segments)
-    {
-        circle.DrawSector(startAngle, endAngle, segments, circle.color);
-    }
-
-    public static void DrawSector(this Circle circle, float startAngle, float endAngle, int segments, Color colorOverride)
-    {
-        DrawCircleSector(circle.position, circle.radius, startAngle, endAngle, segments, colorOverride);
-    }
-
-    public static void DrawSectorLines(this Circle circle, float startAngle, float endAngle)
-    {
-        circle.DrawSectorLines(startAngle, endAngle, 36);
-    }
-
-    public static void DrawSectorLines(this Circle circle, float startAngle, float endAngle, int segments)
-    {
-        circle.DrawSectorLines(startAngle, endAngle, segments, circle.color);
-    }
-
-    public static void DrawSectorLines(this Circle circle, float startAngle, float endAngle, int segments, Color colorOverride)
-    {
-        DrawCircleSectorLines(circle.position, circle.radius, startAngle, endAngle, segments, colorOverride);
-    }
-
-    public static CBool CheckCollision(this Circle circle, Circle circle2)
-    {
-        return CheckCollisionCircles(circle.position, circle.radius, circle2.position, circle2.radius);
-    }
-
-    public static CBool CheckCollision(this Circle circle, Rectangle rec)
-    {
-        return CheckCollisionCircleRec(circle.position, circle.radius, rec);
-    }
-
-    public static CBool CheckCollision(this Circle circle, Vector2 point)
-    {
-        return CheckCollisionPointCircle(point, circle.position, circle.radius);
-    }
-
-    public static CBool CheckCollision(this Circle circle, Line line)
-    {
-        return CheckCollisionCircleLine(circle.position, circle.radius, line.pointA, line.pointB);
-    }
-
-    #endregion
-
-    #region Line
-
-    public static CBool CheckCollision(this Line line1, Line line2, ref Vector2 collisionPoint)
-    {
-        return CheckCollisionLines(line1.pointA, line1.pointB, line2.pointA, line2.pointB, ref collisionPoint);
-    }
-
-    public static CBool CheckCollision(this Line line, Circle circle)
-    {
-        return CheckCollisionCircleLine(circle.position, circle.radius, line.pointA, line.pointB);
-    }
-
-    public static CBool CheckCollision(this Line line, Vector2 point, int threshold)
-    {
-        return CheckCollisionPointLine(point, line.pointA, line.pointB, threshold);
-    }
-
-    public static void Draw(this Line line, Color color)
-    {
-        DrawLineV(line.pointA, line.pointB, color);
-    }
-
-    public static void DrawBezier(this Line line, Color color)
-    {
-        line.DrawBezier(1, color);
-    }
-
-    public static void DrawBezier(this Line line, float thick, Color color)
-    {
-        DrawLineBezier(line.pointA, line.pointB, thick, color);
-    }
-
-    public static void DrawBezierCubic(this Line line, Line control, Color color)
-    {
-        line.DrawBezierCubic(control, 1, color);
-    }
-
-    public static void DrawBezierCubic(this Line line, Line control, float thick, Color color)
-    {
-        DrawLineBezierCubic(line.pointA, line.pointB, control.pointA, control.pointB, thick, color);
-    }
-
-    public static void DrawBezierQuad(this Line line, Vector2 control, Color color)
-    {
-        line.DrawBezierQuad(control, 1, color);
-    }
-
-    public static void DrawBezierQuad(this Line line, Vector2 control, float thick, Color color)
-    {
-        DrawLineBezierQuad(line.pointA, line.pointB, control, thick, color);
-    }
-
-    public static float GetDistance(this Line line)
-    {
-        return Vector2.Distance(line.pointA, line.pointB);
-    }
-
-    public static void SwapPoints(this Line line)
-    {
-        Vector2 temp = line.pointA;
-        line.pointA = line.pointB;
-        line.pointB = temp;
-    }
-
-    public static void DrawLines(this IEnumerable<Line> lines, Color color)
-    {
-        Line[] linesArray = System.Linq.Enumerable.ToArray<Line>(lines);
-        Vector2[] points = new Vector2[linesArray.Length * 2];
-        for (int i = 0; i < linesArray.Length; i++)
-        {
-            Line l = linesArray[i];
-            points[i * 2] = l.pointA;
-            points[i * 2 + 1] = l.pointB;
-        }
-        DrawLineStrip(points, points.Length, color);
-    }
-
     public static void DrawLines(this IEnumerable<Vector2> points, Color color)
     {
         Vector2[] pointArray = System.Linq.Enumerable.ToArray<Vector2>(points);
-
         DrawLineStrip(pointArray, pointArray.Length, color);
     }
 
-    #endregion
-
     #region Image
-
-    public static unsafe Image* GetPointer(this ref Image image)
-    {
-        fixed (Image* ptr = &image)
-        {
-            return ptr;
-        }
-    }
 
     public static void Load(this ref Image image, string fileName)
     {
@@ -362,19 +196,19 @@ public static class RaylibExtensions
         image = LoadImageFromScreen();
     }
 
-    public static void Draw(this ref Image image, Line line, Color color)
+    public static void DrawLine(this ref Image image, Vector2 start, Vector2 end, Color color)
     {
-        ImageDrawLineV(ref image, line.pointA, line.pointB, color);
+        ImageDrawLineV(ref image, start, end, color);
     }
 
-    public static void Draw(this ref Image image, Line line, int thickness, Color color)
+    public static void DrawLine(this ref Image image, Vector2 start, Vector2 end, int thickness, Color color)
     {
-        ImageDrawLineEx(ref image, line.pointA, line.pointB, thickness, color);
+        ImageDrawLineEx(ref image, start, end, thickness, color);
     }
 
-    public static void Draw(this ref Image image, Circle circle)
+    public static void DrawCircle(this ref Image image, Vector2 position, float radius, Color color)
     {
-        ImageDrawCircle(ref image, (int)circle.X, (int)circle.Y, (int)circle.radius, circle.color);
+        ImageDrawCircle(ref image, (int)position.X, (int)position.Y, (int)radius, color);
     }
 
     public static void Draw(this ref Image image, Rectangle rectangle, Color color)
@@ -392,9 +226,9 @@ public static class RaylibExtensions
         ImageDrawTextEx(ref image, font, text, position, fontSize, spacing, color);
     }
 
-    public static unsafe void DrawLines(this ref Image image, Circle circle)
+    public static unsafe void DrawCircleLines(this ref Image image, Vector2 position, float radius, Color color)
     {
-        ImageDrawCircleLinesV(ref image, circle.position, (int)circle.radius, circle.color);
+        ImageDrawCircleLinesV(ref image, position, (int)radius, color);
     }
 
     public static void DrawTriangle(this ref Image image, Vector2 p1, Vector2 p2, Vector2 p3, Color color)
@@ -431,6 +265,13 @@ public static class RaylibExtensions
         texture = LoadTextureFromImage(image);
     }
 
+    public static void Load(this ref Texture2D texture, string fileType, byte[] fileData)
+    {
+        Image img = LoadImageFromMemory(fileType, fileData);
+        texture.Load(img);
+        UnloadImage(img);
+    }
+
     public static void Unload(this Texture2D texture)
     {
         UnloadTexture(texture);
@@ -456,11 +297,6 @@ public static class RaylibExtensions
         return new Rectangle(Vector2.Zero, texture.Width, texture.Height);
     }
 
-    public static Vector2 GetDimensions(this Texture2D texture)
-    {
-        return new Vector2(texture.Width, texture.Height);
-    }
-
     public static void Draw(this Texture2D texture, int x, int y)
     {
         DrawTexture(texture, x, y, Color.White);
@@ -478,7 +314,7 @@ public static class RaylibExtensions
 
     public static void Draw(this Texture2D texture, Vector2 position, Vector2 origin)
     {
-        Vector2 size = texture.GetDimensions();
+        Vector2 size = texture.Dimensions;
         Rectangle source = new Rectangle(Vector2.Zero, size);
         Rectangle target = new Rectangle(position, size);
         DrawTexturePro(texture, source, target, origin, 0, Color.White);
@@ -486,7 +322,7 @@ public static class RaylibExtensions
 
     public static void Draw(this Texture2D texture, Vector2 position, Vector2 origin, Color color)
     {
-        Vector2 size = texture.GetDimensions();
+        Vector2 size = texture.Dimensions;
         Rectangle source = new Rectangle(Vector2.Zero, size);
         Rectangle target = new Rectangle(position, size);
         DrawTexturePro(texture, source, target, origin, 0, color);
@@ -539,6 +375,60 @@ public static class RaylibExtensions
     public static void Draw(this Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color color)
     {
         DrawTexturePro(texture, source, dest, origin, rotation, color);
+    }
+
+    #endregion
+
+    #region Vector
+
+    public static void Normalize(this ref Vector2 vector)
+    {
+        vector = Raymath.Vector2Normalize(vector);
+    }
+
+    public static void Normalize(this ref Vector3 vector)
+    {
+        vector = Raymath.Vector3Normalize(vector);
+    }
+
+    public static void Add(this ref Vector2 vector, float value)
+    {
+        vector = Raymath.Vector2AddValue(vector, value);
+    }
+
+    public static void Add(this ref Vector3 vector, float value)
+    {
+        vector = Raymath.Vector3AddValue(vector, value);
+    }
+
+    public static void Add(this ref Vector2 vector, Vector2 value)
+    {
+        vector = Raymath.Vector2Add(vector, value);
+    }
+
+    public static void Add(this ref Vector3 vector, Vector3 value)
+    {
+        vector = Raymath.Vector3Add(vector, value);
+    }
+
+    public static float GetDistance(this Vector2 v1, Vector2 v2)
+    {
+        return Raymath.Vector2Distance(v1, v2);
+    }
+
+    public static float GetDistance(this Vector3 v1, Vector3 v2)
+    {
+        return Raymath.Vector3Distance(v1, v2);
+    }
+
+    public static Vector2 Lerp(this Vector2 v1, Vector2 v2, float amount)
+    {
+        return Raymath.Vector2Lerp(v1, v2, amount);
+    }
+
+    public static Vector3 Lerp(this Vector3 v1, Vector3 v2, float amount)
+    {
+        return Raymath.Vector3Lerp(v1, v2, amount);
     }
 
     #endregion
