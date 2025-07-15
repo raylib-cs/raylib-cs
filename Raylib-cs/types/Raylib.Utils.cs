@@ -236,6 +236,21 @@ public static unsafe partial class Raylib
         return SaveFileData(ansiBuffer.AsPointer(), &data, sizeof(T));
     }
 
+    /// <summary>Save data to file from an unmanaged type</summary>
+    /// <returns>True if the operation was successfully</returns>
+    public static CBool SaveFileData<T>(T[] data, string fileName) where T : unmanaged
+    {
+        if (data == null || data.Length == 0)
+        {
+            return false;
+        }
+        fixed (T* ptr = data)
+        {
+            using AnsiBuffer ansiBuffer = fileName.ToAnsiBuffer();
+            return SaveFileData(ansiBuffer.AsPointer(), ptr, sizeof(T) * data.Length);
+        }
+    }
+
     /// <summary>Load file data as byte array (read)</summary>
     public static byte* LoadFileData(string fileName, ref int bytesRead)
     {
@@ -275,9 +290,9 @@ public static unsafe partial class Raylib
         FilePathList filePathList = LoadDroppedFiles();
         string[] files = new string[filePathList.Count];
 
-        for (int i = 0; i < filePathList.Count; i++)
+        for (uint i = 0; i < filePathList.Count; i++)
         {
-            files[i] = Marshal.PtrToStringUTF8((IntPtr)filePathList.Paths[i]);
+            files[i] = filePathList[i];
         }
         UnloadDroppedFiles(filePathList);
 
@@ -1361,10 +1376,7 @@ public static unsafe partial class Raylib
     /// <summary>
     /// Load music stream from managed memory, fileType refers to extension: i.e. ".wav"
     /// </summary>
-    public static Music LoadMusicStreamFromMemory(
-        string fileType,
-        byte[] fileData
-    )
+    public static Music LoadMusicStreamFromMemory(string fileType, byte[] fileData)
     {
         using AnsiBuffer fileTypeNative = fileType.ToAnsiBuffer();
 
@@ -1478,5 +1490,75 @@ public static unsafe partial class Raylib
     public static string GetWorkingDirectoryString()
     {
         return new string(GetWorkingDirectory());
+    }
+
+    /// <summary>
+    /// Load a sequence of random numbers, store them and return them but not before unloading them.
+    /// </summary>
+    /// <param name="count">Amount of random numbers to load</param>
+    /// <param name="min">Minimum random value</param>
+    /// <param name="max">Maximum random value</param>
+    /// <returns>An array filled with the random numbers</returns>
+    public static int[] GetRandomSequence(uint count, int min, int max)
+    {
+        int temp = min;
+        min = Math.Min(min, max);
+        max = Math.Max(temp, max);
+        int* sequence = LoadRandomSequence(count, min, max);
+        int[] output = new int[count];
+        //Marshal.Copy((IntPtr)sequence, output, 0, count);
+        for (uint i = 0; i < count; i++)
+        {
+            output[i] = sequence[i];
+        }
+        UnloadRandomSequence(sequence);
+        return output;
+    }
+
+    /// <summary>
+    /// Load a sequence of random numbers, store them and return them but not before unloading them.
+    /// </summary>
+    /// <param name="count">Amount of random numbers to load</param>
+    /// <param name="min">Minimum random value</param>
+    /// <param name="max">Maximum random value</param>
+    /// <returns>An array filled with the random numbers</returns>
+    public static float[] GetRandomSequence(uint count, float min, float max)
+    {
+        float temp = min;
+        min = Math.Min(min, max);
+        max = Math.Max(temp, max);
+        const int maxi = 100000;
+        int* sequence = LoadRandomSequence(count, 0, maxi);
+        float[] output = new float[count];
+        for (uint i = 0; i < count; i++)
+        {
+            int val = sequence[i];
+            float norm = (float)val / (float)maxi;
+            output[i] = Raymath.Lerp(min, max, norm);
+        }
+        return output;
+    }
+
+    /// <summary>
+    /// Create a file in the specified path to save the specified text
+    /// </summary>
+    public static void SaveFileText(string fileName, string text)
+    {
+        using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
+        using AnsiBuffer textBuffer = text.ToAnsiBuffer();
+        SaveFileText(fileBuffer.AsPointer(), textBuffer.AsPointer());
+    }
+
+    /// <summary>
+    /// Loads text from a file, reads it, saves it, unloads the file, and returns the loaded text.
+    /// </summary>
+    /// <returns>The text content of the file on the given path</returns>
+    public static string LoadFileText(string fileName)
+    {
+        using AnsiBuffer nameBuffer = fileName.ToAnsiBuffer();
+        sbyte* data = LoadFileText(nameBuffer.AsPointer());
+        string text = new string(data);
+        UnloadFileText(data);
+        return text;
     }
 }

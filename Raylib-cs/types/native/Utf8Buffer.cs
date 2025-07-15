@@ -41,10 +41,10 @@ public static class Utf8StringUtils
             return null;
         }
 
-        var length = Encoding.UTF8.GetByteCount(text);
+        int length = Encoding.UTF8.GetByteCount(text);
 
-        var byteArray = new byte[length + 1];
-        var wrote = Encoding.UTF8.GetBytes(text, 0, text.Length, byteArray, 0);
+        byte[] byteArray = new byte[length + 1];
+        int wrote = Encoding.UTF8.GetBytes(text, 0, text.Length, byteArray, 0);
         byteArray[wrote] = 0;
 
         return byteArray;

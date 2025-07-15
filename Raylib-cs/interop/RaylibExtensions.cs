@@ -6,23 +6,6 @@ namespace Raylib_cs;
 
 public static class RaylibExtensions
 {
-    public static unsafe void SaveFileText(string fileName, string text)
-    {
-        using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
-        using AnsiBuffer textBuffer = text.ToAnsiBuffer();
-        Raylib.SaveFileText(fileBuffer.AsPointer(), textBuffer.AsPointer());
-    }
-
-    public static unsafe string LoadFileText(string fileName)
-    {
-        using AnsiBuffer nameBuffer = fileName.ToAnsiBuffer();
-        sbyte* data = Raylib.LoadFileText(nameBuffer.AsPointer());
-        //string text = new string(data);
-        string text = System.Runtime.InteropServices.Marshal.PtrToStringUTF8((System.IntPtr)data);
-        Raylib.UnloadFileText(data);
-        return text;
-    }
-
     #region Rectangle
 
     public static void Draw(this Rectangle rectangle, Color color)

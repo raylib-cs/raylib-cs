@@ -1,5 +1,5 @@
-using System;
 using System.Runtime.InteropServices;
+using System;
 
 namespace Raylib_cs;
 
@@ -96,11 +96,10 @@ public partial struct Color
     /// </summary>
     public Color(float r, float g, float b, float a)
     {
-        //   X = (byte)Math.Clamp(MathF.Round(x * 255), 0f, 255f);
-        this.R = (byte)((r < 0) ? 0 : ((r > 1) ? 255 : ((r * 255) + .5f)));
-        this.G = (byte)((g < 0) ? 0 : ((g > 1) ? 255 : ((g * 255) + .5f)));
-        this.B = (byte)((b < 0) ? 0 : ((b > 1) ? 255 : ((b * 255) + .5f)));
-        this.A = (byte)((a < 0) ? 0 : ((a > 1) ? 255 : ((a * 255) + .5f)));
+        this.R = (byte)(Math.Clamp(r, 0.0f, 1.0f) * 255);
+        this.G = (byte)(Math.Clamp(g, 0.0f, 1.0f) * 255);
+        this.B = (byte)(Math.Clamp(b, 0.0f, 1.0f) * 255);
+        this.A = (byte)(Math.Clamp(a, 0.0f, 1.0f) * 255);
     }
 
     /// <summary>
@@ -110,10 +109,9 @@ public partial struct Color
     /// </summary>
     public Color(float r, float g, float b)
     {
-        //   X = (byte)Math.Clamp(MathF.Round(x * 255), 0f, 255f);
-        this.R = (byte)((r < 0) ? 0 : ((r > 1) ? 255 : ((r * 255) + .5f)));
-        this.G = (byte)((g < 0) ? 0 : ((g > 1) ? 255 : ((g * 255) + .5f)));
-        this.B = (byte)((b < 0) ? 0 : ((b > 1) ? 255 : ((b * 255) + .5f)));
+        this.R = (byte)(Math.Clamp(r, 0.0f, 1.0f) * 255);
+        this.G = (byte)(Math.Clamp(g, 0.0f, 1.0f) * 255);
+        this.B = (byte)(Math.Clamp(b, 0.0f, 1.0f) * 255);
         this.A = 255;
     }
 

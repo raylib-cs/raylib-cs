@@ -22,4 +22,12 @@ public unsafe struct FilePathList
     /// Filepaths entries
     /// </summary>
     public byte** Paths;
+
+    public string this[uint i]
+    {
+        get
+        {
+            return Marshal.PtrToStringUTF8((System.IntPtr)Paths[i]);
+        }
+    }
 }

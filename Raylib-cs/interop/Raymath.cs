@@ -21,7 +21,7 @@ public static unsafe partial class Raymath
     /// <summary>
     /// Used by DllImport to load the native library
     /// </summary>
-    public const string NativeLibName = "raylib";
+    public const string NativeLibName = Raylib.NativeLibName;
 
     /// <summary>Clamp float value</summary>
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]

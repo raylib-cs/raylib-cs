@@ -42,10 +42,10 @@ struct VaListLinuxX64
 /// </summary>
 public static unsafe class Logging
 {
-    [UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    [UnmanagedCallersOnly(CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
     public static unsafe void LogConsole(int msgType, sbyte* text, sbyte* args)
     {
-        var message = GetLogMessage(new IntPtr(text), new IntPtr(args));
+        string message = GetLogMessage(new IntPtr(text), new IntPtr(args));
         Console.WriteLine(message);
     }
 
@@ -62,13 +62,13 @@ public static unsafe class Logging
             return LinuxX64LogCallback(format, args);
         }
 
-        var byteLength = VsnPrintf(IntPtr.Zero, UIntPtr.Zero, format, args) + 1;
+        int byteLength = VsnPrintf(IntPtr.Zero, UIntPtr.Zero, format, args) + 1;
         if (byteLength <= 1)
         {
             return string.Empty;
         }
 
-        var buffer = Marshal.AllocHGlobal(byteLength);
+        IntPtr buffer = Marshal.AllocHGlobal(byteLength);
         VsPrintf(buffer, format, args);
 
         string result = Marshal.PtrToStringUTF8(buffer);
@@ -77,12 +77,12 @@ public static unsafe class Logging
         return result;
     }
 
-    static string AppleLogCallback(IntPtr format, IntPtr args)
+    private static string AppleLogCallback(IntPtr format, IntPtr args)
     {
         IntPtr buffer = IntPtr.Zero;
         try
         {
-            var count = Native.VasPrintfApple(ref buffer, format, args);
+            int count = Native.VasPrintfApple(ref buffer, format, args);
             if (count == -1)
             {
                 return string.Empty;
@@ -98,7 +98,7 @@ public static unsafe class Logging
     static string LinuxX64LogCallback(IntPtr format, IntPtr args)
     {
         // The args pointer cannot be reused between two calls. We need to make a copy of the underlying structure.
-        var listStructure = Marshal.PtrToStructure<VaListLinuxX64>(args);
+        VaListLinuxX64 listStructure = Marshal.PtrToStructure<VaListLinuxX64>(args);
         IntPtr listPointer = IntPtr.Zero;
         int byteLength = 0;
         string result = "";
@@ -127,7 +127,7 @@ public static unsafe class Logging
     // https://github.com/dotnet/runtime/issues/51052
     static int VsnPrintf(IntPtr buffer, UIntPtr size, IntPtr format, IntPtr args)
     {
-        var os = Environment.OSVersion;
+        OperatingSystem os = Environment.OSVersion;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             return Native.VsnPrintfWindows(buffer, size, format, args);

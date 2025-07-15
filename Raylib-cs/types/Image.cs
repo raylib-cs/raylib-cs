@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Numerics;
 
 namespace Raylib_cs;
 
@@ -159,4 +160,15 @@ public unsafe partial struct Image
     /// Data format (PixelFormat type)
     /// </summary>
     public PixelFormat Format;
+
+    /// <summary>
+    /// Get width and height packed in a Vector2
+    /// </summary>
+    public Vector2 Dimensions
+    {
+        get
+        {
+            return new Vector2(Width, Height);
+        }
+    }
 }
