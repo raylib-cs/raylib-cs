@@ -7,7 +7,7 @@ namespace Raylib_cs;
 /// Ray, ray for raycasting
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct Ray
+public struct Ray
 {
     /// <summary>
     /// Ray position (origin)
@@ -30,7 +30,7 @@ public partial struct Ray
 /// Raycast hit information
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct RayCollision
+public struct RayCollision
 {
     /// <summary>
     /// Did the ray hit something?

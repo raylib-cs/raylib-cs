@@ -28,7 +28,7 @@ public enum CameraProjection
 /// Camera3D, defines position/orientation in 3d space
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct Camera3D
+public struct Camera3D
 {
     /// <summary>
     /// Camera position

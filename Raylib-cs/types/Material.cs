@@ -48,7 +48,7 @@ public enum MaterialMapIndex
 /// Material texture map
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct MaterialMap
+public struct MaterialMap
 {
     /// <summary>
     /// Material map texture
@@ -70,7 +70,7 @@ public partial struct MaterialMap
 /// Material type (generic)
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Material
+public unsafe struct Material
 {
     /// <summary>
     /// Material shader
@@ -87,4 +87,55 @@ public unsafe partial struct Material
     /// Material generic parameters (if required)
     /// </summary>
     public fixed float Param[4];
+
+    public readonly CBool IsValid => Raylib.IsMaterialValid(this);
+
+    /// <summary>
+    /// Load default material
+    /// </summary>
+    public static Material Load()
+    {
+        return Raylib.LoadMaterialDefault();
+    }
+
+    /// <summary>
+    /// Load materials from model file
+    /// </summary>
+    public static Material[] Load(string fileName)
+    {
+        using AnsiBuffer buffer = fileName.ToAnsiBuffer();
+        int count = 0;
+        Material* materials = Raylib.LoadMaterials(buffer.AsPointer(), &count);
+        Material[] output = new Material[count];
+        for (int i = 0; i < count; i++)
+        {
+            output[i] = materials[i];
+        }
+        return output;
+    }
+
+    public static Material GetMaterial(ref Model model, int materialIndex)
+    {
+        return Raylib.GetMaterial(ref model, materialIndex);
+    }
+
+    public static Texture2D GetTexture(ref Model model, int materialIndex, MaterialMapIndex mapIndex)
+    {
+        return Raylib.GetMaterialTexture(ref model, materialIndex, mapIndex);
+    }
+
+    public void SetTexture(MaterialMapIndex mapIndex, Texture2D texture)
+    {
+        Raylib.SetMaterialTexture(ref this, mapIndex, texture);
+    }
+
+    public static void SetShader(ref Model model, int materialIndex, ref Shader shader)
+    {
+        Raylib.SetMaterialShader(ref model, materialIndex, ref shader);
+    }
+
+    public void Unload()
+    {
+        Raylib.UnloadMaterial(this);
+    }
 }

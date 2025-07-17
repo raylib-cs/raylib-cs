@@ -15,6 +15,11 @@ public unsafe struct AutomationEvent
 
     /// <summary>Event parameters (if required)</summary>
     public fixed int Params[4];
+
+    public readonly void Play()
+    {
+        Raylib.PlayAutomationEvent(this);
+    }
 }
 
 /// <summary>Automation event list</summary>
@@ -31,5 +36,21 @@ public unsafe struct AutomationEventList
     public AutomationEvent* Events;
 
     /// <inheritdoc cref="Events"/>
-    public ReadOnlySpan<AutomationEvent> EventsAsSpan => new(Events, (int)Count);
+    public readonly ReadOnlySpan<AutomationEvent> EventsAsSpan => new ReadOnlySpan<AutomationEvent>(Events, (int)Count);
+
+    public static AutomationEventList Load(string fileName)
+    {
+        return Raylib.LoadAutomationEventList(fileName);
+    }
+
+    public readonly CBool Export(string fileName)
+    {
+        return Raylib.ExportAutomationEventList(this, fileName);
+    }
+
+    public void Unload()
+    {
+        Raylib.UnloadAutomationEventList(this);
+    }
+
 }

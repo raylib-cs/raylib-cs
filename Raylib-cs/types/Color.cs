@@ -7,7 +7,7 @@ namespace Raylib_cs;
 /// Color type, RGBA (32bit)
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct Color
+public struct Color
 {
     public byte R;
     public byte G;
@@ -115,7 +115,108 @@ public partial struct Color
         this.A = 255;
     }
 
-    public override string ToString()
+    public readonly void GetHSV(out float h, out float s, out float v)
+    {
+        float rf = this.R / 255f;
+        float gf = this.G / 255f;
+        float bf = this.B / 255f;
+
+        float max = MathF.Max(rf, MathF.Max(gf, bf));
+        float min = MathF.Min(rf, MathF.Min(gf, bf));
+        float delta = max - min;
+
+        // Value
+        v = max;
+
+        // Saturation
+        s = (max == 0f) ? 0f : delta / max;
+
+        // Hue
+        if (delta == 0f)
+        {
+            h = 0f;
+        }
+        else if (max == rf)
+        {
+            h = 60f * (((gf - bf) / delta) % 6f);
+        }
+        else if (max == gf)
+        {
+            h = 60f * (((bf - rf) / delta) + 2f);
+        }
+        else // max == bf
+        {
+            h = 60f * (((rf - gf) / delta) + 4f);
+        }
+
+        // Keep h inside 0 and 360
+        if (h < 0f)
+        {
+            h += 360f;
+        }
+    }
+
+    public static Color FromHSV(float h, float s, float v)
+    {
+        float c = v * s;
+        float x = c * (1f - MathF.Abs((h / 60f) % 2f - 1f));
+        float m = v - c;
+
+        float rf, gf, bf;
+
+        if (h < 60f)
+        {
+            rf = c;
+            gf = x;
+            bf = 0;
+        }
+        else if (h < 120f)
+        {
+            rf = x;
+            gf = c;
+            bf = 0;
+        }
+        else if (h < 180f)
+        {
+            rf = 0;
+            gf = c;
+            bf = x;
+        }
+        else if (h < 240f)
+        {
+            rf = 0;
+            gf = x;
+            bf = c;
+        }
+        else if (h < 300f)
+        {
+            rf = x;
+            gf = 0;
+            bf = c;
+        }
+        else
+        {
+            rf = c;
+            gf = 0;
+            bf = x;
+        }
+
+        byte r = (byte)((rf + m) * 255f + 0.5f);
+        byte g = (byte)((gf + m) * 255f + 0.5f);
+        byte b = (byte)((bf + m) * 255f + 0.5f);
+        return new Color(r, g, b, byte.MaxValue);
+    }
+
+    public static Color Lerp(Color origin, Color target, float t)
+    {
+        byte r = origin.R.Lerp(target.R, t);
+        byte g = origin.G.Lerp(target.G, t);
+        byte b = origin.B.Lerp(target.B, t);
+        byte a = origin.A.Lerp(target.A, t);
+        return new Color(r, g, b, a);
+    }
+
+    public readonly override string ToString()
     {
         return $"{{R:{R} G:{G} B:{B} A:{A}}}";
     }

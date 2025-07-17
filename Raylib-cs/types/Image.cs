@@ -134,7 +134,7 @@ public enum PixelFormat
 /// Image, pixel data stored in CPU memory (RAM)
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Image
+public unsafe struct Image
 {
     /// <summary>
     /// Image raw data
@@ -164,11 +164,117 @@ public unsafe partial struct Image
     /// <summary>
     /// Get width and height packed in a Vector2
     /// </summary>
-    public Vector2 Dimensions
+    public readonly Vector2 Dimensions => new Vector2(Width, Height);
+    public readonly CBool IsValid => Raylib.IsImageValid(this);
+
+    public static Image Load(string fileName)
     {
-        get
+        return Raylib.LoadImage(fileName);
+    }
+
+    /// <summary>
+    /// Create an image from text using the default font
+    /// </summary>
+    public static Image CreateFromText(string text, int fontSize, Color color)
+    {
+        return Raylib.ImageText(text, fontSize, color);
+    }
+
+    public static Image CreateFromText(Font font, string text, int fontSize, float spacing, Color color)
+    {
+        return Raylib.ImageTextEx(font, text, fontSize, spacing, color);
+    }
+
+    public static Image LoadFromMemory(string fileType, byte[] data)
+    {
+        return Raylib.LoadImageFromMemory(fileType, data);
+    }
+
+    public static Image LoadFromTexture(Texture2D texture)
+    {
+        return Raylib.LoadImageFromTexture(texture);
+    }
+
+    public static Image LoadRaw(string fileName, int width, int height, PixelFormat format, int headerSize)
+    {
+        return Raylib.LoadImageRaw(fileName, width, height, format, headerSize);
+    }
+
+    public readonly void Unload()
+    {
+        Raylib.UnloadImage(this);
+    }
+
+    public readonly unsafe Color[] GetPalette(int maxPaletteSize)
+    {
+        int colorCount = 0;
+        Color* colors = Raylib.LoadImagePalette(this, maxPaletteSize, &colorCount);
+        Color[] palette = new Color[colorCount];
+        for (int i = 0; i < colorCount; i++)
         {
-            return new Vector2(Width, Height);
+            palette[i] = colors[i];
         }
+        Raylib.UnloadImagePalette(colors);
+        return palette;
+    }
+
+    public static Image LoadFromScreen()
+    {
+        return Raylib.LoadImageFromScreen();
+    }
+
+    public void DrawLine(Vector2 start, Vector2 end, Color color)
+    {
+        Raylib.ImageDrawLineV(ref this, start, end, color);
+    }
+
+    public void DrawLine(Vector2 start, Vector2 end, int thickness, Color color)
+    {
+        Raylib.ImageDrawLineEx(ref this, start, end, thickness, color);
+    }
+
+    public void DrawCircle(Vector2 position, float radius, Color color)
+    {
+        Raylib.ImageDrawCircle(ref this, (int)position.X, (int)position.Y, (int)radius, color);
+    }
+
+    public void DrawRectangle(Rectangle rectangle, Color color)
+    {
+        Raylib.ImageDrawRectangleRec(ref this, rectangle, color);
+    }
+
+    public void DrawText(string text, Vector2 position, int fontSize, Color color)
+    {
+        Raylib.ImageDrawText(ref this, text, (int)position.X, (int)position.Y, fontSize, color);
+    }
+
+    public void DrawText(Font font, string text, Vector2 position, int fontSize, float spacing, Color color)
+    {
+        Raylib.ImageDrawTextEx(ref this, font, text, position, fontSize, spacing, color);
+    }
+
+    public unsafe void DrawCircleLines(Vector2 position, float radius, Color color)
+    {
+        Raylib.ImageDrawCircleLinesV(ref this, position, (int)radius, color);
+    }
+
+    public void DrawTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color color)
+    {
+        Raylib.ImageDrawTriangle(ref this, p1, p2, p3, color);
+    }
+
+    public void DrawTriangle(Vector2 p1, Vector2 p2, Vector2 p3, Color c1, Color c2, Color c3)
+    {
+        Raylib.ImageDrawTriangleEx(ref this, p1, p2, p3, c1, c2, c3);
+    }
+
+    public void DrawRectangleLines(Rectangle rectangle, Color color)
+    {
+        Raylib.ImageDrawRectangleLines(ref this, rectangle, 1, color);
+    }
+
+    public void DrawRectangleLines(Rectangle rectangle, int thickness, Color color)
+    {
+        Raylib.ImageDrawRectangleLines(ref this, rectangle, thickness, color);
     }
 }

@@ -27,7 +27,14 @@ public unsafe struct FilePathList
     {
         get
         {
-            return Marshal.PtrToStringUTF8((System.IntPtr)Paths[i]);
+            if (i >= 0 && i < Count)
+            {
+                return Marshal.PtrToStringUTF8((System.IntPtr)Paths[i]);
+            }
+            else
+            {
+                throw new System.IndexOutOfRangeException();
+            }
         }
     }
 }

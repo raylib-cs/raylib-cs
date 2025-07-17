@@ -6,7 +6,7 @@ namespace Raylib_cs;
 /// RenderTexture2D type, for texture rendering
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct RenderTexture2D
+public struct RenderTexture2D
 {
     /// <summary>
     /// OpenGL Framebuffer Object (FBO) id
@@ -22,4 +22,16 @@ public partial struct RenderTexture2D
     /// Depth buffer attachment texture
     /// </summary>
     public Texture2D Depth;
+
+    public readonly CBool IsValid => Raylib.IsRenderTextureValid(this);
+
+    public static RenderTexture2D Load(int width, int height)
+    {
+        return Raylib.LoadRenderTexture(width, height);
+    }
+
+    public void Unload()
+    {
+        Raylib.UnloadRenderTexture(this);
+    }
 }

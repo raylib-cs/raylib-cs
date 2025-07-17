@@ -8,7 +8,7 @@ namespace Raylib_cs;
 /// Bone information
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct BoneInfo
+public unsafe struct BoneInfo
 {
     /// <summary>
     /// Bone name (char[32])
@@ -25,7 +25,7 @@ public unsafe partial struct BoneInfo
 /// Model type
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Model
+public unsafe struct Model
 {
     /// <summary>
     /// Local transform matrix
@@ -73,13 +73,105 @@ public unsafe partial struct Model
     /// Bones base transformation (pose, Transform *)
     /// </summary>
     public Transform* BindPose;
+
+    public readonly CBool IsValid => Raylib.IsModelValid(this);
+
+    public static Model Load(string fileName)
+    {
+        return Raylib.LoadModel(fileName);
+    }
+
+    public static Model LoadFromMesh(Mesh mesh)
+    {
+        return Raylib.LoadModelFromMesh(mesh);
+    }
+
+    public readonly void Draw(Vector3 position)
+    {
+        Raylib.DrawModel(this, position, 1.0f, Color.White);
+    }
+
+    public readonly void Draw(Vector3 position, float scale)
+    {
+        Raylib.DrawModel(this, position, scale, Color.White);
+    }
+
+    public readonly void Draw(Vector3 position, float scale, Color color)
+    {
+        Raylib.DrawModel(this, position, scale, color);
+    }
+
+    public readonly void Draw(Vector3 position, Vector3 rotationAxis, float rotationAngle)
+    {
+        Raylib.DrawModelEx(this, position, rotationAxis, rotationAngle, Vector3.One, Color.White);
+    }
+
+    public readonly void Draw(Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale)
+    {
+        Raylib.DrawModelEx(this, position, rotationAxis, rotationAngle, scale, Color.White);
+    }
+
+    public readonly void Draw(Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale, Color color)
+    {
+        Raylib.DrawModelEx(this, position, rotationAxis, rotationAngle, scale, color);
+    }
+
+    public readonly void DrawWires(Vector3 position, Color color)
+    {
+        Raylib.DrawModelWires(this, position, 1.0f, color);
+    }
+
+    public readonly void DrawWires(Vector3 position, float scale)
+    {
+        Raylib.DrawModelWires(this, position, scale, Color.White);
+    }
+
+    public readonly void DrawWires(Vector3 position, float scale, Color color)
+    {
+        Raylib.DrawModelWires(this, position, scale, color);
+    }
+
+    public readonly void DrawWires(Vector3 position, Vector3 rotationAxis, float rotationAngle, Color color)
+    {
+        Raylib.DrawModelWiresEx(this, position, rotationAxis, rotationAngle, Vector3.One, color);
+    }
+
+    public readonly void DrawWires(Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale, Color color)
+    {
+        Raylib.DrawModelWiresEx(this, position, rotationAxis, rotationAngle, scale, color);
+    }
+
+    public readonly void DrawPoints(Vector3 position, Color color)
+    {
+        Raylib.DrawModelPoints(this, position, 1.0f, color);
+    }
+
+    public readonly void DrawPoints(Vector3 position, float scale, Color color)
+    {
+        Raylib.DrawModelPoints(this, position, scale, color);
+    }
+
+    public readonly void DrawPoints(Vector3 position, Vector3 rotationAxis, float rotationAngle, Color color)
+    {
+        Raylib.DrawModelPointsEx(this, position, rotationAxis, rotationAngle, Vector3.One, color);
+    }
+
+    public readonly void DrawPoints(Vector3 position, Vector3 rotationAxis, float rotationAngle, Vector3 scale, Color color)
+    {
+        Raylib.DrawModelPointsEx(this, position, rotationAxis, rotationAngle, scale, color);
+    }
+
+    public void Unload()
+    {
+        Raylib.UnloadModel(this);
+    }
 }
 
 /// <summary>
 /// Model animation
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct ModelAnimation
+public unsafe struct ModelAnimation
 {
     /// <summary>
     /// Number of bones
@@ -110,7 +202,7 @@ public unsafe partial struct ModelAnimation
     public fixed sbyte Name[32];
 
     /// <inheritdoc cref="FramePoses"/>
-    public FramePosesCollection FramePosesColl => new(FramePoses, FrameCount, BoneCount);
+    public readonly FramePosesCollection FramePosesColl => new FramePosesCollection(FramePoses, FrameCount, BoneCount);
 
     public struct FramePosesCollection
     {
@@ -120,9 +212,9 @@ public unsafe partial struct ModelAnimation
 
         readonly int _boneCount;
 
-        public FramePoses this[int index] => new(_framePoses[index], _boneCount);
+        public readonly FramePoses this[int index] => new FramePoses(_framePoses[index], _boneCount);
 
-        public Transform this[int index1, int index2] => new FramePoses(_framePoses[index1], _boneCount)[index2];
+        public readonly Transform this[int index1, int index2] => new FramePoses(_framePoses[index1], _boneCount)[index2];
 
         internal FramePosesCollection(Transform** framePoses, int frameCount, int boneCount)
         {
@@ -130,6 +222,31 @@ public unsafe partial struct ModelAnimation
             this._frameCount = frameCount;
             this._boneCount = boneCount;
         }
+    }
+
+    public static ModelAnimation[] LoadAnimations(string fileName)
+    {
+        int count = 0;
+        ModelAnimation* animations = Raylib.LoadModelAnimations(fileName, ref count);
+        ModelAnimation[] output = new ModelAnimation[count];
+        for (int i = 0; i < count; i++)
+        {
+            output[i] = animations[i];
+        }
+        return output;
+    }
+
+    public static void UnloadAnimations(ModelAnimation[] modelAnimations)
+    {
+        fixed (ModelAnimation* ptr = modelAnimations)
+        {
+            Raylib.UnloadModelAnimations(ptr, modelAnimations.Length);
+        }
+    }
+
+    public void Unload()
+    {
+        Raylib.UnloadModelAnimation(this);
     }
 }
 

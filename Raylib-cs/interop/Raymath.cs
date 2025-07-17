@@ -37,12 +37,9 @@ public static unsafe partial class Raymath
 
     /// <summary>Remap input value within input range to output range</summary>
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern float Remap(
-        float value,
-        float inputStart,
-        float inputEnd,
-        float outputStart,
-        float outputEnd
+    public static extern float Remap(float value,
+        float inputStart, float inputEnd,
+        float outputStart, float outputEnd
     );
 
     /// <summary>Wrap input value from min to max</summary>

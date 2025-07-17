@@ -29,7 +29,7 @@ internal readonly struct Native
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
-struct VaListLinuxX64
+internal struct VaListLinuxX64
 {
     uint _gpOffset;
     uint _fpOffset;
@@ -95,7 +95,7 @@ public static unsafe class Logging
         }
     }
 
-    static string LinuxX64LogCallback(IntPtr format, IntPtr args)
+    private static string LinuxX64LogCallback(IntPtr format, IntPtr args)
     {
         // The args pointer cannot be reused between two calls. We need to make a copy of the underlying structure.
         VaListLinuxX64 listStructure = Marshal.PtrToStructure<VaListLinuxX64>(args);
@@ -125,7 +125,7 @@ public static unsafe class Logging
     }
 
     // https://github.com/dotnet/runtime/issues/51052
-    static int VsnPrintf(IntPtr buffer, UIntPtr size, IntPtr format, IntPtr args)
+    private static int VsnPrintf(IntPtr buffer, UIntPtr size, IntPtr format, IntPtr args)
     {
         OperatingSystem os = Environment.OSVersion;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -144,7 +144,7 @@ public static unsafe class Logging
     }
 
     // https://github.com/dotnet/runtime/issues/51052
-    static int VsPrintf(IntPtr buffer, IntPtr format, IntPtr args)
+    private static int VsPrintf(IntPtr buffer, IntPtr format, IntPtr args)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
