@@ -189,7 +189,7 @@ public unsafe struct ModelAnimation
     public readonly BoneInfo* Bones;
 
     /// <inheritdoc cref="Bones"/>
-    public ReadOnlySpan<BoneInfo> BoneInfo => new(Bones, BoneCount);
+    public readonly ReadOnlySpan<BoneInfo> BoneInfo => new ReadOnlySpan<BoneInfo>(Bones, BoneCount);
 
     /// <summary>
     /// Poses array by frame (Transform **)
@@ -204,7 +204,7 @@ public unsafe struct ModelAnimation
     /// <inheritdoc cref="FramePoses"/>
     public readonly FramePosesCollection FramePosesColl => new FramePosesCollection(FramePoses, FrameCount, BoneCount);
 
-    public struct FramePosesCollection
+    public readonly struct FramePosesCollection
     {
         readonly Transform** _framePoses;
 
@@ -250,13 +250,13 @@ public unsafe struct ModelAnimation
     }
 }
 
-public unsafe struct FramePoses
+public readonly unsafe struct FramePoses
 {
     readonly Transform* _poses;
 
     readonly int _count;
 
-    public ref Transform this[int index] => ref _poses[index];
+    public readonly ref Transform this[int index] => ref _poses[index];
 
     internal FramePoses(Transform* poses, int count)
     {

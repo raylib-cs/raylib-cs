@@ -186,7 +186,12 @@ public struct Texture2D
 
     public readonly void Draw(Vector2 position)
     {
-        Raylib.DrawTexture(this, (int)position.X, (int)position.Y, Color.White);
+        Raylib.DrawTextureV(this, position, Color.White);
+    }
+
+    public readonly void Draw(Vector2 position, Color color)
+    {
+        Raylib.DrawTextureV(this, position, color);
     }
 
     public readonly void Draw(Vector2 position, Vector2 origin)
@@ -203,11 +208,6 @@ public struct Texture2D
         Rectangle source = new Rectangle(Vector2.Zero, size);
         Rectangle target = new Rectangle(position, size);
         Raylib.DrawTexturePro(this, source, target, origin, 0, color);
-    }
-
-    public readonly void Draw(Vector2 position, Color color)
-    {
-        Raylib.DrawTexture(this, (int)position.X, (int)position.Y, color);
     }
 
     public readonly void Draw(Vector2 position, float rotation, float scale)

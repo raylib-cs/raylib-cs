@@ -172,6 +172,11 @@ public unsafe struct Image
         return Raylib.LoadImage(fileName);
     }
 
+    public static Image LoadAnim(string fileName, out int frames)
+    {
+        return Raylib.LoadImageAnim(fileName, out frames);
+    }
+
     /// <summary>
     /// Create an image from text using the default font
     /// </summary>

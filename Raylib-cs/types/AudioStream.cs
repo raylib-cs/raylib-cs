@@ -8,7 +8,7 @@ namespace Raylib_cs;
 /// NOTE: Useful to create custom audio streams not bound to a specific file
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct AudioStream
+public struct AudioStream
 {
     //TODO: convert
     /// <summary>
@@ -58,6 +58,11 @@ public partial struct AudioStream
     public readonly void Resume()
     {
         Raylib.ResumeAudioStream(this);
+    }
+
+    public unsafe void Update(void* data, int frameCount)
+    {
+        Raylib.UpdateAudioStream(this, data, frameCount);
     }
 
     public readonly void Stop()

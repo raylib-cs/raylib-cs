@@ -52,6 +52,11 @@ public unsafe struct Music
         Raylib.PauseMusicStream(this);
     }
 
+    public void Update()
+    {
+        Raylib.UpdateMusicStream(this);
+    }
+
     public readonly void Stop()
     {
         Raylib.StopMusicStream(this);

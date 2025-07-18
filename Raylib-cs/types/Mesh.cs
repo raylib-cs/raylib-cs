@@ -166,7 +166,7 @@ public unsafe struct Mesh
     /// </summary>
     public readonly Span<T> TexCoordsAs<T>() where T : unmanaged
     {
-        return new(TexCoords, 2 * VertexCount * sizeof(float) / sizeof(T));
+        return new Span<T>(TexCoords, 2 * VertexCount * sizeof(float) / sizeof(T));
     }
 
     /// <summary>
@@ -174,7 +174,7 @@ public unsafe struct Mesh
     /// </summary>
     public readonly Span<T> TexCoords2As<T>() where T : unmanaged
     {
-        return new(TexCoords2, 2 * VertexCount * sizeof(float) / sizeof(T));
+        return new Span<T>(TexCoords2, 2 * VertexCount * sizeof(float) / sizeof(T));
     }
 
     /// <summary>
@@ -182,7 +182,7 @@ public unsafe struct Mesh
     /// </summary>
     public readonly Span<T> NormalsAs<T>() where T : unmanaged
     {
-        return new(Normals, 3 * VertexCount * sizeof(float) / sizeof(T));
+        return new Span<T>(Normals, 3 * VertexCount * sizeof(float) / sizeof(T));
     }
 
     /// <summary>
@@ -190,7 +190,7 @@ public unsafe struct Mesh
     /// </summary>
     public readonly Span<T> TangentsAs<T>() where T : unmanaged
     {
-        return new(Tangents, 4 * VertexCount * sizeof(float) / sizeof(T));
+        return new Span<T>(Tangents, 4 * VertexCount * sizeof(float) / sizeof(T));
     }
 
     /// <summary>
@@ -198,7 +198,7 @@ public unsafe struct Mesh
     /// </summary>
     public readonly Span<T> ColorsAs<T>() where T : unmanaged
     {
-        return new(Colors, 4 * VertexCount * sizeof(byte) / sizeof(T));
+        return new Span<T>(Colors, 4 * VertexCount * sizeof(byte) / sizeof(T));
     }
 
     /// <summary>
@@ -206,7 +206,7 @@ public unsafe struct Mesh
     /// </summary>
     public readonly Span<T> IndicesAs<T>() where T : unmanaged
     {
-        return new(Indices, 3 * TriangleCount * sizeof(ushort) / sizeof(T));
+        return new Span<T>(Indices, 3 * TriangleCount * sizeof(ushort) / sizeof(T));
     }
 
     #endregion

@@ -107,8 +107,7 @@ public unsafe struct Shader
 
     public void SetValue<T>(int locationIndex, T value, ShaderUniformDataType uniformDataType) where T : unmanaged
     {
-        void* val = &value;
-        Raylib.SetShaderValue(this, locationIndex, val, uniformDataType);
+        Raylib.SetShaderValue(this, locationIndex, &value, uniformDataType);
     }
 
     public void SetValues<T>(int locationIndex, T[] values, ShaderUniformDataType uniformDataType) where T : unmanaged

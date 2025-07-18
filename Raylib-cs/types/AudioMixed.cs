@@ -4,6 +4,13 @@ using System;
 
 namespace Raylib_cs;
 
+/// <summary>
+/// Audio stream processor.
+/// Used with <see cref="Raylib.AttachAudioMixedProcessor(AudioCallback{float})"/>
+/// and <see cref="Raylib.DetachAudioMixedProcessor(AudioCallback{float})"/>
+/// </summary>
+public delegate void AudioCallback<T>(Span<T> buffer);
+
 internal static unsafe class AudioMixed
 {
     public static AudioCallback<float> Callback = null;
