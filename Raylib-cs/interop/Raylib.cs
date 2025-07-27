@@ -1424,7 +1424,7 @@ public static unsafe partial class Raylib
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
     public static extern Image LoadImageAnim(sbyte* fileName, int* frames);
 
-    /// <summary>Load image from memory buffer, fileType refers to extension: i.e. "png"</summary>
+    /// <summary>Load image from memory buffer, fileType refers to extension: i.e. ".png"</summary>
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
     public static extern Image LoadImageFromMemory(sbyte* fileType, byte* fileData, int dataSize);
 
@@ -1976,7 +1976,7 @@ public static unsafe partial class Raylib
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
     public static extern Font LoadFontFromImage(Image image, Color key, int firstChar);
 
-    /// <summary>Load font from memory buffer, fileType refers to extension: i.e. "ttf"</summary>
+    /// <summary>Load font from memory buffer, fileType refers to extension: i.e. ".ttf"</summary>
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
     public static extern Font LoadFontFromMemory(
         sbyte* fileType,
@@ -2694,7 +2694,7 @@ public static unsafe partial class Raylib
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
     public static extern Wave LoadWave(sbyte* fileName);
 
-    /// <summary>Load wave from memory buffer, fileType refers to extension: i.e. "wav"</summary>
+    /// <summary>Load wave from memory buffer, fileType refers to extension: i.e. ".wav"</summary>
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
     public static extern Wave LoadWaveFromMemory(sbyte* fileType, byte* fileData, int dataSize);
 

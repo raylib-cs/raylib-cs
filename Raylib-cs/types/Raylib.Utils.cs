@@ -130,7 +130,7 @@ public static unsafe partial class Raylib
     }
 
     /// <summary>
-    /// Load image from managed memory, fileType refers to extension: i.e. "png"
+    /// Load image from managed memory, fileType refers to extension: i.e. ".png"
     /// </summary>
     public static Image LoadImageFromMemory(string fileType, byte[] fileData)
     {
@@ -949,7 +949,7 @@ public static unsafe partial class Raylib
     }
 
     /// <summary>
-    /// Load font from managed memory, fileType refers to extension: i.e. "ttf"
+    /// Load font from managed memory, fileType refers to extension: i.e. ".ttf"
     /// </summary>
     public static Font LoadFontFromMemory(
         string fileType,
@@ -1273,7 +1273,7 @@ public static unsafe partial class Raylib
     }
 
     /// <summary>
-    /// Load wave from managed memory, fileType refers to extension: i.e. "wav"
+    /// Load wave from managed memory, fileType refers to extension: i.e. ".wav"
     /// </summary>
     public static Wave LoadWaveFromMemory(
         string fileType,
