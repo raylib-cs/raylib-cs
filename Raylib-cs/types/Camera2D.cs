@@ -7,7 +7,7 @@ namespace Raylib_cs;
 /// Camera2D, defines position/orientation in 2d space
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct Camera2D
+public struct Camera2D
 {
     /// <summary>
     /// Camera offset (displacement from target)

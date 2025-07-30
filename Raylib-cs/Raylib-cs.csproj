@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <EnableDefaultItems>false</EnableDefaultItems>
@@ -49,9 +49,6 @@
   <ItemGroup>
     <Compile Include="interop\*.cs" />
     <Compile Include="types\*.cs" />
-    <Compile Include="types\native\CBool.cs" />
-    <Compile Include="types\native\AnsiBuffer.cs" />
-    <Compile Include="types\native\Utf8Buffer.cs" />
-    <Compile Include="types\native\FilePathList.cs" />
+    <Compile Include="types\native\*.cs" />
   </ItemGroup>
 </Project>

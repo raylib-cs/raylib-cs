@@ -6,7 +6,7 @@ namespace Raylib_cs;
 /// Wave type, defines audio wave data
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Wave
+public unsafe struct Wave
 {
     /// <summary>
     /// Number of samples
@@ -33,4 +33,36 @@ public unsafe partial struct Wave
     /// Buffer data pointer
     /// </summary>
     public void* Data;
+
+    public readonly CBool IsValid => Raylib.IsWaveValid(this);
+
+    public static Wave Load(string fileName)
+    {
+        return Raylib.LoadWave(fileName);
+    }
+
+    public CBool Export(string fileName)
+    {
+        return Raylib.ExportWave(this, fileName);
+    }
+
+    public CBool ExportAsCode(string fileName)
+    {
+        return Raylib.ExportWaveAsCode(this, fileName);
+    }
+
+    public void Format(int sampleRate, int sampleSize, int channels)
+    {
+        Raylib.WaveFormat(ref this, sampleRate, sampleSize, channels);
+    }
+
+    public void Crop(int initFrame, int finalFrame)
+    {
+        Raylib.WaveCrop(ref this, initFrame, finalFrame);
+    }
+
+    public void Unload()
+    {
+        Raylib.UnloadWave(this);
+    }
 }

@@ -9,7 +9,7 @@ namespace Raylib_cs;
 /// NOTE: Data stored in CPU memory (and GPU)
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Mesh
+public unsafe struct Mesh
 {
     /// <summary>
     ///  Creates a mesh ready for default vertex data allocation
@@ -29,6 +29,36 @@ public unsafe partial struct Mesh
     /// Number of triangles stored (indexed or not)
     /// </summary>
     public int TriangleCount;
+
+    public readonly void Draw(Material material, Matrix4x4 transform)
+    {
+        Raylib.DrawMesh(this, material, transform);
+    }
+
+    public readonly void DrawInstanced(Material material, Matrix4x4[] transforms, int instances)
+    {
+        Raylib.DrawMeshInstanced(this, material, transforms, instances);
+    }
+
+    public readonly void Export(string fileName)
+    {
+        Raylib.ExportMesh(this, fileName);
+    }
+
+    public readonly void ExportAsCode(string fileName)
+    {
+        Raylib.ExportMeshAsCode(this, fileName);
+    }
+
+    public void Upload(CBool dynamic)
+    {
+        Raylib.UploadMesh(ref this, dynamic);
+    }
+
+    public void Unload()
+    {
+        Raylib.UnloadMesh(this);
+    }
 
     #region Default vertex data
 
@@ -136,7 +166,7 @@ public unsafe partial struct Mesh
     /// </summary>
     public readonly Span<T> TexCoordsAs<T>() where T : unmanaged
     {
-        return new(TexCoords, 2 * VertexCount * sizeof(float) / sizeof(T));
+        return new Span<T>(TexCoords, 2 * VertexCount * sizeof(float) / sizeof(T));
     }
 
     /// <summary>
@@ -144,7 +174,7 @@ public unsafe partial struct Mesh
     /// </summary>
     public readonly Span<T> TexCoords2As<T>() where T : unmanaged
     {
-        return new(TexCoords2, 2 * VertexCount * sizeof(float) / sizeof(T));
+        return new Span<T>(TexCoords2, 2 * VertexCount * sizeof(float) / sizeof(T));
     }
 
     /// <summary>
@@ -152,7 +182,7 @@ public unsafe partial struct Mesh
     /// </summary>
     public readonly Span<T> NormalsAs<T>() where T : unmanaged
     {
-        return new(Normals, 3 * VertexCount * sizeof(float) / sizeof(T));
+        return new Span<T>(Normals, 3 * VertexCount * sizeof(float) / sizeof(T));
     }
 
     /// <summary>
@@ -160,7 +190,7 @@ public unsafe partial struct Mesh
     /// </summary>
     public readonly Span<T> TangentsAs<T>() where T : unmanaged
     {
-        return new(Tangents, 4 * VertexCount * sizeof(float) / sizeof(T));
+        return new Span<T>(Tangents, 4 * VertexCount * sizeof(float) / sizeof(T));
     }
 
     /// <summary>
@@ -168,7 +198,7 @@ public unsafe partial struct Mesh
     /// </summary>
     public readonly Span<T> ColorsAs<T>() where T : unmanaged
     {
-        return new(Colors, 4 * VertexCount * sizeof(byte) / sizeof(T));
+        return new Span<T>(Colors, 4 * VertexCount * sizeof(byte) / sizeof(T));
     }
 
     /// <summary>
@@ -176,7 +206,7 @@ public unsafe partial struct Mesh
     /// </summary>
     public readonly Span<T> IndicesAs<T>() where T : unmanaged
     {
-        return new(Indices, 3 * TriangleCount * sizeof(ushort) / sizeof(T));
+        return new Span<T>(Indices, 3 * TriangleCount * sizeof(ushort) / sizeof(T));
     }
 
     #endregion

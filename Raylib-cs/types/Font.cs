@@ -59,7 +59,7 @@ public partial struct GlyphInfo
 /// Font, font texture and GlyphInfo array data
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Font
+public unsafe struct Font
 {
     /// <summary>
     /// Base size (default chars height)
@@ -90,4 +90,8 @@ public unsafe partial struct Font
     /// Glyphs info data
     /// </summary>
     public GlyphInfo* Glyphs;
+
+    public readonly CBool IsValid => Raylib.IsFontValid(this);
+
+    public static Font Default => Raylib.GetFontDefault();
 }

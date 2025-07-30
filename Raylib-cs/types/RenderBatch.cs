@@ -7,7 +7,7 @@ namespace Raylib_cs;
 /// RenderBatch type
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct RenderBatch
+public unsafe struct RenderBatch
 {
     /// <summary>
     /// Number of vertex buffers (multi-buffering support)
@@ -44,7 +44,7 @@ public unsafe partial struct RenderBatch
 /// Dynamic vertex buffers (position + texcoords + colors + indices arrays)
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct VertexBuffer
+public unsafe struct VertexBuffer
 {
     /// <summary>
     /// Number of elements in the buffer (QUADS)

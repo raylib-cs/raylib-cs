@@ -22,4 +22,19 @@ public unsafe struct FilePathList
     /// Filepaths entries
     /// </summary>
     public byte** Paths;
+
+    public string this[uint i]
+    {
+        get
+        {
+            if (i >= 0 && i < Count)
+            {
+                return Marshal.PtrToStringUTF8((System.IntPtr)Paths[i]);
+            }
+            else
+            {
+                throw new System.IndexOutOfRangeException();
+            }
+        }
+    }
 }

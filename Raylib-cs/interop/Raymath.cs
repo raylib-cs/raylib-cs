@@ -1,5 +1,5 @@
-using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Numerics;
 using System.Security;
 
 namespace Raylib_cs;
@@ -21,7 +21,7 @@ public static unsafe partial class Raymath
     /// <summary>
     /// Used by DllImport to load the native library
     /// </summary>
-    public const string NativeLibName = "raylib";
+    public const string NativeLibName = Raylib.NativeLibName;
 
     /// <summary>Clamp float value</summary>
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
@@ -37,12 +37,9 @@ public static unsafe partial class Raymath
 
     /// <summary>Remap input value within input range to output range</summary>
     [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern float Remap(
-        float value,
-        float inputStart,
-        float inputEnd,
-        float outputStart,
-        float outputEnd
+    public static extern float Remap(float value,
+        float inputStart, float inputEnd,
+        float outputStart, float outputEnd
     );
 
     /// <summary>Wrap input value from min to max</summary>

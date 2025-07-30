@@ -7,7 +7,7 @@ namespace Raylib_cs;
 /// Transform, vertex transformation data
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct Transform
+public struct Transform
 {
     /// <summary>
     /// Translation
@@ -23,4 +23,14 @@ public partial struct Transform
     /// Scale
     /// </summary>
     public Vector3 Scale;
+
+    public void TranslateLocal(Vector3 translation)
+    {
+        Translation += Vector3.Transform(translation, Rotation);
+    }
+
+    public void TranslateGlobal(Vector3 translation)
+    {
+        Translation += translation;
+    }
 }

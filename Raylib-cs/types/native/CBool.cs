@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 
 namespace Raylib_cs;
@@ -13,8 +12,8 @@ public readonly struct CBool
      * which can be later implicitely cast onto any type during usage.
      * 
      * It is wise to note that C booleans are any numeric value, but allocating an
-     * Int64 for every CBool instance is.. well, wildly memory-inefficient. Yes, the
-     * process is basically treated as a 0-cost instantiation, but it's better to rely
+     * Int64 (long) for every CBool instance is.. well, wildly memory-inefficient. Yes,
+     * the process is basically treated as a 0-cost instantiation, but it's better to rely
      * on explicit motivation than to blindly trust the runtime judgement on its memory
      * management. 
      * 
@@ -30,7 +29,7 @@ public readonly struct CBool
     {
         this.Value = (sbyte)(value ? 1 : 0);
     }
-    public CBool(Int64 value)
+    public CBool(long value)
     {
         this.Value = (sbyte)(value != 0 ? 1 : 0);
     }
@@ -45,20 +44,20 @@ public readonly struct CBool
     // Allows for CBools to be implicitely assigned to a native boolean variable.
     public static implicit operator bool(CBool x)
     {
-        return x.Value != 0 ? true : false;
+        return x.Value != 0;
     }
 
     // Native -> CBool
     // Allows native booleans to be implicitely constructed into CBools while passing parameters.
     public static implicit operator CBool(bool x)
     {
-        return new CBool { Value = (sbyte)(x ? 1 : 0) };
+        return new CBool(x);
     }
 
     // Same goes for integer numeric values (any value, so an Int64 is used).
-    public static implicit operator CBool(Int64 x)
+    public static implicit operator CBool(long x)
     {
-        return new CBool { Value = (sbyte)(x != 0 ? 1 : 0) };
+        return new CBool(x);
     }
 
     /* Arithmetic overloads
