@@ -104,7 +104,7 @@ public struct Color
 
     /// <summary>
     /// <inheritdoc cref="Color(byte, byte, byte)"/>.
-    /// Accepts <see cref="float"/>'s, upscales and clamps them to the range 0..255.
+    /// Accepts <see cref="float"/>'s, upscales and clamps them to the range 0...255.
     /// Then they are converted to <see cref="byte"/>'s by rounding.
     /// </summary>
     public Color(float r, float g, float b)
@@ -209,11 +209,17 @@ public struct Color
 
     public static Color Lerp(Color origin, Color target, float t)
     {
-        byte r = origin.R.Lerp(target.R, t);
-        byte g = origin.G.Lerp(target.G, t);
-        byte b = origin.B.Lerp(target.B, t);
-        byte a = origin.A.Lerp(target.A, t);
+        byte r = LerpB(origin.R, target.R, t);
+        byte g = LerpB(origin.R, target.G, t);
+        byte b = LerpB(origin.R, target.B, t);
+        byte a = LerpB(origin.R, target.A, t);
         return new Color(r, g, b, a);
+    }
+
+    // Lerp byte
+    private static byte LerpB(byte a, byte b, float t)
+    {
+        return (byte)(a + (b - a) * t);
     }
 
     public readonly override string ToString()
