@@ -1561,4 +1561,12 @@ public static unsafe partial class Raylib
         UnloadFileText(data);
         return text;
     }
+
+    public static Vector2 GetScreenCenter()
+    {
+        Vector2 center = new Vector2();
+        center.X = GetScreenWidth() / 2.0f;
+        center.Y = GetScreenHeight() / 2.0f;
+        return center;
+    }
 }

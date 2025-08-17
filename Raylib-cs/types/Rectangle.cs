@@ -14,6 +14,24 @@ public struct Rectangle
     public float Width;
     public float Height;
 
+    public static Rectangle Grow(Rectangle rec, float growth)
+    {
+        rec.X -= growth;
+        rec.Y -= growth;
+        rec.Width += growth * 2.0f;
+        rec.Height += growth * 2.0f;
+        return rec;
+    }
+
+    public static Rectangle Shrink(Rectangle rec, float shrink)
+    {
+        rec.X += shrink;
+        rec.Y += shrink;
+        rec.Width-= shrink * 2.0f;
+        rec.Height -= shrink * 2.0f;
+        return rec;
+    }
+
     public Rectangle(float x, float y, float width, float height)
     {
         this.X = x;
@@ -69,6 +87,17 @@ public struct Rectangle
         {
             Width = value.X;
             Height = value.Y;
+        }
+    }
+
+    public readonly Vector2 Center
+    {
+        get
+        {
+            Vector2 center = new Vector2();
+            center.X = X + (Width / 2.0f);
+            center.Y = Y + (Height / 2.0f);
+            return center;
         }
     }
 
@@ -171,6 +200,16 @@ public struct Rectangle
     public readonly Rectangle GetCollisionRectangle(Rectangle rectangle2)
     {
         return Raylib.GetCollisionRec(this, rectangle2);
+    }
+
+    public void Grow(float growth)
+    {
+        this = Rectangle.Grow(this, growth);
+    }
+
+    public void Shrink(float shrink)
+    {
+        this = Rectangle.Shrink(this, shrink);
     }
 
     public readonly override string ToString()
