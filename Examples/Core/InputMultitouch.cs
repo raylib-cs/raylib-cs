@@ -38,7 +38,7 @@ public class InputMultitouch
         {
             // Update
             //----------------------------------------------------------------------------------
-            // Get the touch point count (h ow many fingers are touching the screen )
+            // Get the touch point count (how many fingers are touching the screen )
             int tCount = GetTouchPointCount();
 
             // Clamp touch points available (set the maximum touch points allowed )
