@@ -22,16 +22,4 @@ public struct RenderTexture2D
     /// Depth buffer attachment texture
     /// </summary>
     public Texture2D Depth;
-
-    public readonly CBool IsValid => Raylib.IsRenderTextureValid(this);
-
-    public static RenderTexture2D Load(int width, int height)
-    {
-        return Raylib.LoadRenderTexture(width, height);
-    }
-
-    public void Unload()
-    {
-        Raylib.UnloadRenderTexture(this);
-    }
 }

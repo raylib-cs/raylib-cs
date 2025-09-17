@@ -14,24 +14,6 @@ public struct Rectangle
     public float Width;
     public float Height;
 
-    public static Rectangle Grow(Rectangle rec, float growth)
-    {
-        rec.X -= growth;
-        rec.Y -= growth;
-        rec.Width += growth * 2.0f;
-        rec.Height += growth * 2.0f;
-        return rec;
-    }
-
-    public static Rectangle Shrink(Rectangle rec, float shrink)
-    {
-        rec.X += shrink;
-        rec.Y += shrink;
-        rec.Width-= shrink * 2.0f;
-        rec.Height -= shrink * 2.0f;
-        return rec;
-    }
-
     public Rectangle(float x, float y, float width, float height)
     {
         this.X = x;
@@ -101,21 +83,6 @@ public struct Rectangle
         }
     }
 
-    public readonly void Draw(Color color)
-    {
-        Raylib.DrawRectangleRec(this, color);
-    }
-
-    public readonly void Draw(Vector2 origin, Color color)
-    {
-        Draw(origin, 0.0f, color);
-    }
-
-    public readonly void Draw(Vector2 origin, float rotation, Color color)
-    {
-        Raylib.DrawRectanglePro(this, origin, rotation, color);
-    }
-
     public readonly void GetIntegerValues(out int x, out int y, out int width, out int height)
     {
         x = (int)this.X;
@@ -124,92 +91,20 @@ public struct Rectangle
         height = (int)this.Height;
     }
 
-    public readonly void DrawLines(Color color)
-    {
-        GetIntegerValues(out int x, out int y, out int w, out int h);
-        Raylib.DrawRectangleLines(x, y, w, h, color);
-    }
-
-    public readonly void DrawLines(float thickness, Color color)
-    {
-        Raylib.DrawRectangleLinesEx(this, thickness, color);
-    }
-
-    public readonly void DrawGradient(Color topLeft, Color bottomLeft, Color topRight, Color bottomRight)
-    {
-        Raylib.DrawRectangleGradientEx(this, topLeft, bottomLeft, topRight, bottomRight);
-    }
-
-    public readonly void DrawGradientV(Color top, Color bottom)
-    {
-        GetIntegerValues(out int x, out int y, out int w, out int h);
-        Raylib.DrawRectangleGradientV(x, y, w, h, top, bottom);
-    }
-
-    public readonly void DrawGradientH(Color left, Color right)
-    {
-        GetIntegerValues(out int x, out int y, out int w, out int h);
-        Raylib.DrawRectangleGradientH(x, y, w, h, left, right);
-    }
-
-    public readonly void DrawRounded(float roundness, Color color)
-    {
-        Raylib.DrawRectangleRounded(this, roundness, 10, color);
-    }
-
-    public readonly void DrawRounded(float roundness, int segments, Color color)
-    {
-        Raylib.DrawRectangleRounded(this, roundness, segments, color);
-    }
-
-    public readonly void DrawRoundedLines(float roundness, Color color)
-    {
-        Raylib.DrawRectangleRoundedLines(this, roundness, 10, color);
-    }
-
-    public readonly void DrawRoundedLines(float roundness, int segments, Color color)
-    {
-        Raylib.DrawRectangleRoundedLines(this, roundness, segments, color);
-    }
-
-    public readonly void DrawRoundedLines(float roundness, float thickness, Color color)
-    {
-        Raylib.DrawRectangleRoundedLinesEx(this, roundness, 10, thickness, color);
-    }
-
-    public readonly void DrawRoundedLines(float roundness, int segments, float thickness, Color color)
-    {
-        Raylib.DrawRectangleRoundedLinesEx(this, roundness, segments, thickness, color);
-    }
-
-    public readonly CBool CheckCollisionRec(Rectangle rectangle)
-    {
-        return Raylib.CheckCollisionRecs(this, rectangle);
-    }
-
-    public readonly CBool CheckCollisionPoint(Vector2 point)
-    {
-        return Raylib.CheckCollisionPointRec(point, this);
-    }
-
-    public readonly CBool CheckCollisionCircle(Vector2 center, float radius)
-    {
-        return Raylib.CheckCollisionCircleRec(center, radius, this);
-    }
-
-    public readonly Rectangle GetCollisionRectangle(Rectangle rectangle2)
-    {
-        return Raylib.GetCollisionRec(this, rectangle2);
-    }
-
     public void Grow(float growth)
     {
-        this = Rectangle.Grow(this, growth);
+        X -= growth;
+        Y -= growth;
+        Width += growth * 2.0f;
+        Height += growth * 2.0f;
     }
 
     public void Shrink(float shrink)
     {
-        this = Rectangle.Shrink(this, shrink);
+        X += shrink;
+        Y += shrink;
+        Width -= shrink * 2.0f;
+        Height -= shrink * 2.0f;
     }
 
     public readonly override string ToString()

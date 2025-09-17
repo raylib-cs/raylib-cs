@@ -30,36 +30,6 @@ public unsafe struct Mesh
     /// </summary>
     public int TriangleCount;
 
-    public readonly void Draw(Material material, Matrix4x4 transform)
-    {
-        Raylib.DrawMesh(this, material, transform);
-    }
-
-    public readonly void DrawInstanced(Material material, Matrix4x4[] transforms, int instances)
-    {
-        Raylib.DrawMeshInstanced(this, material, transforms, instances);
-    }
-
-    public readonly void Export(string fileName)
-    {
-        Raylib.ExportMesh(this, fileName);
-    }
-
-    public readonly void ExportAsCode(string fileName)
-    {
-        Raylib.ExportMeshAsCode(this, fileName);
-    }
-
-    public void Upload(CBool dynamic)
-    {
-        Raylib.UploadMesh(ref this, dynamic);
-    }
-
-    public void Unload()
-    {
-        Raylib.UnloadMesh(this);
-    }
-
     #region Default vertex data
 
     /// <summary>
