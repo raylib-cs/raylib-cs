@@ -76,7 +76,7 @@ public enum ShaderUniformDataType
 /// Shader type (generic)
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Shader
+public unsafe struct Shader
 {
     /// <summary>
     /// Shader program id

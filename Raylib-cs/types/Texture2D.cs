@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Numerics;
 
 namespace Raylib_cs;
 
@@ -102,7 +103,7 @@ public enum CubemapLayout
 /// NOTE: Data stored in GPU memory
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct Texture2D
+public struct Texture2D
 {
     /// <summary>
     /// OpenGL texture id
@@ -128,4 +129,9 @@ public partial struct Texture2D
     /// Data format (PixelFormat type)
     /// </summary>
     public PixelFormat Format;
+
+    /// <summary>
+    /// Get width and height packed in a Vector2
+    /// </summary>
+    public readonly Vector2 Dimensions => new Vector2(Width, Height);
 }

@@ -8,9 +8,9 @@ namespace Raylib_cs;
 /// NOTE: Useful to create custom audio streams not bound to a specific file
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct AudioStream
+public struct AudioStream
 {
-    //TODO: convert
+    // TODO: convert
     /// <summary>
     /// Pointer to internal data(rAudioBuffer *) used by the audio system
     /// </summary>

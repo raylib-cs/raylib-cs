@@ -6,7 +6,7 @@ namespace Raylib_cs;
 /// RenderTexture2D type, for texture rendering
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct RenderTexture2D
+public struct RenderTexture2D
 {
     /// <summary>
     /// OpenGL Framebuffer Object (FBO) id

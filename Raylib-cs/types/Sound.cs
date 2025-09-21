@@ -6,7 +6,7 @@ namespace Raylib_cs;
 /// Sound source type
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct Sound
+public struct Sound
 {
     /// <summary>
     /// Audio stream

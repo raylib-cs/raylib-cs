@@ -6,7 +6,7 @@ namespace Raylib_cs;
 /// Wave type, defines audio wave data
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Wave
+public unsafe struct Wave
 {
     /// <summary>
     /// Number of samples
@@ -28,7 +28,7 @@ public unsafe partial struct Wave
     /// </summary>
     public uint Channels;
 
-    //TODO: SPAN<byte>  ?
+    // TODO: SPAN<byte>?
     /// <summary>
     /// Buffer data pointer
     /// </summary>

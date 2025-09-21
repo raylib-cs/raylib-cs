@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Numerics;
 
 namespace Raylib_cs;
 
@@ -133,7 +134,7 @@ public enum PixelFormat
 /// Image, pixel data stored in CPU memory (RAM)
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Image
+public unsafe struct Image
 {
     /// <summary>
     /// Image raw data
@@ -159,4 +160,9 @@ public unsafe partial struct Image
     /// Data format (PixelFormat type)
     /// </summary>
     public PixelFormat Format;
+
+    /// <summary>
+    /// Get width and height packed in a Vector2
+    /// </summary>
+    public readonly Vector2 Dimensions => new Vector2(Width, Height);
 }

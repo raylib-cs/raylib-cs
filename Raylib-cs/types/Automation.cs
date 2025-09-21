@@ -31,5 +31,5 @@ public unsafe struct AutomationEventList
     public AutomationEvent* Events;
 
     /// <inheritdoc cref="Events"/>
-    public ReadOnlySpan<AutomationEvent> EventsAsSpan => new(Events, (int)Count);
+    public readonly ReadOnlySpan<AutomationEvent> EventsAsSpan => new ReadOnlySpan<AutomationEvent>(Events, (int)Count);
 }

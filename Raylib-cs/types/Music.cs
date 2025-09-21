@@ -7,7 +7,7 @@ namespace Raylib_cs;
 /// NOTE: Anything longer than ~10 seconds should be streamed
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Music
+public unsafe struct Music
 {
     /// <summary>
     /// Audio stream
@@ -29,7 +29,7 @@ public unsafe partial struct Music
     /// </summary>
     public int CtxType;
 
-    //TODO span
+    // TODO span
     /// <summary>
     /// Audio context data, depends on type
     /// </summary>

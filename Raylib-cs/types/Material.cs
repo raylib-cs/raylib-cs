@@ -48,7 +48,7 @@ public enum MaterialMapIndex
 /// Material texture map
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public partial struct MaterialMap
+public struct MaterialMap
 {
     /// <summary>
     /// Material map texture
@@ -70,14 +70,14 @@ public partial struct MaterialMap
 /// Material type (generic)
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public unsafe partial struct Material
+public unsafe struct Material
 {
     /// <summary>
     /// Material shader
     /// </summary>
     public Shader Shader;
 
-    //TODO: convert
+    // TODO: convert
     /// <summary>
     /// Material maps
     /// </summary>

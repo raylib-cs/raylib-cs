@@ -10,7 +10,8 @@ C# bindings for raylib, a simple and easy-to-use library to learn videogames pro
 [![GitHub stars](https://img.shields.io/github/stars/raylib-cs/raylib-cs?style=social)](https://github.com/raylib-cs/raylib-cs/stargazers)
 [![Build](https://github.com/raylib-cs/raylib-cs/workflows/Build/badge.svg)](https://github.com/raylib-cs/raylib-cs/actions?query=workflow%3ABuild)
 
-Raylib-cs targets net6.0 and uses the [official 5.5 release](https://github.com/raysan5/raylib/releases/tag/5.5) to build the native libraries.
+Raylib-cs targets net6.0 net8.0 and uses the [official 5.5 release](https://github.com/raysan5/raylib/releases/tag/5.5)
+to build the native libraries.
 
 ## Status
 
@@ -37,8 +38,8 @@ dotnet add package Raylib-cs
 If you need to edit Raylib-cs source then you will need to add the bindings as a project (see below).
 
 If you are new to using NuGet (or you've forgotten) and are trying to run the above command in the command prompt,
-remember that you need to be *inside the intended project directory* (not just inside the solution directory) otherwise
-the command won't work.
+remember that you need to be *inside the intended project directory* (not just inside the solution directory)
+otherwise the command won't work.
 
 ## Installation - Manual
 
@@ -60,10 +61,10 @@ using Raylib_cs;
 
 namespace HelloWorld;
 
-class Program
+internal static class Program
 {
     // STAThread is required if you deploy using NativeAOT on Windows - See https://github.com/raylib-cs/raylib-cs/issues/301
-    [STAThread]
+    [System.STAThread]
     public static void Main()
     {
         Raylib.InitWindow(800, 480, "Hello World");
