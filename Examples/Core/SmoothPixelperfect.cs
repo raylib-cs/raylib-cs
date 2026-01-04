@@ -24,53 +24,53 @@ public static class SmoothPixelPerfect
     {
         // Initialization
         //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
+                                 const int screenWidth = 800;
+                                 const int screenHeight = 450;
 
-        const int virtualScreenWidth = 160;
-        const int virtualScreenHeight = 90;
+                                 const int virtualScreenWidth = 160;
+                                 const int virtualScreenHeight = 90;
 
-        const float virtualRatio = (float)screenWidth / (float)virtualScreenWidth;
+                                 const float virtualRatio = (float)screenWidth / (float)virtualScreenWidth;
 
-        InitWindow(screenWidth, screenHeight, "raylib [core] example - smooth pixel-perfect camera");
+                                 InitWindow(screenWidth, screenHeight, "raylib [core] example - smooth pixel-perfect camera");
 
-        // Game world camera
-        Camera2D worldSpaceCamera = new();
-        worldSpaceCamera.Zoom = 1.0f;
+                                 // Game world camera
+                                 Camera2D worldSpaceCamera = new();
+                                 worldSpaceCamera.Zoom = 1.0f;
 
-        // Smoothing camera
-        Camera2D screenSpaceCamera = new();
-        screenSpaceCamera.Zoom = 1.0f;
+                                 // Smoothing camera
+                                 Camera2D screenSpaceCamera = new();
+                                 screenSpaceCamera.Zoom = 1.0f;
 
-        // This is where we'll draw all our objects.
-        RenderTexture2D target = LoadRenderTexture(virtualScreenWidth, virtualScreenHeight);
+                                 // This is where we'll draw all our objects.
+                                 RenderTexture2D target = LoadRenderTexture(virtualScreenWidth, virtualScreenHeight);
 
-        Rectangle rec01 = new(70.0f, 35.0f, 20.0f, 20.0f);
-        Rectangle rec02 = new(90.0f, 55.0f, 30.0f, 10.0f);
-        Rectangle rec03 = new(80.0f, 65.0f, 15.0f, 25.0f);
+                                 Rectangle rec01 = new(70.0f, 35.0f, 20.0f, 20.0f);
+                                 Rectangle rec02 = new(90.0f, 55.0f, 30.0f, 10.0f);
+                                 Rectangle rec03 = new(80.0f, 65.0f, 15.0f, 25.0f);
 
-        // The target's height is flipped (in the source Rectangle), due to OpenGL reasons
-        Rectangle sourceRec = new(
-            0.0f,
-            0.0f,
-            (float)target.Texture.Width,
-            -(float)target.Texture.Height
-        );
-        Rectangle destRec = new(
-            -virtualRatio,
-            -virtualRatio,
-            screenWidth + (virtualRatio * 2),
-            screenHeight + (virtualRatio * 2)
-        );
+                                 // The target's height is flipped (in the source Rectangle), due to OpenGL reasons
+                                 Rectangle sourceRec = new(
+                                     0.0f,
+                                     0.0f,
+                                     (float)target.Texture.Width,
+                                     -(float)target.Texture.Height
+                                 );
+                                 Rectangle destRec = new(
+                                     -virtualRatio,
+                                     -virtualRatio,
+                                     screenWidth + (virtualRatio * 2),
+                                     screenHeight + (virtualRatio * 2)
+                                 );
 
-        Vector2 origin = new(0.0f, 0.0f);
+                                 Vector2 origin = new(0.0f, 0.0f);
 
-        float rotation = 0.0f;
+                                 float rotation = 0.0f;
 
-        float cameraX = 0.0f;
-        float cameraY = 0.0f;
+                                 float cameraX = 0.0f;
+                                 float cameraY = 0.0f;
 
-        SetTargetFPS(60);
+                                 SetTargetFPS(60);
         //--------------------------------------------------------------------------------------
 
         // Main game loop

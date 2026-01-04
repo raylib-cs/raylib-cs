@@ -15,7 +15,7 @@ public static class BlittableHelper
 
 public class RaylibTests
 {
-    private unsafe void CheckType<T>() where T : unmanaged
+    private static void CheckType<T>() where T : unmanaged
     {
         Assert.True(BlittableHelper.IsBlittable<T>());
     }

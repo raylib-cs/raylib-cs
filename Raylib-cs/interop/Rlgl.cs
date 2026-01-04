@@ -298,19 +298,6 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void DisableVertexAttribute(uint index);
 
-    /// <summary>Enable attribute state pointer<br/>
-    /// NOTE: Only available for GRAPHICS_API_OPENGL_11</summary>
-    [LibraryImport(NativeLibName, EntryPoint = "rlEnableStatePointer")]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void EnableStatePointer(int vertexAttribType, void* buffer);
-
-    /// <summary>Disable attribute state pointer<br/>
-    /// NOTE: Only available for GRAPHICS_API_OPENGL_11</summary>
-    [LibraryImport(NativeLibName, EntryPoint = "rlDisableStatePointer")]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void DisableStatePointer(int vertexAttribType);
-
-
     // Textures state
 
     /// <summary>Select and active a texture slot</summary>
