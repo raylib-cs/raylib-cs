@@ -210,9 +210,9 @@ public struct Color
     public static Color Lerp(Color origin, Color target, float t)
     {
         byte r = LerpB(origin.R, target.R, t);
-        byte g = LerpB(origin.R, target.G, t);
-        byte b = LerpB(origin.R, target.B, t);
-        byte a = LerpB(origin.R, target.A, t);
+        byte g = LerpB(origin.G, target.G, t);
+        byte b = LerpB(origin.B, target.B, t);
+        byte a = LerpB(origin.A, target.A, t);
         return new Color(r, g, b, a);
     }
 
