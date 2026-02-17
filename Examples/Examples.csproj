@@ -1,25 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <StartupObject>Examples.Program</StartupObject>
-    <RunWorkingDirectory>$(MSBuildThisFileDirectory)</RunWorkingDirectory>
-    <LangVersion>12</LangVersion>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <StartupObject>Examples.Program</StartupObject>
+        <RunWorkingDirectory>$(MSBuildThisFileDirectory)</RunWorkingDirectory>
+        <LangVersion>12</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Core/LoadingThread.cs"/>
-    <Compile Remove="Text/Unicode.cs"/>
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="Core/LoadingThread.cs"/>
+        <Compile Remove="Text/Unicode.cs"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="Raylib_cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <Using Include="Raylib_cs"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="../Raylib-cs/Raylib-cs.csproj" />
-    <ProjectReference Include="../Raylib-cs.Native/Raylib-cs.Native.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Raylib-cs" Version="8.0.0"/>
+    </ItemGroup>
 </Project>

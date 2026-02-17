@@ -265,16 +265,6 @@ public static unsafe partial class Rlgl
     [DllImport(NativeLibName, EntryPoint = "rlDisableVertexAttribute", CallingConvention = CallingConvention.Cdecl)]
     public static extern void DisableVertexAttribute(uint index);
 
-    /// <summary>Enable attribute state pointer<br/>
-    /// NOTE: Only available for GRAPHICS_API_OPENGL_11</summary>
-    [DllImport(NativeLibName, EntryPoint = "rlEnableStatePointer", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void EnableStatePointer(int vertexAttribType, void* buffer);
-
-    /// <summary>Disable attribute state pointer<br/>
-    /// NOTE: Only available for GRAPHICS_API_OPENGL_11</summary>
-    [DllImport(NativeLibName, EntryPoint = "rlDisableStatePointer", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void DisableStatePointer(int vertexAttribType);
-
 
     // Textures state
 

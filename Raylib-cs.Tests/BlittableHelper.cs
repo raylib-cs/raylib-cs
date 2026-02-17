@@ -27,6 +27,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -36,7 +37,7 @@ public static class BlittableHelper
 {
     public static bool IsBlittable<T>()
     {
-        return IsBlittableCache<T>.VALUE;
+        return IsBlittableCache<T>.Value;
     }
 
     public static bool IsBlittable(this Type type)
@@ -48,11 +49,13 @@ public static class BlittableHelper
         if (type.IsArray)
         {
             var elementType = type.GetElementType();
-            return elementType != null && elementType.IsValueType && IsBlittable(elementType);
+            return elementType is {IsValueType: true} && elementType.IsBlittable();
         }
         try
         {
-            var instance = FormatterServices.GetUninitializedObject(type);
+            //was deprecated: FormatterServices.GetUninitializedObject(type);
+            //TODO: There's probably a nicer way to do this. See fennecs.net
+            var instance = RuntimeHelpers.GetUninitializedObject(type);
             GCHandle.Alloc(instance, GCHandleType.Pinned).Free();
             return true;
         }
@@ -64,6 +67,6 @@ public static class BlittableHelper
 
     private static class IsBlittableCache<T>
     {
-        public static readonly bool VALUE = IsBlittable(typeof(T));
+        public static readonly bool Value = typeof(T).IsBlittable();
     }
 }

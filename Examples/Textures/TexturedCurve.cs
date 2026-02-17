@@ -90,11 +90,10 @@ public unsafe class TexturedCurve
     {
         if (showCurve)
         {
-            DrawLineBezierCubic(
+            //TODO: DrawLineBezier was deprecated, I merely replaced to the fallback one.
+            DrawLineBezier(
                 curveStartPosition,
                 curveEndPosition,
-                curveStartPositionTangent,
-                curveEndPositionTangent,
                 2,
                 Color.Blue
             );

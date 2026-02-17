@@ -1,184 +1,46 @@
-name: Build
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
 on:
   push:
-    branches: ["master"]
+    branches: [ "master" ]
+  
   pull_request:
     branches: ["*"]
     paths-ignore:
       - "README.md"
       - ".github/ISSUE_TEMPLATE/**"
+  
   workflow_dispatch:
+
 jobs:
   build:
-    runs-on: ubuntu-22.04
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      pkgversion: ${{ steps.version.outputs.pkgversion }}
+    runs-on: ubuntu-latest
+
     steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: check raylib version
-        id: version
-        shell: bash
-        run: |
-          echo "version=$(sed -n 's/.*<TargetRaylibTag>\(.*\)<\/TargetRaylibTag>.*/\1/p' Raylib-cs/Build.props)">> ${GITHUB_OUTPUT}
-          echo "pkgversion=$(sed -n 's/.*<PackageVersion>\(.*\)<\/PackageVersion>.*/\1/p' Raylib-cs/Build.props)">> ${GITHUB_OUTPUT}
-
-  build-linux:
-    runs-on: ubuntu-22.04
-    needs: build
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
-
-      - name: setup dotnet
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            6.0.x
             8.0.x
+            9.0.x
+            10.0.x
 
-      - name: setup dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install \
-            libasound2-dev \
-            libx11-dev \
-            libxrandr-dev \
-            libxi-dev \
-            libgl1-mesa-dev \
-            libglu1-mesa-dev \
-            libxcursor-dev \
-            libxinerama-dev
-
-      - name: build projects
-        run: dotnet build -c Release
-
-      - name: run tests
-        run: dotnet test Raylib-cs.Tests -c Release
-
-      - name: upload build
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-x64
-          path: Raylib-cs.Native/bin/Release/native/raylib/libraylib.so
-          if-no-files-found: error
-
-  build-osx:
-    runs-on: macos-latest
-    needs: build
-    strategy:
-      matrix:
-        name: [arm64, x64]
-        include:
-          - name: arm64
-            arch: arm64
-          - name: x64
-            arch: x86_64
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
-
-      - name: setup dotnet
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            6.0.x
-            8.0.x
-
-      - name: build projects
-        run: dotnet build -c Release /p:BuildArch=${{ matrix.arch }}
-
-      - name: run tests
-        run: dotnet test Raylib-cs.Tests -c Release
-
-      - name: upload build
-        uses: actions/upload-artifact@v4
-        with:
-          name: osx-${{ matrix.name }}
-          path: Raylib-cs.Native/bin/Release/native/raylib/libraylib.dylib
-          if-no-files-found: error
-
-  build-windows:
-    runs-on: windows-latest
-    needs: build
-    strategy:
-      matrix:
-        name: [x86, x64]
-        include:
-          - name: x86
-            arch: win32
-          - name: x64
-            arch: x64
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
-
-      - name: setup dotnet
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            6.0.x
-            8.0.x
-
-      - name: build projects
-        run: dotnet build -c Release /p:BuildArch=${{ matrix.arch }}
-
-      - name: run tests
-        run: dotnet test Raylib-cs.Tests -c Release
-
-      - name: upload build
-        uses: actions/upload-artifact@v4
-        with:
-          name: win-${{ matrix.name }}
-          path: Raylib-cs.Native/bin/Release/native/raylib/Release/raylib.dll
-          if-no-files-found: error
-
-  build-publish:
-    runs-on: ubuntu-22.04
-    needs:
-      - build-linux
-      - build-osx
-      - build-windows
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4.1.7
-        with:
-          name: linux-x64
-          path: Raylib-cs/runtimes/linux-x64/native
-
-      - uses: actions/download-artifact@v4.1.7
-        with:
-          name: osx-arm64
-          path: Raylib-cs/runtimes/osx-arm64/native
-
-      - uses: actions/download-artifact@v4.1.7
-        with:
-          name: osx-x64
-          path: Raylib-cs/runtimes/osx-x64/native
-
-      - uses: actions/download-artifact@v4.1.7
-        with:
-          name: win-x86
-          path: Raylib-cs/runtimes/win-x86/native
-
-      - uses: actions/download-artifact@v4.1.7
-        with:
-          name: win-x64
-          path: Raylib-cs/runtimes/win-x64/native
-
-      - name: setup dotnet
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: |
-            6.0.x
-            8.0.x
-
-      - name: create NuGet Package
+      - name: Create NuGet Package
         run: dotnet pack Raylib-cs -c Release --output nuget
+          
+
+      - name: Restore + Install Built Package
+        run: |
+          dotnet restore
+
+      - name: Run Tests
+        run: |
+          dotnet test --verbosity normal
 
       - name: upload NuGet Package As Artifact
         uses: actions/upload-artifact@v4
