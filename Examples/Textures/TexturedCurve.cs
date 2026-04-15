@@ -90,7 +90,7 @@ public unsafe class TexturedCurve
     {
         if (showCurve)
         {
-            DrawLineBezierCubic(
+            DrawSplineSegmentBezierCubic(
                 curveStartPosition,
                 curveEndPosition,
                 curveStartPositionTangent,
@@ -102,6 +102,7 @@ public unsafe class TexturedCurve
 
         // Draw the various control points and highlight where the mouse is
         DrawLineV(curveStartPosition, curveStartPositionTangent, Color.SkyBlue);
+        DrawLineV(curveStartPositionTangent, curveEndPositionTangent, Fade(Color.LightGray, 0.4f));
         DrawLineV(curveEndPosition, curveEndPositionTangent, Color.Purple);
         Vector2 mouse = GetMousePosition();
 
