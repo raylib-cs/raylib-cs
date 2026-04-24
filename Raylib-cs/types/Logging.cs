@@ -2,30 +2,36 @@
 // For more information see the dotnet issue: https://github.com/dotnet/runtime/issues/9316
 // Example of va_list interop: https://github.com/jeremyVignelles/va-list-interop-demo
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Raylib_cs;
 
-internal readonly struct Native
+internal readonly partial struct Native
 {
     internal const string Msvcrt = "msvcrt";
     internal const string Libc = "libc";
     internal const string LibSystem = "libSystem";
 
-    [DllImport(LibSystem, EntryPoint = "vasprintf", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int VasPrintfApple(ref IntPtr buffer, IntPtr format, IntPtr args);
+    [LibraryImport(LibSystem, EntryPoint = "vasprintf")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int VasPrintfApple(ref IntPtr buffer, IntPtr format, IntPtr args);
 
-    [DllImport(Libc, EntryPoint = "vsprintf", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int VsPrintfLinux(IntPtr buffer, IntPtr format, IntPtr args);
+    [LibraryImport(Libc, EntryPoint = "vsprintf")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int VsPrintfLinux(IntPtr buffer, IntPtr format, IntPtr args);
 
-    [DllImport(Msvcrt, EntryPoint = "vsprintf", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int VsPrintfWindows(IntPtr buffer, IntPtr format, IntPtr args);
+    [LibraryImport(Msvcrt, EntryPoint = "vsprintf")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int VsPrintfWindows(IntPtr buffer, IntPtr format, IntPtr args);
 
-    [DllImport(Libc, EntryPoint = "vsnprintf", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int VsnPrintfLinux(IntPtr buffer, UIntPtr size, IntPtr format, IntPtr args);
+    [LibraryImport(Libc, EntryPoint = "vsnprintf")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int VsnPrintfLinux(IntPtr buffer, UIntPtr size, IntPtr format, IntPtr args);
 
-    [DllImport(Msvcrt, EntryPoint = "vsnprintf", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int VsnPrintfWindows(IntPtr buffer, UIntPtr size, IntPtr format, IntPtr args);
+    [LibraryImport(Msvcrt, EntryPoint = "vsnprintf")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int VsnPrintfWindows(IntPtr buffer, UIntPtr size, IntPtr format, IntPtr args);
 }
 
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
