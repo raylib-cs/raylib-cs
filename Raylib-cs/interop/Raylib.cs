@@ -3,7 +3,9 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Reflection;
 using System.Security;
+using System.IO;
 
 [assembly: DisableRuntimeMarshalling]
 
@@ -21,6 +23,117 @@ public static unsafe partial class Raylib
 
     public const float DEG2RAD = MathF.PI / 180.0f;
     public const float RAD2DEG = 180.0f / MathF.PI;
+
+    static Raylib()
+    {
+        NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), (libraryName, assembly, searchPath) =>
+        {
+            IntPtr handle = IntPtr.Zero;
+            string libraryPath = GetLibraryPath(libraryName);
+
+            if (NativeLibrary.TryLoad(libraryPath, out handle))
+            {
+                return handle;
+            }
+
+            if (NativeLibrary.TryLoad(libraryName, assembly, searchPath, out handle))
+            {
+                return handle;
+            }
+
+            throw new DllNotFoundException(
+                $"Failed to load {libraryName} using {libraryPath}."
+            );
+        });
+    }
+
+    public static string GetLibraryPath(string libraryName)
+    {
+        string appBase = AppContext.BaseDirectory;
+        string rid = GetNormalizedRuntimeIdentifier();
+
+        string path = Path.Combine(appBase, "runtimes", rid, "native");
+
+        string fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? $"{libraryName}.dll"
+            : RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                ? $"lib{libraryName}.dylib"
+                : $"lib{libraryName}.so";
+
+        return Path.Combine(path, fileName);
+    }
+
+    /// <summary>
+    /// Gets a normalized runtime identifier that's consistent across different installation methods.
+    /// https://github.com/dotnet/runtime/issues/114156#issuecomment-2773234611
+    /// </summary>
+    public static string GetNormalizedRuntimeIdentifier()
+    {
+        string rid = RuntimeInformation.RuntimeIdentifier;
+
+        // If already in the expected format, return as is
+        if (rid == "win-x64" || rid == "win-arm64" ||
+            rid == "linux-x64" || rid == "linux-arm64" ||
+            rid == "linux-musl-x64" || rid == "linux-musl-arm64" ||
+            rid == "osx-x64" || rid == "osx-arm64")
+        {
+            return rid;
+        }
+
+        // Handle OS-specific RIDs from native repositories
+
+        // Extract architecture (should be the part after the last dash)
+        string architecture = "x64"; // Default
+        if (rid.Contains("-"))
+        {
+            architecture = rid.Substring(rid.LastIndexOf('-') + 1);
+        }
+
+        // Determine OS and variant
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            return $"win-{architecture}";
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            // Check if it's Alpine Linux (musl-based)
+            if (rid.Contains("alpine") || IsAlpineLinux())
+            {
+                return $"linux-musl-{architecture}";
+            }
+            return $"linux-{architecture}";
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            return $"osx-{architecture}";
+        }
+
+        // Fallback to the original RID if we can't normalize it
+        return rid;
+    }
+
+    /// <summary>
+    /// Checks if the current Linux distribution is Alpine (musl-based).
+    /// </summary>
+    private static bool IsAlpineLinux()
+    {
+        try
+        {
+            // Check for /etc/os-release file which contains distribution info
+            if (File.Exists("/etc/os-release"))
+            {
+                string content = File.ReadAllText("/etc/os-release");
+                return content.Contains("ID=alpine") || content.Contains("ID=\"alpine\"");
+            }
+
+            // Alternative check for /etc/alpine-release
+            return File.Exists("/etc/alpine-release");
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
     /// <summary>
     /// Get color with alpha applied, alpha goes from 0.0f to 1.0f<br/>
