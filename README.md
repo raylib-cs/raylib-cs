@@ -1,4 +1,4 @@
-![Raylib-cs Logo](Raylib-cs/logo/raylib-cs_256x256.png "Raylib-cs Logo")
+![Raylib-cs Logo](https://github.com/raylib-cs/raylib-cs/blob/main/Raylib-cs/logo/raylib-cs_256x256.png "Raylib-cs Logo")
 
 # Raylib-cs
 
@@ -10,7 +10,7 @@ C# bindings for raylib, a simple and easy-to-use library to learn videogames pro
 [![GitHub stars](https://img.shields.io/github/stars/raylib-cs/raylib-cs?style=social)](https://github.com/raylib-cs/raylib-cs/stargazers)
 [![Build](https://github.com/raylib-cs/raylib-cs/workflows/Build/badge.svg)](https://github.com/raylib-cs/raylib-cs/actions?query=workflow%3ABuild)
 
-Raylib-cs targets net6.0 net8.0 and uses the [official 5.5 release](https://github.com/raysan5/raylib/releases/tag/5.5)
+Raylib-cs targets net8.0 and uses the [official 5.5 release](https://github.com/raysan5/raylib/releases/tag/5.5)
 to build the native libraries.
 
 ## Status
