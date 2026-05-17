@@ -1,4 +1,5 @@
-namespace Raylib_cs.Native
+namespace Raylib_cs.Native;
+
+internal class Native
 {
-    internal class Native { }
 }

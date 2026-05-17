@@ -31,10 +31,16 @@ public static class Bunnymark
     private record struct Bunny()
     {
         public Vector2 Position { get; set; } = GetMousePosition();
-        public Vector2 Speed { get; set; } = new(
+        public Vector2 Speed
+        {
+            get; set;
+        } = new(
             GetRandomValue(-250, 250) / (float)TARGET_FPS,
             GetRandomValue(-250, 250) / (float)TARGET_FPS);
-        public Color Color { get; } = new(
+        public Color Color
+        {
+            get;
+        } = new(
             GetRandomValue(50, 240),
             GetRandomValue(80, 240),
             GetRandomValue(100, 240), 255);
@@ -68,7 +74,7 @@ public static class Bunnymark
             if (IsMouseButtonDown(MouseButton.Left) && bunniesCount < MaxBunnies)
             {
                 // Add a range of new bunnies
-                foreach (ref var bunny in bunnies[bunniesCount..(bunniesCount+BunnyIncrement)])
+                foreach (ref var bunny in bunnies[bunniesCount..(bunniesCount + BunnyIncrement)])
                 {
                     bunny = new();
                 }
@@ -79,7 +85,7 @@ public static class Bunnymark
                 // Remove the oldest bunnies, shifting them back in the span
                 if (bunniesCount > BunnyDecrement)
                 {
-                    bunnies[BunnyDecrement .. bunniesCount].CopyTo(bunnies);
+                    bunnies[BunnyDecrement..bunniesCount].CopyTo(bunnies);
                 }
                 bunniesCount = Math.Max(0, bunniesCount - BunnyDecrement);
             }
@@ -93,9 +99,9 @@ public static class Bunnymark
                 // Bounce bunnies off the screen borders
                 bunny.Speed *= (bunny.Position + halfSize) switch
                 {
-                    { X: < 0 or > screenWidth, Y: < 40 or > screenHeight} => new(-1, -1),
-                    { X: < 0 or > screenWidth} => new(-1, 1),
-                    { Y: < 40 or > screenHeight} => new(1,-1),
+                    { X: < 0 or > screenWidth, Y: < 40 or > screenHeight } => new(-1, -1),
+                    { X: < 0 or > screenWidth } => new(-1, 1),
+                    { Y: < 40 or > screenHeight } => new(1, -1),
                     _ => Vector2.One,
                 };
             }
