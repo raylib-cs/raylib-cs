@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Examples.Core;
 using Examples.Shapes;
 using Examples.Textures;
@@ -175,23 +176,26 @@ class Program
         {
             var example = ExampleList.GetExample(args[0]);
             example?.Main?.Invoke();
+            return;
         }
-        else
+
+        foreach (var example in ExampleList.AllExamples)
         {
-            RunExamples(ExampleList.AllExamples);
+            RunExampleProcess(Environment.ProcessPath, example.Name);
         }
     }
 
-    static void RunExamples(ExampleInfo[] examples)
+    static void RunExampleProcess(
+        string fileName,
+        string exampleName
+    )
     {
-        var configFlags = Enum.GetValues(typeof(ConfigFlags));
-        foreach (var example in examples)
+        var processStartInfo = new ProcessStartInfo
         {
-            example?.Main?.Invoke();
-            foreach (ConfigFlags flag in configFlags)
-            {
-                Raylib.ClearWindowState(flag);
-            }
-        }
+            FileName = fileName,
+            Arguments = exampleName
+        };
+        using var process = Process.Start(processStartInfo);
+        process?.WaitForExit();
     }
 }
