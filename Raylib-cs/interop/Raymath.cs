@@ -102,6 +102,11 @@ public static unsafe partial class Raymath
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial float Vector2DotProduct(Vector2 v1, Vector2 v2);
 
+    /// <summary>Calculate two vectors cross product</summary>
+    [LibraryImport(NativeLibName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial float Vector2CrossProduct(Vector2 v1, Vector2 v2);
+
     /// <summary>Calculate distance between two vectors</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -113,8 +118,9 @@ public static unsafe partial class Raymath
     public static partial float Vector2DistanceSqr(Vector2 v1, Vector2 v2);
 
     /// <summary>
-    /// Calculate angle between two vectors
-    /// NOTE: Angle is calculated from origin point (0, 0)
+    /// Calculate the signed angle from v1 to v2, relative to the origin (0, 0)
+    /// NOTE: Coordinate system convention: positive X right, positive Y down
+    /// positive angles appear clockwise, and negative angles appear counterclockwise
     /// </summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -474,6 +480,13 @@ public static unsafe partial class Raymath
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial Matrix4x4 MatrixMultiply(Matrix4x4 left, Matrix4x4 right);
 
+    /// <summary>
+    /// Multiply matrix components by value
+    /// </summary>
+    [LibraryImport(NativeLibName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial Matrix4x4 MatrixMultiplyValue(Matrix4x4 left, float value);
+
     /// <summary>Get translation matrix</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -697,6 +710,14 @@ public static unsafe partial class Raymath
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial int QuaternionEquals(Quaternion p, Quaternion q);
+
+    /// <summary>
+    /// Compose a transformation matrix from rotational, translational and scaling components
+    /// TODO: This function is not following raymath conventions defined in header: NOT self-contained
+    /// </summary>
+    [LibraryImport(NativeLibName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial Matrix4x4 MatrixCompose(Vector3 translation, Quaternion rotation, Vector3 scale);
 
     /// <summary>Decompose a transformation matrix into its rotational, translational and scaling components</summary>
     [LibraryImport(NativeLibName)]

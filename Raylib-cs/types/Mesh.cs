@@ -181,37 +181,22 @@ public unsafe struct Mesh
 
     #endregion
 
-    #region Animation vertex data
+    #region Skin data for animation
 
     /// <summary>
-    /// Animated vertex positions (after bones transformations)
+    /// Number of bones (MAX: 256 bones)
     /// </summary>
-    public float* AnimVertices = default;
-
-    /// <summary>
-    /// Animated normals (after bones transformations)
-    /// </summary>
-    public float* AnimNormals = default;
+    public int BoneCount;
 
     /// <summary>
     /// Vertex bone ids, up to 4 bones influence by vertex (skinning)
     /// </summary>
-    public byte* BoneIds = default;
+    public byte* boneIndices = default;
 
     /// <summary>
     /// Vertex bone weight, up to 4 bones influence by vertex (skinning)
     /// </summary>
     public float* BoneWeights = default;
-
-    /// <summary>
-    /// Bones animated transformation matrices
-    /// </summary>
-    public Matrix4x4* BoneMatrices = default;
-
-    /// <summary>
-    /// Number of bones
-    /// </summary>
-    public int BoneCount;
 
     #endregion
 

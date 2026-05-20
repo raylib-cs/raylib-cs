@@ -462,15 +462,30 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void Scissor(int x, int y, int width, int height);
 
-    /// <summary>Enable wire mode</summary>
-    [LibraryImport(NativeLibName, EntryPoint = "rlEnableWireMode")]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void EnableWireMode();
-
     /// <summary>Enable point mode</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlEnablePointMode")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void EnablePointMode();
+
+    /// <summary>Disable point mode</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlDisablePointMode")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void DisablePointMode();
+
+    /// <summary>Set the point drawing size</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlSetPointSize")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void SetPointSize(float size);
+
+    /// <summary>Set the point drawing size</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlGetPointSize")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial float GetPointSize();
+
+    /// <summary>Disable wire mode</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlEnableWireMode")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void EnableWireMode();
 
     /// <summary>Disable wire mode</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlDisableWireMode")]
@@ -568,6 +583,11 @@ public static unsafe partial class Rlgl
     [LibraryImport(NativeLibName, EntryPoint = "rlLoadExtensions")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void LoadExtensions(void* loader);
+
+    /// <summary>Get OpenGL procedure address</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlGetProcAddress")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void* GetProcAddress(sbyte* procName);
 
     /// <summary>Get current OpenGL version</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlGetVersion")]
@@ -811,24 +831,43 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void UnloadFramebuffer(uint id);
 
+    /// <summary>Copy framebuffer pixel data to internal buffer</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlCopyFramebuffer")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void rlCopyFramebuffer(int x, int y, int width, int height, int format, void* pixels);
+
+    /// <summary>Copy framebuffer pixel data to internal buffer</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlResizeFramebuffer")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void rlResizeFramebuffer(int width, int height);
 
     // Shaders management
 
+    /// <summary>Load (compile) shader and return shader id (type: RL_VERTEX_SHADER, RL_FRAGMENT_SHADER, RL_COMPUTE_SHADER)</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlLoadShader")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial uint LoadShader(sbyte* vsCode, int type);
+
     /// <summary>Load shader from code strings</summary>
-    [LibraryImport(NativeLibName, EntryPoint = "rlLoadShaderCode")]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial uint LoadShaderCode(sbyte* vsCode, sbyte* fsCode);
-
-    /// <summary>Compile custom shader and return shader id<br/>
-    /// (type: VERTEX_SHADER, FRAGMENT_SHADER, COMPUTE_SHADER)</summary>
-    [LibraryImport(NativeLibName, EntryPoint = "rlCompileShader")]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial uint CompileShader(sbyte* shaderCode, int type);
-
-    /// <summary>Load custom shader program</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlLoadShaderProgram")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial uint LoadShaderProgram(uint vShaderId, uint fShaderId);
+    public static partial uint LoadShaderProgram(sbyte* vsCode, sbyte* fsCode);
+
+    /// <summary>Load shader from code strings</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlLoadShaderProgramEx")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial uint LoadShaderProgramEx(uint vsId, uint fsId);
+
+    /// <summary>Load shader from code strings</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlLoadShaderProgramCompute")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial uint LoadShaderProgramCompute(uint csId);
+
+
+    /// <summary>Unload shader program</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlUnloadShader")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void UnloadShader(uint id);
 
     /// <summary>Unload shader program</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlUnloadShaderProgram")]
@@ -872,11 +911,6 @@ public static unsafe partial class Rlgl
 
 
     // Compute shader management
-
-    /// <summary>Load compute shader program</summary>
-    [LibraryImport(NativeLibName, EntryPoint = "rlLoadComputeShaderProgram")]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial uint LoadComputeShaderProgram(uint shaderId);
 
     /// <summary>Dispatch compute shader (equivalent to *draw* for graphics pilepine)</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlComputeShaderDispatch")]

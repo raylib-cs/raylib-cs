@@ -22,6 +22,32 @@ public unsafe struct BoneInfo
 }
 
 /// <summary>
+/// Skeleton, animation bones hierarchy
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct ModelSkeleton
+{
+    /// <summary>
+    /// Number of bones
+    /// </summary>
+    public int BoneCount;
+
+    /// <summary>
+    /// Bones information (skeleton)
+    /// </summary>
+    public BoneInfo* Bones;
+
+    /// <summary>
+    /// Bones base transformation (Transform[])
+    /// </summary>
+    public Transform* ModelAnimPose;
+}
+
+// Note:
+// Anim pose, an array of Transform[]
+// typedef Transform *ModelAnimPose; It's just an pointer array.
+
+/// <summary>
 /// Model type
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
