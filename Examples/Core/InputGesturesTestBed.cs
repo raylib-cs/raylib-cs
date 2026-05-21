@@ -397,18 +397,18 @@ public class InputGesturesTestBed
     {
         switch (gesture)
         {
-            case 0: return "None"; break;
-            case 1: return "Tap"; break;
-            case 2: return "Double Tap"; break;
-            case 4: return "Hold"; break;
-            case 8: return "Drag"; break;
-            case 16: return "Swipe Right"; break;
-            case 32: return "Swipe Left"; break;
-            case 64: return "Swipe Up"; break;
-            case 128: return "Swipe Down"; break;
-            case 256: return "Pinch In"; break;
-            case 512: return "Pinch Out"; break;
-            default: return "Unknown"; break;
+            case 0: return "None";
+            case 1: return "Tap";
+            case 2: return "Double Tap";
+            case 4: return "Hold";
+            case 8: return "Drag";
+            case 16: return "Swipe Right";
+            case 32: return "Swipe Left";
+            case 64: return "Swipe Up";
+            case 128: return "Swipe Down";
+            case 256: return "Pinch In";
+            case 512: return "Pinch Out";
+            default: return "Unknown";
         }
     }
 
@@ -417,18 +417,18 @@ public class InputGesturesTestBed
     {
         switch (gesture)
         {
-            case 0: return Color.Black; break;
-            case 1: return Color.Blue; break;
-            case 2: return Color.SkyBlue; break;
-            case 4: return Color.Black; break;
-            case 8: return Color.Lime; break;
-            case 16: return Color.Red; break;
-            case 32: return Color.Red; break;
-            case 64: return Color.Red; break;
-            case 128: return Color.Red; break;
-            case 256: return Color.Violet; break;
-            case 512: return Color.Orange; break;
-            default: return Color.Black; break;
+            case 0: return Color.Black;
+            case 1: return Color.Blue;
+            case 2: return Color.SkyBlue;
+            case 4: return Color.Black;
+            case 8: return Color.Lime;
+            case 16: return Color.Red;
+            case 32: return Color.Red;
+            case 64: return Color.Red;
+            case 128: return Color.Red;
+            case 256: return Color.Violet;
+            case 512: return Color.Orange;
+            default: return Color.Black;
         }
     }
 }

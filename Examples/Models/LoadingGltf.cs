@@ -76,13 +76,8 @@ public class LoadingGltf
 
 
             // Update model animation
-            animCurrentFrame = (animCurrentFrame + 1)%anims[animIndex].KeyFrameCount;
+            animCurrentFrame = (animCurrentFrame + 1) % anims[animIndex].KeyFrameCount;
             UpdateModelAnimation(model, anims[animIndex], (float)animCurrentFrame);
-
-            if (animCurrentFrame >= anims[0].KeyFrameCount)
-            {
-                animCurrentFrame = 0;
-            }
             //----------------------------------------------------------------------------------
 
             // Draw
