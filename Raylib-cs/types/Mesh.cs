@@ -198,6 +198,16 @@ public unsafe struct Mesh
     /// </summary>
     public float* BoneWeights = default;
 
+    /// <summary>
+    /// Animated vertex positions after bones transformations, CPU skinning
+    /// </summary>
+    public float* AnimVertices = default;
+
+    /// <summary>
+    /// Animated normals after bones transformations, CPU skinning
+    /// </summary>
+    public float* AnimNormals = default;
+
     #endregion
 
     #region OpenGL identifiers

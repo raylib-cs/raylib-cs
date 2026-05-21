@@ -113,6 +113,7 @@ public class ExampleList
 
         // Models
         new ExampleInfo("LoadingIqm", LoadingIqm.Main),
+        new ExampleInfo("LoadingGltf", LoadingGltf.Main),
         new ExampleInfo("BillboardDemo", BillboardDemo.Main),
         new ExampleInfo("BoxCollisions", BoxCollisions.Main),
         new ExampleInfo("CubicmapDemo", CubicmapDemo.Main),
@@ -129,6 +130,7 @@ public class ExampleList
         new ExampleInfo("SkyboxDemo", SkyboxDemo.Main),
         new ExampleInfo("WavingCubes", WavingCubes.Main),
         new ExampleInfo("YawPitchRoll", YawPitchRoll.Main),
+        new ExampleInfo("DynamicMesh", DynamicMesh.Main),
 
         // Shaders
         new ExampleInfo("BasicLighting", BasicLighting.Main),
