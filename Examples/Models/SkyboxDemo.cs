@@ -37,7 +37,7 @@ public class SkyboxDemo
         Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
         Model skybox = LoadModelFromMesh(cube);
 
-        bool useHdr = true;
+        bool useHdr = false;
 
         // Load skybox shader and set required locations
         // NOTE: Some locations are automatically set at shader loading

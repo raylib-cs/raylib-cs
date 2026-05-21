@@ -156,7 +156,7 @@ public class BasicPbr
             PbrLightType.Point,
             new Vector3(1.0f, 1.0f, -2.0f),
             new Vector3(0.0f, 0.0f, 0.0f),
-            Color.Black,
+            Color.Blue,
             2.0f,
             shader);
 
@@ -232,7 +232,7 @@ public class BasicPbr
             var emissiveIntensity = 0.01f;
             SetShaderValue(shader, emissiveIntensityLoc, &emissiveIntensity, ShaderUniformDataType.Float);
 
-            DrawModel(car, Vector3.Zero, 0.005f, Color.White); // Draw car model
+            DrawModel(car, Vector3.Zero, 0.25f, Color.White); // Draw car model
 
             // Draw spheres to show the lights positions
             for (var i = 0; i < 4; i++)

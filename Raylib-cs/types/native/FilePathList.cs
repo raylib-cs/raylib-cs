@@ -10,11 +10,6 @@ namespace Raylib_cs;
 public unsafe struct FilePathList
 {
     /// <summary>
-    /// Filepaths max entries
-    /// </summary>
-    public uint Capacity;
-
-    /// <summary>
     /// Filepaths entries count
     /// </summary>
     public uint Count;
