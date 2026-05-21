@@ -1,28 +1,31 @@
 /*******************************************************************************************
 *
-*   raylib [models] example - Load 3d model with animations and play them
+*   raylib [models] example - loading iqm
 *
-*   This example has been created using raylib 2.5 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example complexity rating: [★★☆☆] 2/4
+*
+*   Example originally created with raylib 2.5, last time updated with raylib 3.5
 *
 *   Example contributed by Culacant (@culacant) and reviewed by Ramon Santamaria (@raysan5)
 *
-*   Copyright (c) 2019 Culacant (@culacant) and Ramon Santamaria (@raysan5)
+*   NOTES: To export an IQM model from blender, make sure it is not posed, the vertices need
+*   to be in the same position as they would be in edit mode and the scale of the models is
+*   set to 0; scaling can be set from the export menu
 *
-********************************************************************************************
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
 *
-* To export a model from blender, make sure it is not posed, the vertices need to be in the
-* same position as they would be in edit mode.
-* and that the scale of your models is set to 0. Scaling can be done from the export menu.
+*   Copyright (c) 2019-2025 Culacant (@culacant) and Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
 using System.Numerics;
+using System.Runtime.InteropServices;
 using static Raylib_cs.Raylib;
 
 namespace Examples.Models;
 
-public class AnimationDemo
+public class LoadingIqm
 {
     public unsafe static int Main()
     {
@@ -36,20 +39,22 @@ public class AnimationDemo
         // Define the camera to look into our 3d world
         Camera3D camera = new();
         camera.Position = new Vector3(10.0f, 10.0f, 10.0f);
-        camera.Target = new Vector3(0.0f, 0.0f, 0.0f);
+        camera.Target = new Vector3(0.0f, 4.0f, 0.0f);
         camera.Up = new Vector3(0.0f, 1.0f, 0.0f);
         camera.FovY = 45.0f;
         camera.Projection = CameraProjection.Perspective;
 
         Model model = LoadModel("resources/models/iqm/guy.iqm");
         Texture2D texture = LoadTexture("resources/models/iqm/guytex.png");
-        Raylib.SetMaterialTexture(ref model, 0, MaterialMapIndex.Albedo, ref texture);
-
+        Raylib.SetMaterialTexture(ref model, 0, MaterialMapIndex.Diffuse, ref texture);
         Vector3 position = new(0.0f, 0.0f, 0.0f);
+
         // Load animation data
-        int animsCount = 0;
-        var anims = LoadModelAnimations("resources/models/iqm/guyanim.iqm", ref animsCount);
-        int animFrameCounter = 0;
+        var anims = LoadModelAnimations("resources/models/iqm/guyanim.iqm");
+
+        // Animation playing variables
+        int animIndex = 0;
+        float animCurrentFrame = 0.0f;
 
         SetTargetFPS(60);
         //--------------------------------------------------------------------------------------
@@ -59,17 +64,15 @@ public class AnimationDemo
         {
             // Update
             //----------------------------------------------------------------------------------
-            UpdateCamera(ref camera, CameraMode.Free);
+            UpdateCamera(ref camera, CameraMode.Orbital);
 
             // Play animation when spacebar is held down
-            if (IsKeyDown(KeyboardKey.Space))
+            animCurrentFrame += 1.0f;
+            UpdateModelAnimation(model, anims[0], animCurrentFrame);
+
+            if (animCurrentFrame >= anims[0].KeyFrameCount)
             {
-                animFrameCounter++;
-                UpdateModelAnimation(model, anims[0], animFrameCounter);
-                if (animFrameCounter >= anims[0].FrameCount)
-                {
-                    animFrameCounter = 0;
-                }
+                animCurrentFrame = 0;
             }
             //----------------------------------------------------------------------------------
 
@@ -89,17 +92,10 @@ public class AnimationDemo
                 Color.White
             );
 
-            for (int i = 0; i < model.BoneCount; i++)
-            {
-                var framePoses = anims[0].FramePoses;
-                DrawCube(framePoses[animFrameCounter][i].Translation, 0.2f, 0.2f, 0.2f, Color.Red);
-            }
-
             DrawGrid(10, 1.0f);
 
             EndMode3D();
-
-            DrawText("PRESS SPACE to PLAY MODEL ANIMATION", 10, 10, 20, Color.Maroon);
+            DrawText($"Current animation: {anims[animIndex].NameToString()}", 10, 10, 20, Color.Maroon);
             DrawText("(c) Guy IQM 3D model by @culacant", screenWidth - 200, screenHeight - 20, 10, Color.Gray);
 
             EndDrawing();
@@ -109,9 +105,7 @@ public class AnimationDemo
         // De-Initialization
         //--------------------------------------------------------------------------------------
         UnloadTexture(texture);
-
-        UnloadModelAnimations(anims, animsCount);
-
+        UnloadModelAnimations(anims);
         UnloadModel(model);
 
         CloseWindow();

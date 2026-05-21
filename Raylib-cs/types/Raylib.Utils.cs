@@ -1085,6 +1085,24 @@ public static unsafe partial class Raylib
         }
     }
 
+    /// <summary>Load model animations from file</summary>
+    public static Span<ModelAnimation> LoadModelAnimations(string fileName)
+    {
+        using AnsiBuffer str1 = fileName.ToAnsiBuffer();
+        int count;
+
+        ModelAnimation* result = LoadModelAnimations(str1.AsPointer(), &count);
+        return new Span<ModelAnimation>(result, count);
+    }
+
+    public static void UnloadModelAnimations(Span<ModelAnimation> animations)
+    {
+        fixed (ModelAnimation* ptr = animations)
+        {
+            UnloadModelAnimations(ptr, animations.Length);
+        }
+    }
+
     /// <summary>Compute mesh tangents</summary>
     public static void GenMeshTangents(ref Mesh mesh)
     {
@@ -1549,6 +1567,155 @@ public static unsafe partial class Raylib
         SaveFileText(fileBuffer.AsPointer(), textBuffer.AsPointer());
     }
 
+    /// <summary>Rename file (if exists)</summary>
+    public static int FileRename(string filename, string fileRename)
+    {
+
+        using AnsiBuffer fileBuffer = filename.ToAnsiBuffer();
+        using AnsiBuffer textBuffer = fileRename.ToAnsiBuffer();
+        return FileRename(fileBuffer.AsPointer(), textBuffer.AsPointer());
+    }
+
+    /// <summary>Remove file (if exists)</summary>
+    public static int FileRemove(string filename)
+    {
+        using AnsiBuffer fileBuffer = filename.ToAnsiBuffer();
+        return FileRemove(fileBuffer.AsPointer());
+    }
+
+    /// <summary>Copy file from one path to another, dstPath created if it doesn't exist</summary>
+    public static int FileCopy(string srcPath, string dstPath)
+    {
+        using AnsiBuffer srcBuffer = srcPath.ToAnsiBuffer();
+        using AnsiBuffer dstBuffer = dstPath.ToAnsiBuffer();
+        return FileCopy(srcBuffer.AsPointer(), dstBuffer.AsPointer());
+    }
+
+    /// <summary>Move file from one path to another, dstPath created if it doesn't exist</summary>
+    public static int FileMove(string srcPath, string dstPath)
+    {
+        using AnsiBuffer srcBuffer = srcPath.ToAnsiBuffer();
+        using AnsiBuffer dstBuffer = dstPath.ToAnsiBuffer();
+        return FileMove(srcBuffer.AsPointer(), dstBuffer.AsPointer());
+    }
+
+    /// <summary>Replace text in an existing file</summary>
+    public static int FileTextReplace(string fileName, string search, string replacement)
+    {
+        using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
+        using AnsiBuffer searchBuffer = search.ToAnsiBuffer();
+        using AnsiBuffer replaceBuffer = replacement.ToAnsiBuffer();
+        return FileTextReplace(fileBuffer.AsPointer(), searchBuffer.AsPointer(), replaceBuffer.AsPointer());
+    }
+
+    /// <summary>Find text in existing file</summary>
+    public static int FileTextFindIndex(string fileName, string search)
+    {
+        using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
+        using AnsiBuffer searchBuffer = search.ToAnsiBuffer();
+        return FileTextFindIndex(fileBuffer.AsPointer(), searchBuffer.AsPointer());
+    }
+
+    /// <summary>Check if file exists</summary>
+    public static CBool FileExists(string fileName)
+    {
+        using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
+        return FileExists(fileBuffer.AsPointer());
+    }
+
+    /// <summary>Check if a directory path exists</summary>
+    public static CBool DirectoryExists(string dirPath)
+    {
+        using AnsiBuffer dirBuffer = dirPath.ToAnsiBuffer();
+        return DirectoryExists(dirBuffer.AsPointer());
+    }
+
+    /// <summary>Get file length in bytes</summary>
+    public static int GetFileLength(string fileName)
+    {
+        using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
+        return GetFileLength(fileBuffer.AsPointer());
+    }
+
+    /// <summary>Get string to extension for a filename string (includes dot: '.png')</summary>
+    public static string GetFileExtension(string fileName)
+    {
+        using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
+        return new string(GetFileExtension(fileBuffer.AsPointer()));
+    }
+
+    /// <summary>Get string to filename for a path string</summary>
+    public static string GetFileName(string fileName)
+    {
+        using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
+        return new string(GetFileName(fileBuffer.AsPointer()));
+    }
+
+    /// <summary>Get filename string without extension </summary>
+    public static string GetFileNameWithoutExt(string fileName)
+    {
+        using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
+        return new string(GetFileNameWithoutExt(fileBuffer.AsPointer()));
+    }
+
+    /// <summary>Get full path for a given fileName with path</summary>
+    public static string GetDirectoryPath(string filePath)
+    {
+        using AnsiBuffer fileBuffer = filePath.ToAnsiBuffer();
+        return new string(GetDirectoryPath(fileBuffer.AsPointer()));
+    }
+
+    /// <summary>Get previous directory path for a given path</summary>
+    public static string GetPrevDirectoryPath(string dirPath)
+    {
+        using AnsiBuffer dirBuffer = dirPath.ToAnsiBuffer();
+        return new string(GetPrevDirectoryPath(dirBuffer.AsPointer()));
+    }
+
+    /// <summary>Get current working directory</summary>
+    public static string GetWorkingDirectoryAsString()
+    {
+        return new string(GetWorkingDirectory());
+    }
+
+    /// <summary>Get the directory of the running application</summary>
+    public static string GetApplicationDirectoryAsString()
+    {
+        return new string(GetApplicationDirectory());
+    }
+
+    /// <summary>Change working directory, return true on success</summary>
+    public static CBool ChangeDirectory(string dirPath)
+    {
+        using AnsiBuffer dirBuffer = dirPath.ToAnsiBuffer();
+        return ChangeDirectory(dirBuffer.AsPointer());
+    }
+
+    /// <summary>Check if a given path is a file or a directory</summary>
+    public static CBool IsPathFile(string path)
+    {
+        using AnsiBuffer pathBuffer = path.ToAnsiBuffer();
+        return IsPathFile(pathBuffer.AsPointer());
+    }
+
+    /// <summary>Load directory filepaths</summary>
+    public static FilePathList LoadDirectoryFiles(string dirPath, out int count)
+    {
+        using AnsiBuffer dirBuffer = dirPath.ToAnsiBuffer();
+        int c = 0;
+        var result = LoadDirectoryFiles(dirBuffer.AsPointer(), &c);
+        count = c;
+        return result;
+    }
+
+    /// <summary>Load directory filepaths with extension filtering and subdir scan; some filters available: "*.*", "FILES*", "DIRS*"</summary>
+    public static FilePathList LoadDirectoryFilesEx(string basePath, string filter, CBool scanSubDirs)
+    {
+        using AnsiBuffer baseBuffer = basePath.ToAnsiBuffer();
+        using AnsiBuffer filterBuffer = filter.ToAnsiBuffer();
+        return LoadDirectoryFilesEx(baseBuffer.AsPointer(), filterBuffer.AsPointer(), scanSubDirs);
+    }
+
     /// <summary>
     /// Loads text from a file, reads it, saves it, unloads the file, and returns the loaded text.
     /// </summary>
@@ -1569,4 +1736,5 @@ public static unsafe partial class Raylib
         center.Y = GetScreenHeight() / 2.0f;
         return center;
     }
+
 }

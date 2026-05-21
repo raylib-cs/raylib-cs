@@ -1,13 +1,18 @@
 /*******************************************************************************************
 *
-*   raylib [core] example - Mouse input
+*   raylib [core] example - input mouse
 *
-*   This example has been created using raylib 1.0 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example complexity rating: [★☆☆☆] 1/4
 *
-*   Copyright (c) 2014 Ramon Santamaria (@raysan5)
+*   Example originally created with raylib 1.0, last time updated with raylib 5.5
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2014-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
+
 
 using System.Numerics;
 using static Raylib_cs.Raylib;
@@ -36,6 +41,19 @@ public class InputMouse
         {
             // Update
             //----------------------------------------------------------------------------------
+
+            if (IsKeyPressed(KeyboardKey.H))
+            {
+                if (IsCursorHidden())
+                {
+                    ShowCursor();
+                }
+                else
+                {
+                    HideCursor();
+                }
+            }
+
             ballPosition = GetMousePosition();
 
             if (IsMouseButtonPressed(MouseButton.Left))
@@ -50,6 +68,18 @@ public class InputMouse
             {
                 ballColor = Color.DarkBlue;
             }
+            else if (IsMouseButtonPressed(MouseButton.Extra))
+            {
+                ballColor = Color.Yellow;
+            }
+            else if (IsMouseButtonPressed(MouseButton.Forward))
+            {
+                ballColor = Color.Orange;
+            }
+            else if (IsMouseButtonPressed(MouseButton.Back))
+            {
+                ballColor = Color.Beige;
+            }
             //----------------------------------------------------------------------------------
 
             // Draw
@@ -60,6 +90,16 @@ public class InputMouse
             DrawCircleV(ballPosition, 40, ballColor);
 
             DrawText("move ball with mouse and click mouse button to change color", 10, 10, 20, Color.DarkGray);
+            DrawText("Press 'H' to toggle cursor visibility", 10, 30, 20, Color.DarkGray);
+
+            if (IsCursorHidden())
+            {
+                DrawText("CURSOR HIDDEN", 20, 60, 20, Color.Red);
+            }
+            else
+            {
+                DrawText("CURSOR VISIBLE", 20, 60, 20, Color.Lime);
+            }
 
             EndDrawing();
             //----------------------------------------------------------------------------------

@@ -2,10 +2,14 @@
 *
 *   raylib [core] example - 2d camera
 *
-*   This example has been created using raylib 1.5 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example complexity rating: [★★☆☆] 2/4
 *
-*   Copyright (c) 2016 Ramon Santamaria (@raysan5)
+*   Example originally created with raylib 1.5, last time updated with raylib 3.0
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2016-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 

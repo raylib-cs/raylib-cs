@@ -820,32 +820,32 @@ public static unsafe partial class Raylib
     /// <summary>Rename file (if exists)</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial CBool FileRename(sbyte* fileName, sbyte* fileRename);
+    public static partial int FileRename(sbyte* fileName, sbyte* fileRename);
 
     /// <summary>Remove file (if exists)</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial CBool FileRemove(sbyte* fileName);
+    public static partial int FileRemove(sbyte* fileName);
 
     /// <summary>Copy file from one path to another, dstPath created if it doesn't exist</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial CBool FileCopy(sbyte* srcPath, sbyte* dstPath);
+    public static partial int FileCopy(sbyte* srcPath, sbyte* dstPath);
 
     /// <summary>Move file from one path to another, dstPath created if it doesn't exist</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial CBool FileMove(sbyte* srcPath, sbyte* dstPath);
+    public static partial int FileMove(sbyte* srcPath, sbyte* dstPath);
 
     /// <summary>Replace text in an existing file</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial CBool FileTextReplace(sbyte* fileName, sbyte* search, sbyte* replacement);
+    public static partial int FileTextReplace(sbyte* fileName, sbyte* search, sbyte* replacement);
 
     /// <summary>Find text in existing file</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial CBool FileTextFindIndex(sbyte* fileName, sbyte* search);
+    public static partial int FileTextFindIndex(sbyte* fileName, sbyte* search);
 
     /// <summary>Check if file exists</summary>
     [LibraryImport(NativeLibName)]
@@ -962,7 +962,7 @@ public static unsafe partial class Raylib
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial FilePathList GetDirectoryFileCount(sbyte* dirPath);
 
-    /// <summary>Get the file count in a directory</summary>
+    /// <summary>Load directory filepaths with extension filtering and subdir scan; some filters available: "*.*", "FILES*", "DIRS*"</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial FilePathList GetDirectoryFileCountEx(sbyte* dirPath, sbyte* filter, CBool scanSubdirs);

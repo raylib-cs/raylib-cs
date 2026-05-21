@@ -1,11 +1,15 @@
 /*******************************************************************************************
 *
-*   raylib [core] example - Gestures Detection
+*   raylib [core] example - input gestures
 *
-*   This example has been created using raylib 1.4 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example complexity rating: [★★☆☆] 2/4
 *
-*   Copyright (c) 2016 Ramon Santamaria (@raysan5)
+*   Example originally created with raylib 1.4, last time updated with raylib 4.2
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2016-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -25,7 +29,7 @@ public class InputGestures
         const int screenWidth = 800;
         const int screenHeight = 450;
 
-        InitWindow(screenWidth, screenHeight, "raylib [core] example - gestures detection");
+        InitWindow(screenWidth, screenHeight, "raylib [core] example - input gestures");
 
         Vector2 touchPosition = new(0, 0);
         Rectangle touchArea = new(220, 10, screenWidth - 230, screenHeight - 20);

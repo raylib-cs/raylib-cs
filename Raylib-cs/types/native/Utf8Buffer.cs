@@ -21,6 +21,11 @@ public readonly ref struct Utf8Buffer
         return (sbyte*)_data.ToPointer();
     }
 
+    public unsafe byte* AsBytePointer()
+    {
+        return (byte*)_data.ToPointer();
+    }
+
     public void Dispose()
     {
         Marshal.ZeroFreeCoTaskMemUTF8(_data);

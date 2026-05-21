@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Examples.Core;
 using Examples.Shapes;
@@ -34,6 +33,9 @@ public class ExampleList
     public static ExampleInfo[] AllExamples = new[]
     {
         // Core
+        new ExampleInfo("DeltaTime", DeltaTime.Main),
+        new ExampleInfo("InputGesturesTestBed", InputGesturesTestBed.Main),
+        new ExampleInfo("InputVirtualControls", InputVirtualControls.Main),
         new ExampleInfo("Camera2dPlatformer", Camera2dPlatformer.Main),
         new ExampleInfo("Camera2dDemo", Camera2dDemo.Main),
         new ExampleInfo("Camera3dFirstPerson", Camera3dFirstPerson.Main),
@@ -110,7 +112,7 @@ public class ExampleList
         new ExampleInfo("WritingAnim", WritingAnim.Main),
 
         // Models
-        new ExampleInfo("AnimationDemo", AnimationDemo.Main),
+        new ExampleInfo("LoadingIqm", LoadingIqm.Main),
         new ExampleInfo("BillboardDemo", BillboardDemo.Main),
         new ExampleInfo("BoxCollisions", BoxCollisions.Main),
         new ExampleInfo("CubicmapDemo", CubicmapDemo.Main),
