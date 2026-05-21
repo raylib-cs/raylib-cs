@@ -10,7 +10,7 @@ C# bindings for raylib, a simple and easy-to-use library to learn videogames pro
 [![GitHub stars](https://img.shields.io/github/stars/raylib-cs/raylib-cs?style=social)](https://github.com/raylib-cs/raylib-cs/stargazers)
 [![Build](https://github.com/raylib-cs/raylib-cs/workflows/Build/badge.svg)](https://github.com/raylib-cs/raylib-cs/actions?query=workflow%3ABuild)
 
-Raylib-cs targets net8.0 and uses the [official 5.5 release](https://github.com/raysan5/raylib/releases/tag/5.5)
+Raylib-cs targets net8.0, net10.0 and uses the [official 6.0 release](https://github.com/raysan5/raylib/releases/tag/6.0)
 to build the native libraries.
 
 ## Status
@@ -47,7 +47,7 @@ otherwise the command won't work.
 
 2. Add [Raylib-cs/Raylib-cs.csproj](Raylib-cs/Raylib-cs.csproj) to your project as an existing project.
 
-3. Download/build the native libraries for the platforms you want using the [official 5.5 release](https://github.com/raysan5/raylib/releases/tag/5.5).
+3. Download/build the native libraries for the platforms you want using the [official 6.0 release](https://github.com/raysan5/raylib/releases/tag/6.0).
    **NOTE: the MSVC version is required for Windows platforms**
 
 4. Setup the native libraries so they are in the same directory as the executable/can be found in the [search path](https://www.mono-project.com/docs/advanced/pinvoke/).
