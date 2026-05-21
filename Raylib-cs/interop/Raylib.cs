@@ -987,7 +987,7 @@ public static unsafe partial class Raylib
     /// <summary>Decode Base64 string data, memory must be MemFree()</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial byte* DecodeDataBase64(byte* data, int* outputSize);
+    public static partial byte* DecodeDataBase64(sbyte* data, int* outputSize);
 
     /// <summary>Compute CRC32 hash code</summary>
     [LibraryImport(NativeLibName)]
@@ -1886,7 +1886,7 @@ public static unsafe partial class Raylib
     /// <summary>Load image sequence from memory buffer</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial Image LoadImageAnimFromMemory(sbyte* fileName, sbyte* fileData, int dataSize, int* frames);
+    public static partial Image LoadImageAnimFromMemory(sbyte* fileType, byte* fileData, int dataSize, int* frames);
 
     /// <summary>Load image from memory buffer, fileType refers to extension: i.e. ".png"</summary>
     [LibraryImport(NativeLibName)]

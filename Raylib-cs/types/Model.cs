@@ -57,6 +57,12 @@ public unsafe struct ModelSkeleton
 
     public Span<BoneInfo> BonesAsSpan()
     {
+
+        if (Bones == null || BoneCount <= 0)
+        {
+            return Span<BoneInfo>.Empty;
+        }
+
         return new Span<BoneInfo>(Bones, BoneCount);
     }
 }
@@ -104,7 +110,7 @@ public unsafe struct Model
     /// <summary>
     /// Skeleton for animation
     /// </summary>
-    ModelSkeleton Skeleton;
+    public ModelSkeleton Skeleton;
 
     /// <summary>
     /// Current animation pose (Transform[])
@@ -128,11 +134,21 @@ public unsafe struct Model
 
     public Span<int> MeshMaterialAsSpan()
     {
+        if (MeshMaterial == null || MeshCount <= 0)
+        {
+            return Span<int>.Empty;
+        }
+
         return new Span<int>(MeshMaterial, MeshCount);
     }
 
     public Span<Mesh> MeshesAsSpan()
     {
+        if (Meshes == null || MeshCount <= 0)
+        {
+            return Span<Mesh>.Empty;
+        }
+
         return new Span<Mesh>(Meshes, MeshCount);
     }
 }
@@ -161,11 +177,23 @@ public unsafe struct ModelAnimation
     /// <summary>
     /// Animation sequence keyframe poses [keyframe][pose]
     /// </summary>
-    public Transform* KeyframePoses;
+    public Transform** KeyframePoses;
 
-    public Span<Transform> KeyFramePosesAsSpan()
+    public Span<Transform> GetKeyFramePoseAsSpan(int frame)
     {
-        return new Span<Transform>(KeyframePoses, KeyFrameCount);
+        if (KeyframePoses == null || frame < 0 || frame >= KeyFrameCount)
+        {
+            return Span<Transform>.Empty;
+        }
+
+        var pose = KeyframePoses[frame];
+
+        if (pose == null || BoneCount <= 0)
+        {
+            return Span<Transform>.Empty;
+        }
+
+        return new Span<Transform>(KeyframePoses[frame], KeyFrameCount);
     }
 
     public string NameToString()

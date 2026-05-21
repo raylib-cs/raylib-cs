@@ -20,6 +20,20 @@ public static unsafe partial class Raylib
         SetWindowTitle(str1.AsPointer());
     }
 
+    /// <summary>Set icon for window (multiple images, RGBA 32bit)</summary>
+    public static void SetWindowIcons(Image[] images)
+    {
+        if (images == null || images.Length == 0)
+        {
+            return;
+        }
+
+        fixed (Image* imagesPtr = images)
+        {
+            SetWindowIcons(imagesPtr, images.Length);
+        }
+    }
+
     /// <summary>Get the human-readable, UTF-8 encoded name of the specified monitor</summary>
     public static string GetMonitorName_(int monitor)
     {
@@ -112,6 +126,19 @@ public static unsafe partial class Raylib
         return LoadImage(str1.AsPointer());
     }
 
+    /// <summary>Load image sequence from memory buffer</summary>
+    public static Image LoadImageAnimFromMemory(string fileType, byte[] fileData, out int frames)
+    {
+        using AnsiBuffer type = fileType.ToAnsiBuffer();
+        fixed (byte* data = fileData)
+        {
+            int frameCount;
+            var result = LoadImageAnimFromMemory(type.AsPointer(), data, fileData.Length, &frameCount);
+            frames = frameCount;
+            return result;
+        }
+    }
+
     /// <summary>Load image from RAW file data</summary>
     public static Image LoadImageRaw(string fileName, int width, int height, PixelFormat format, int headerSize)
     {
@@ -192,7 +219,7 @@ public static unsafe partial class Raylib
 
     /// <summary>Set shader uniform value</summary>
     public static void SetShaderValue<T>(Shader shader, int locIndex, T value, ShaderUniformDataType uniformType)
-    where T : unmanaged
+        where T : unmanaged
     {
         SetShaderValue(shader, locIndex, &value, uniformType);
     }
@@ -244,10 +271,21 @@ public static unsafe partial class Raylib
         {
             return false;
         }
+
         fixed (T* ptr = data)
         {
             using AnsiBuffer ansiBuffer = fileName.ToAnsiBuffer();
             return SaveFileData(ansiBuffer.AsPointer(), ptr, sizeof(T) * data.Length);
+        }
+    }
+
+    /// <summary>Export data to code (.h), returns true on success</summary>
+    public static CBool ExportDataAsCode(byte[] data, string fileName)
+    {
+        fixed (byte* ptr = data)
+        {
+            using AnsiBuffer name = fileName.ToAnsiBuffer();
+            return ExportDataAsCode(ptr, data.Length, name.AsPointer());
         }
     }
 
@@ -265,6 +303,13 @@ public static unsafe partial class Raylib
     {
         int length = 0;
         byte* data = LoadFileData(fileName, ref length);
+
+        if (data == null)
+        {
+            return Array.Empty<byte>();
+        }
+
+
         byte[] arr = new byte[length];
         Marshal.Copy((IntPtr)data, arr, 0, length);
         UnloadFileData(data);
@@ -294,6 +339,7 @@ public static unsafe partial class Raylib
         {
             files[i] = filePathList[i];
         }
+
         UnloadDroppedFiles(filePathList);
 
         return files;
@@ -409,7 +455,7 @@ public static unsafe partial class Raylib
         CBool lockView,
         CBool rotateAroundTarget,
         CBool rotateUp
-        )
+    )
     {
         fixed (Camera3D* c = &camera)
         {
@@ -866,7 +912,8 @@ public static unsafe partial class Raylib
     }
 
     /// <summary>Draw triangle with interpolated colors within an image</summary>
-    public static void ImageDrawTriangleEx(ref Image dst, Vector2 v1, Vector2 v2, Vector2 v3, Color c1, Color c2, Color c3)
+    public static void ImageDrawTriangleEx(ref Image dst, Vector2 v1, Vector2 v2, Vector2 v3, Color c1, Color c2,
+        Color c3)
     {
         fixed (Image* p = &dst)
         {
@@ -1112,6 +1159,33 @@ public static unsafe partial class Raylib
         }
     }
 
+    /// <summary>Update sound buffer with new data</summary>
+    public static void UpdateSound<T>(Sound sound, ReadOnlySpan<T> data, int sampleCount) where T : unmanaged
+    {
+        fixed (T* dataPtr = data)
+        {
+            UpdateSound(sound, dataPtr, sampleCount);
+        }
+    }
+
+    /// <summary>Update sound buffer with new data</summary>
+    public static void UpdateSound<T>(Sound sound, ReadOnlySpan<T> data) where T : unmanaged
+    {
+        fixed (T* dataPtr = data)
+        {
+            UpdateSound(sound, dataPtr, data.Length);
+        }
+    }
+
+    /// <summary>Update audio stream buffers with data</summary>
+    public static void UpdateAudioStream<T>(AudioStream sound, ReadOnlySpan<T> data, int frameCount) where T : unmanaged
+    {
+        fixed (T* dataPtr = data)
+        {
+            UpdateAudioStream(sound, dataPtr, frameCount);
+        }
+    }
+
     /// <summary>Convert wave data to desired format</summary>
     public static void WaveFormat(ref Wave wave, int sampleRate, int sampleSize, int channels)
     {
@@ -1230,6 +1304,33 @@ public static unsafe partial class Raylib
     {
         using Utf8Buffer str1 = text.ToUtf8Buffer();
         DrawTextPro(font, str1.AsPointer(), position, origin, rotation, fontSize, spacing, tint);
+    }
+
+    /// <summary>Draw multiple characters (codepoint)</summary>
+    public static void DrawTextCodepoints(
+        Font font,
+        int[] codepoints,
+        Vector2 position,
+        float fontSize,
+        float spacing,
+        Color tint
+    )
+    {
+        fixed (int* codepointsPtr = codepoints)
+        {
+            DrawTextCodepoints(font, codepointsPtr, codepoints.Length, position, fontSize, spacing, tint);
+        }
+    }
+
+    /// <summary>Measure string size for Font</summary>
+    public static Vector2 MeasureTextCodepoints(
+        Font font, int[] codepoints, float fontSize, float spacing
+    )
+    {
+        fixed (int* codepointsPtr = codepoints)
+        {
+            return MeasureTextCodepoints(font, codepointsPtr, codepoints.Length, fontSize, spacing);
+        }
     }
 
     /// <summary>Measure string width for default font</summary>
@@ -1502,12 +1603,12 @@ public static unsafe partial class Raylib
 
     public static string GetApplicationDirectoryString()
     {
-        return new string(GetApplicationDirectory());
+        return Utf8StringUtils.GetUTF8String(GetApplicationDirectory());
     }
 
     public static string GetWorkingDirectoryString()
     {
-        return new string(GetWorkingDirectory());
+        return Utf8StringUtils.GetUTF8String(GetWorkingDirectory());
     }
 
     /// <summary>
@@ -1529,6 +1630,7 @@ public static unsafe partial class Raylib
         {
             output[i] = sequence[i];
         }
+
         UnloadRandomSequence(sequence);
         return output;
     }
@@ -1554,6 +1656,7 @@ public static unsafe partial class Raylib
             float norm = (float)val / (float)maxi;
             output[i] = Raymath.Lerp(min, max, norm);
         }
+
         return output;
     }
 
@@ -1641,47 +1744,47 @@ public static unsafe partial class Raylib
     public static string GetFileExtension(string fileName)
     {
         using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
-        return new string(GetFileExtension(fileBuffer.AsPointer()));
+        return Utf8StringUtils.GetUTF8String(GetFileExtension(fileBuffer.AsPointer()));
     }
 
     /// <summary>Get string to filename for a path string</summary>
     public static string GetFileName(string fileName)
     {
         using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
-        return new string(GetFileName(fileBuffer.AsPointer()));
+        return Utf8StringUtils.GetUTF8String(GetFileName(fileBuffer.AsPointer()));
     }
 
     /// <summary>Get filename string without extension </summary>
     public static string GetFileNameWithoutExt(string fileName)
     {
         using AnsiBuffer fileBuffer = fileName.ToAnsiBuffer();
-        return new string(GetFileNameWithoutExt(fileBuffer.AsPointer()));
+        return Utf8StringUtils.GetUTF8String(GetFileNameWithoutExt(fileBuffer.AsPointer()));
     }
 
     /// <summary>Get full path for a given fileName with path</summary>
     public static string GetDirectoryPath(string filePath)
     {
         using AnsiBuffer fileBuffer = filePath.ToAnsiBuffer();
-        return new string(GetDirectoryPath(fileBuffer.AsPointer()));
+        return Utf8StringUtils.GetUTF8String(GetDirectoryPath(fileBuffer.AsPointer()));
     }
 
     /// <summary>Get previous directory path for a given path</summary>
     public static string GetPrevDirectoryPath(string dirPath)
     {
         using AnsiBuffer dirBuffer = dirPath.ToAnsiBuffer();
-        return new string(GetPrevDirectoryPath(dirBuffer.AsPointer()));
+        return Utf8StringUtils.GetUTF8String(GetPrevDirectoryPath(dirBuffer.AsPointer()));
     }
 
     /// <summary>Get current working directory</summary>
     public static string GetWorkingDirectoryAsString()
     {
-        return new string(GetWorkingDirectory());
+        return Utf8StringUtils.GetUTF8String(GetWorkingDirectory());
     }
 
     /// <summary>Get the directory of the running application</summary>
     public static string GetApplicationDirectoryAsString()
     {
-        return new string(GetApplicationDirectory());
+        return Utf8StringUtils.GetUTF8String(GetApplicationDirectory());
     }
 
     /// <summary>Change working directory, return true on success</summary>
@@ -1705,12 +1808,233 @@ public static unsafe partial class Raylib
         return LoadDirectoryFiles(dirBuffer.AsPointer());
     }
 
+    /// <summary>Get the file count in a directory</summary>
+    public static int GetDirectoryFileCount(string dirPath)
+    {
+        using AnsiBuffer dirBuffer = dirPath.ToAnsiBuffer();
+        return GetDirectoryFileCount(dirBuffer.AsPointer());
+    }
+
+    /// <summary>Load directory filepaths with extension filtering and subdir scan; some filters available: "*.*", "FILES*", "DIRS*"</summary>
+    public static int GetDirectoryFileCountEx(string dirPath, string filter, CBool scanSubdirs)
+    {
+        using AnsiBuffer dirBuffer = dirPath.ToAnsiBuffer();
+        using AnsiBuffer filterBuffer = filter.ToAnsiBuffer();
+        return GetDirectoryFileCountEx(dirBuffer.AsPointer(), filterBuffer.AsPointer(), scanSubdirs);
+    }
+
     /// <summary>Load directory filepaths with extension filtering and subdir scan; some filters available: "*.*", "FILES*", "DIRS*"</summary>
     public static FilePathList LoadDirectoryFilesEx(string basePath, string filter, CBool scanSubDirs)
     {
         using AnsiBuffer baseBuffer = basePath.ToAnsiBuffer();
         using AnsiBuffer filterBuffer = filter.ToAnsiBuffer();
         return LoadDirectoryFilesEx(baseBuffer.AsPointer(), filterBuffer.AsPointer(), scanSubDirs);
+    }
+
+
+    /// <summary>Compress data (DEFLATE algorithm)</summary>
+    public static byte[] CompressData(byte[] data)
+    {
+        fixed (byte* dataPtr = data)
+        {
+            int compressedSize;
+            var compressedPtr = CompressData(dataPtr, data.Length, &compressedSize);
+
+            if (compressedPtr == null || compressedSize <= 0)
+            {
+                return Array.Empty<byte>();
+            }
+
+            try
+            {
+                var result = new byte[compressedSize];
+
+                fixed (byte* resultPtr = result)
+                {
+                    Buffer.MemoryCopy(
+                        compressedPtr,
+                        resultPtr,
+                        compressedSize,
+                        compressedSize
+                    );
+                }
+
+                return result;
+            }
+            finally
+            {
+                MemFree(compressedPtr);
+            }
+        }
+    }
+
+    /// <summary>Decompress data (DEFLATE algorithm)</summary>
+    public static byte[] DecompressData(byte[] data)
+    {
+        fixed (byte* dataPtr = data)
+        {
+            int dataSize;
+            var compressedPtr = DecompressData(dataPtr, data.Length, &dataSize);
+
+            if (compressedPtr == null || dataSize <= 0)
+            {
+                return Array.Empty<byte>();
+            }
+
+            try
+            {
+                var result = new byte[dataSize];
+
+                fixed (byte* resultPtr = result)
+                {
+                    Buffer.MemoryCopy(
+                        compressedPtr,
+                        resultPtr,
+                        dataSize,
+                        dataSize
+                    );
+                }
+
+                return result;
+            }
+            finally
+            {
+                MemFree(compressedPtr);
+            }
+        }
+    }
+
+    /// <summary>Encode data to Base64 string</summary>
+    public static byte[] EncodeDataBase64(byte[] data)
+    {
+        fixed (byte* dataPtr = data)
+        {
+            int outputSize;
+            var compressedPtr = EncodeDataBase64(dataPtr, data.Length, &outputSize);
+
+            if (compressedPtr == null || outputSize <= 0)
+            {
+                return Array.Empty<byte>();
+            }
+
+            try
+            {
+                var result = new byte[outputSize];
+
+                fixed (byte* resultPtr = result)
+                {
+                    Buffer.MemoryCopy(
+                        compressedPtr,
+                        resultPtr,
+                        outputSize,
+                        outputSize
+                    );
+                }
+
+                return result;
+            }
+            finally
+            {
+                MemFree(compressedPtr);
+            }
+        }
+    }
+
+    /// <summary>Decode data to Base64 string</summary>
+    public static byte[] DecodeDataBase64(string data)
+    {
+        using Utf8Buffer ptr = data.ToUtf8Buffer();
+
+        int outputSize;
+        var compressedPtr = DecodeDataBase64(ptr.AsPointer(), &outputSize);
+
+        if (compressedPtr == null || outputSize <= 0)
+        {
+            return Array.Empty<byte>();
+        }
+
+        try
+        {
+            var result = new byte[outputSize];
+
+            fixed (byte* resultPtr = result)
+            {
+                Buffer.MemoryCopy(
+                    compressedPtr,
+                    resultPtr,
+                    outputSize,
+                    outputSize
+                );
+            }
+
+            return result;
+        }
+        finally
+        {
+            MemFree(compressedPtr);
+        }
+    }
+
+    /// <summary>Compute CRC32 hash code</summary>
+    public static uint ComputeCRC32(byte[] data)
+    {
+        fixed (byte* dataPtr = data)
+        {
+            return ComputeCRC32(dataPtr, data.Length);
+        }
+    }
+
+    /// <summary>Compute MD5 hash code, returns uint[4] array</summary>
+    public static uint[] ComputeMD5(byte[] data)
+    {
+        fixed (byte* dataPtr = data)
+        {
+            var result = ComputeMD5(dataPtr, data.Length);
+            return
+            [
+                result[0],
+                result[1],
+                result[2],
+                result[3],
+            ];
+        }
+    }
+
+    /// <summary>Compute SHA1 hash code, returns uint[5] array</summary>
+    public static uint[] ComputeSHA1(byte[] data)
+    {
+        fixed (byte* dataPtr = data)
+        {
+            var result = ComputeSHA1(dataPtr, data.Length);
+            return
+            [
+                result[0],
+                result[1],
+                result[2],
+                result[3],
+                result[4],
+            ];
+        }
+    }
+
+    /// <summary>Compute SHA256 hash code, returns int[8] (32 bytes)</summary>
+    public static uint[] ComputeSHA256(byte[] data)
+    {
+        fixed (byte* dataPtr = data)
+        {
+            var result = ComputeSHA256(dataPtr, data.Length);
+            return
+            [
+                result[0],
+                result[1],
+                result[2],
+                result[3],
+                result[4],
+                result[5],
+                result[6],
+                result[7],
+            ];
+        }
     }
 
     /// <summary>
