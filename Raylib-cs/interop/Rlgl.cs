@@ -382,7 +382,7 @@ public static unsafe partial class Rlgl
     /// <summary>Blit active framebuffer to main framebuffer</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlBlitFramebuffer")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void BlitFramebuffer();
+    public static partial void BlitFramebuffer(int srcX, int srcY, int srcWidth, int srcHeight, int dstX, int dstY, int dstWidth, int dstHeight, int bufferMask);
 
     /// <summary>Bind framebuffer (FBO)</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlBindFramebuffer")]
@@ -593,6 +593,16 @@ public static unsafe partial class Rlgl
     [LibraryImport(NativeLibName, EntryPoint = "rlGetVersion")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial GlVersion GetVersion();
+
+    /// <summary>Get default framebuffer width</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlSetFramebufferWidth")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int SetFramebufferWidth(int width);
+
+    /// <summary>Get default framebuffer width</summary>
+    [LibraryImport(NativeLibName, EntryPoint = "rlSetFramebufferHeight")]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial int SetFramebufferHeight(int height);
 
     /// <summary>Get default framebuffer width</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlGetFramebufferWidth")]
@@ -1010,12 +1020,12 @@ public static unsafe partial class Rlgl
     /// <summary>Set eyes projection matrices for stereo rendering</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlSetMatrixProjectionStereo")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void SetMatrixProjectionStereo(Matrix4x4 left, Matrix4x4 right);
+    public static partial void SetMatrixProjectionStereo(Matrix4x4 right, Matrix4x4 left);
 
     /// <summary>Set eyes view offsets matrices for stereo rendering</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlSetMatrixViewOffsetStereo")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void SetMatrixViewOffsetStereo(Matrix4x4 left, Matrix4x4 right);
+    public static partial void SetMatrixViewOffsetStereo(Matrix4x4 right, Matrix4x4 left);
 
 
     // Quick and dirty cube/quad buffers load->draw->unload

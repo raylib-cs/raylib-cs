@@ -46,7 +46,7 @@ public class BasicShapes
             DrawLine(18, 42, screenWidth - 18, 42, Color.Black);
 
             DrawCircle(screenWidth / 4, 120, 35, Color.DarkBlue);
-            DrawCircleGradient(screenWidth / 4, 220, 60, Color.Green, Color.SkyBlue);
+            DrawCircleGradient(new Vector2(screenWidth / 4, 220), 60, Color.Green, Color.SkyBlue);
             DrawCircleLines(screenWidth / 4, 340, 80, Color.DarkBlue);
 
             DrawRectangle(screenWidth / 4 * 2 - 60, 100, 120, 60, Color.Red);

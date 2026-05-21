@@ -296,7 +296,7 @@ public static unsafe partial class Raymath
     /// <summary>Calculate angle between two vectors in XY and XZ</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial Vector2 Vector3Angle(Vector3 v1, Vector3 v2);
+    public static partial float Vector3Angle(Vector3 v1, Vector3 v2);
 
     /// <summary>Negate provided vector (invert direction)</summary>
     [LibraryImport(NativeLibName)]

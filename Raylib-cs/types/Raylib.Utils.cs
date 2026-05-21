@@ -102,7 +102,7 @@ public static unsafe partial class Raylib
     public static long GetFileModTime(string fileName)
     {
         using AnsiBuffer str1 = fileName.ToAnsiBuffer();
-        return GetFileModTime(str1.AsPointer());
+        return GetFileModTime(str1.AsPointer()).Value;
     }
 
     /// <summary>Load image from file into CPU memory (RAM)</summary>
@@ -1699,13 +1699,10 @@ public static unsafe partial class Raylib
     }
 
     /// <summary>Load directory filepaths</summary>
-    public static FilePathList LoadDirectoryFiles(string dirPath, out int count)
+    public static FilePathList LoadDirectoryFiles(string dirPath)
     {
         using AnsiBuffer dirBuffer = dirPath.ToAnsiBuffer();
-        int c = 0;
-        var result = LoadDirectoryFiles(dirBuffer.AsPointer(), &c);
-        count = c;
-        return result;
+        return LoadDirectoryFiles(dirBuffer.AsPointer());
     }
 
     /// <summary>Load directory filepaths with extension filtering and subdir scan; some filters available: "*.*", "FILES*", "DIRS*"</summary>

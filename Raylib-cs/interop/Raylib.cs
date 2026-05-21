@@ -207,7 +207,7 @@ public static unsafe partial class Raylib
     /// <summary>Set window configuration state using flags</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial CBool SetWindowState(ConfigFlags flag);
+    public static partial void SetWindowState(ConfigFlags flag);
 
     /// <summary>Clear window configuration state flags</summary>
     [LibraryImport(NativeLibName)]
@@ -689,7 +689,7 @@ public static unsafe partial class Raylib
     /// <summary>Set the seed for the random number generator</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial int SetRandomSeed(uint seed);
+    public static partial void SetRandomSeed(uint seed);
 
     /// <summary>Load random values sequence, no values repeated</summary>
     [LibraryImport(NativeLibName)]
@@ -870,7 +870,7 @@ public static unsafe partial class Raylib
     /// <summary>Get file modification time (last write time)</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial long GetFileModTime(sbyte* fileName);
+    public static partial CLong GetFileModTime(sbyte* fileName);
 
     /// <summary>Get pointer to extension for a filename string (includes dot: '.png')</summary>
     [LibraryImport(NativeLibName)]
@@ -930,7 +930,7 @@ public static unsafe partial class Raylib
     /// <summary>Load directory filepaths</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial FilePathList LoadDirectoryFiles(sbyte* dirPath, int* count);
+    public static partial FilePathList LoadDirectoryFiles(sbyte* dirPath);
 
     /// <summary>Load directory filepaths with extension filtering and recursive directory scan. Use 'DIR' in the filter string to include directories in the result</summary>
     [LibraryImport(NativeLibName)]
@@ -960,12 +960,12 @@ public static unsafe partial class Raylib
     /// <summary>Get the file count in a directory</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial FilePathList GetDirectoryFileCount(sbyte* dirPath);
+    public static partial int GetDirectoryFileCount(sbyte* dirPath);
 
     /// <summary>Load directory filepaths with extension filtering and subdir scan; some filters available: "*.*", "FILES*", "DIRS*"</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial FilePathList GetDirectoryFileCountEx(sbyte* dirPath, sbyte* filter, CBool scanSubdirs);
+    public static partial int GetDirectoryFileCountEx(sbyte* dirPath, sbyte* filter, CBool scanSubdirs);
 
     // Compression/Encoding functionality
 
@@ -1464,6 +1464,11 @@ public static unsafe partial class Raylib
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);
 
+    /// <summary>Draw a dashed line</summary>
+    [LibraryImport(NativeLibName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial void DrawLineDashed(Vector2 startPos, Vector2 endPos, int dashSize, int spaceSize, Color color);
+
     /// <summary>Draw a color-filled circle</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
@@ -1479,8 +1484,7 @@ public static unsafe partial class Raylib
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void DrawCircleGradient(
-        int centerX,
-        int centerY,
+        Vector2 center,
         float radius,
         Color inner,
         Color outer
@@ -1878,6 +1882,11 @@ public static unsafe partial class Raylib
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial Image LoadImageAnim(sbyte* fileName, int* frames);
+
+    /// <summary>Load image sequence from memory buffer</summary>
+    [LibraryImport(NativeLibName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial Image LoadImageAnimFromMemory(sbyte* fileName, sbyte* fileData, int dataSize, int* frames);
 
     /// <summary>Load image from memory buffer, fileType refers to extension: i.e. ".png"</summary>
     [LibraryImport(NativeLibName)]
@@ -2685,6 +2694,11 @@ public static unsafe partial class Raylib
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial Vector2 MeasureTextEx(Font font, sbyte* text, float fontSize, float spacing);
 
+    /// <summary>Measure string size for Font</summary>
+    [LibraryImport(NativeLibName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial Vector2 MeasureTextCodepoints(Font font, int* codepoints, int length, float fontSize, float spacing);
+
     /// <summary>
     /// Get glyph index position in font for a codepoint (unicode character), fallback to '?' if not found
     /// </summary>
@@ -2815,6 +2829,16 @@ public static unsafe partial class Raylib
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial sbyte* TextReplaceAlloc(sbyte* text, sbyte* search, sbyte* replacement);
+
+    /// <summary>Replace text between two specific strings</summary>
+    [LibraryImport(NativeLibName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial sbyte* TextReplaceBetween(sbyte* text, sbyte* start, sbyte* end, sbyte* replacement);
+
+    /// <summary>Replace text between two specific strings, (WARNING: memory must be freed!)</summary>
+    [LibraryImport(NativeLibName)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial sbyte* TextReplaceBetweenAlloc(sbyte* text, sbyte* start, sbyte* end, sbyte* replacement);
 
     /// <summary>Insert text in a position</summary>
     [LibraryImport(NativeLibName)]
@@ -3308,11 +3332,6 @@ public static unsafe partial class Raylib
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void UpdateModelAnimationEx(Model model, ModelAnimation anim, float frame, ModelAnimation animB, float frameB, float blend);
-
-    /// <summary>Unload animation data</summary>
-    [LibraryImport(NativeLibName)]
-    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void UnloadModelAnimation(ModelAnimation anim);
 
     /// <summary>Unload animation array data</summary>
     [LibraryImport(NativeLibName)]
