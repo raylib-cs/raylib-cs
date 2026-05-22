@@ -1815,7 +1815,7 @@ public static unsafe partial class Raylib
         return GetDirectoryFileCount(dirBuffer.AsPointer());
     }
 
-    /// <summary>Load directory filepaths with extension filtering and subdir scan; some filters available: "*.*", "FILES*", "DIRS*"</summary>
+    /// <summary>Get the file count in a directory with extension filtering and recursive directory scan. Use 'DIR' in the filter string to include directories in the result</summary>
     public static int GetDirectoryFileCountEx(string dirPath, string filter, CBool scanSubdirs)
     {
         using AnsiBuffer dirBuffer = dirPath.ToAnsiBuffer();
