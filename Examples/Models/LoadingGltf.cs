@@ -21,7 +21,6 @@
 ********************************************************************************************/
 
 using System.Numerics;
-using System.Runtime.InteropServices;
 using static Raylib_cs.Raylib;
 
 namespace Examples.Models;
@@ -67,11 +66,11 @@ public class LoadingGltf
 
             if (IsKeyPressed(KeyboardKey.Right))
             {
-                animIndex = (animIndex + 1)%anims.Length;
+                animIndex = (animIndex + 1) % anims.Length;
             }
             else if (IsKeyPressed(KeyboardKey.Left))
             {
-                animIndex = (animIndex + anims.Length - 1)%anims.Length;
+                animIndex = (animIndex + anims.Length - 1) % anims.Length;
             }
 
 

@@ -90,7 +90,7 @@ public class InputGamepad
                 string gamepadName = GetGamepadName_(gamepad);
                 DrawText($"GP{gamepad}: {gamepadName}", 10, 10, 10, Color.Black);
 
-                if (gamepadName.Contains(XBOX_ALIAS_1, StringComparison.OrdinalIgnoreCase)||
+                if (gamepadName.Contains(XBOX_ALIAS_1, StringComparison.OrdinalIgnoreCase) ||
                     gamepadName.Contains(XBOX_ALIAS_2, StringComparison.OrdinalIgnoreCase))
                 {
                     DrawTexture(texXboxPad, 0, 0, Color.DarkGray);

@@ -32,23 +32,23 @@ public class InputGesturesTestBed
 
     public static int Main()
     {
-// Initialization
+        // Initialization
         //--------------------------------------------------------------------------------------
         const int screenWidth = 800;
         const int screenHeight = 450;
 
         InitWindow(screenWidth, screenHeight, "raylib [core] example - input gestures testbed");
 
-        Vector2 messagePosition = new Vector2( 160, 7 );
+        Vector2 messagePosition = new Vector2(160, 7);
 
         // Last gesture variables definitions
         Gesture lastGesture = 0;
-        Vector2 lastGesturePosition = new Vector2( 165, 130 );
+        Vector2 lastGesturePosition = new Vector2(165, 130);
 
         // Gesture log variables definitions
         // NOTE: The gesture log uses an array (as an inverted circular queue) to store the performed gestures
         string[] gestureLog = new string[GESTURE_LOG_SIZE + 1];
-        for (int  i= 0; i < GESTURE_LOG_SIZE; i++)
+        for (int i = 0; i < GESTURE_LOG_SIZE; i++)
         {
             gestureLog[i] = new string(new char[12]);
         }
@@ -64,16 +64,16 @@ public class InputGesturesTestBed
         // - 3 hides repeated events and hide hold events
         int logMode = 1;
 
-        Color gestureColor = new Color(0, 0, 0, 255 );
-        Rectangle logButton1 = new Rectangle( 53, 7, 48, 26 );
-        Rectangle logButton2 = new Rectangle( 108, 7, 36, 26 );
-        Vector2 gestureLogPosition = new Vector2( 10, 10 );
+        Color gestureColor = new Color(0, 0, 0, 255);
+        Rectangle logButton1 = new Rectangle(53, 7, 48, 26);
+        Rectangle logButton2 = new Rectangle(108, 7, 36, 26);
+        Vector2 gestureLogPosition = new Vector2(10, 10);
 
         // Protractor variables definitions
         float angleLength = 90.0f;
         float currentAngleDegrees = 0.0f;
-        Vector2 finalVector = new Vector2( 0.0f, 0.0f );
-        Vector2 protractorPosition = new Vector2( 266.0f, 315.0f );
+        Vector2 finalVector = new Vector2(0.0f, 0.0f);
+        Vector2 protractorPosition = new Vector2(266.0f, 315.0f);
 
         SetTargetFPS(60); // Set our game to run at 60 frames-per-second
         //--------------------------------------------------------------------------------------
@@ -103,20 +103,36 @@ public class InputGesturesTestBed
                 {
                     switch (logMode)
                     {
-                        case 3: logMode = 2; break;
-                        case 2: logMode = 3; break;
-                        case 1: logMode = 0; break;
-                        default: logMode = 1; break;
+                        case 3:
+                            logMode = 2;
+                            break;
+                        case 2:
+                            logMode = 3;
+                            break;
+                        case 1:
+                            logMode = 0;
+                            break;
+                        default:
+                            logMode = 1;
+                            break;
                     }
                 }
                 else if (CheckCollisionPointRec(GetMousePosition(), logButton2))
                 {
                     switch (logMode)
                     {
-                        case 3: logMode = 1; break;
-                        case 2: logMode = 0; break;
-                        case 1: logMode = 3; break;
-                        default: logMode = 2; break;
+                        case 3:
+                            logMode = 1;
+                            break;
+                        case 2:
+                            logMode = 0;
+                            break;
+                        case 1:
+                            logMode = 3;
+                            break;
+                        default:
+                            logMode = 2;
+                            break;
                     }
                 }
             }
@@ -320,7 +336,7 @@ public class InputGesturesTestBed
             // Note: Official it's using raylibs functions for string manipulation. But in C# it will end up in an unsafe handling.
             string angleString = currentAngleDegrees.ToString("F3");
             int angleStringDot = angleString.IndexOf('.');
-            string angleStringTrim =  angleString.Substring(0, angleStringDot + 3);
+            string angleStringTrim = angleString.Substring(0, angleStringDot + 3);
 
             DrawText(angleStringTrim, (int)protractorPosition.X + 55, (int)protractorPosition.Y + 92, 20, gestureColor);
             DrawCircleV(protractorPosition, 80.0f, Color.White);
@@ -397,38 +413,62 @@ public class InputGesturesTestBed
     {
         switch (gesture)
         {
-            case 0: return "None";
-            case 1: return "Tap";
-            case 2: return "Double Tap";
-            case 4: return "Hold";
-            case 8: return "Drag";
-            case 16: return "Swipe Right";
-            case 32: return "Swipe Left";
-            case 64: return "Swipe Up";
-            case 128: return "Swipe Down";
-            case 256: return "Pinch In";
-            case 512: return "Pinch Out";
-            default: return "Unknown";
+            case 0:
+                return "None";
+            case 1:
+                return "Tap";
+            case 2:
+                return "Double Tap";
+            case 4:
+                return "Hold";
+            case 8:
+                return "Drag";
+            case 16:
+                return "Swipe Right";
+            case 32:
+                return "Swipe Left";
+            case 64:
+                return "Swipe Up";
+            case 128:
+                return "Swipe Down";
+            case 256:
+                return "Pinch In";
+            case 512:
+                return "Pinch Out";
+            default:
+                return "Unknown";
         }
     }
 
-// Get color for gesture value
+    // Get color for gesture value
     static Color GetGestureColor(int gesture)
     {
         switch (gesture)
         {
-            case 0: return Color.Black;
-            case 1: return Color.Blue;
-            case 2: return Color.SkyBlue;
-            case 4: return Color.Black;
-            case 8: return Color.Lime;
-            case 16: return Color.Red;
-            case 32: return Color.Red;
-            case 64: return Color.Red;
-            case 128: return Color.Red;
-            case 256: return Color.Violet;
-            case 512: return Color.Orange;
-            default: return Color.Black;
+            case 0:
+                return Color.Black;
+            case 1:
+                return Color.Blue;
+            case 2:
+                return Color.SkyBlue;
+            case 4:
+                return Color.Black;
+            case 8:
+                return Color.Lime;
+            case 16:
+                return Color.Red;
+            case 32:
+                return Color.Red;
+            case 64:
+                return Color.Red;
+            case 128:
+                return Color.Red;
+            case 256:
+                return Color.Violet;
+            case 512:
+                return Color.Orange;
+            default:
+                return Color.Black;
         }
     }
 }

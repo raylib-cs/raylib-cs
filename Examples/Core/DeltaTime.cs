@@ -1,6 +1,3 @@
-using System.Numerics;
-
-namespace Examples.Core;
 /*******************************************************************************************
  *
  *   raylib [core] example - delta time
@@ -17,6 +14,10 @@ namespace Examples.Core;
  *   Copyright (c) 2025 Robin (@RobinsAviary)
  *
  ********************************************************************************************/
+
+using System.Numerics;
+
+namespace Examples.Core;
 
 using static Raylib_cs.Raylib;
 

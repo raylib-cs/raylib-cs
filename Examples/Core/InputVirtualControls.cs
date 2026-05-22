@@ -62,7 +62,7 @@ public class InputVirtualControls
             ) // Down
         ];
 
-        Vector2[][] arrowTris =  [
+        Vector2[][] arrowTris = [
             // Up
             [
                 new Vector2(
@@ -122,9 +122,9 @@ public class InputVirtualControls
         ];
 
         int pressedButton = (int)PadButton.BUTTON_NONE;
-        Vector2 inputPosition = new Vector2( 0, 0 );
+        Vector2 inputPosition = new Vector2(0, 0);
 
-        Vector2 playerPosition = new Vector2( (float)screenWidth / 2, (float)screenHeight / 2 );
+        Vector2 playerPosition = new Vector2((float)screenWidth / 2, (float)screenHeight / 2);
         float playerSpeed = 75f;
 
         SetTargetFPS(60);
@@ -168,11 +168,20 @@ public class InputVirtualControls
             // Move player according to pressed button
             switch ((PadButton)pressedButton)
             {
-                case PadButton.BUTTON_UP: playerPosition.Y -= playerSpeed * GetFrameTime(); break;
-                case PadButton.BUTTON_LEFT: playerPosition.X -= playerSpeed * GetFrameTime(); break;
-                case PadButton.BUTTON_RIGHT: playerPosition.X += playerSpeed * GetFrameTime(); break;
-                case PadButton.BUTTON_DOWN: playerPosition.Y += playerSpeed * GetFrameTime(); break;
-                default: break;
+                case PadButton.BUTTON_UP:
+                    playerPosition.Y -= playerSpeed * GetFrameTime();
+                    break;
+                case PadButton.BUTTON_LEFT:
+                    playerPosition.X -= playerSpeed * GetFrameTime();
+                    break;
+                case PadButton.BUTTON_RIGHT:
+                    playerPosition.X += playerSpeed * GetFrameTime();
+                    break;
+                case PadButton.BUTTON_DOWN:
+                    playerPosition.Y += playerSpeed * GetFrameTime();
+                    break;
+                default:
+                    break;
             }
 
             ;

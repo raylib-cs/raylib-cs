@@ -28,7 +28,7 @@ public class InputMouseWheel
 
         InitWindow(screenWidth, screenHeight, "raylib [core] example - input mouse wheel");
 
-        int boxPositionY = screenHeight/2 - 40;
+        int boxPositionY = screenHeight / 2 - 40;
         int scrollSpeed = 4;            // Scrolling speed in pixels
 
         SetTargetFPS(60);

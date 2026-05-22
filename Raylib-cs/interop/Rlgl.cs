@@ -477,7 +477,7 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void SetPointSize(float size);
 
-    /// <summary>Set the point drawing size</summary>
+    /// <summary>Get the point drawing size</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlGetPointSize")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial float GetPointSize();
@@ -594,12 +594,12 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial GlVersion GetVersion();
 
-    /// <summary>Get default framebuffer width</summary>
+    /// <summary>Set current framebuffer width</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlSetFramebufferWidth")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial int SetFramebufferWidth(int width);
 
-    /// <summary>Get default framebuffer width</summary>
+    /// <summary>Set current framebuffer height</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlSetFramebufferHeight")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial int SetFramebufferHeight(int height);
