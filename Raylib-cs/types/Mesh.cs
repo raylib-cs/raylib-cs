@@ -189,22 +189,22 @@ public unsafe struct Mesh
     public int BoneCount;
 
     /// <summary>
-    /// Vertex bone ids, up to 4 bones influence by vertex (skinning)
+    /// Vertex bone indices, up to 4 bones influence by vertex (skinning) (shader-location = 6)
     /// </summary>
-    public byte* boneIndices = default;
+    public byte* BoneIndices = default;
 
     /// <summary>
-    /// Vertex bone weight, up to 4 bones influence by vertex (skinning)
+    /// Vertex bone weight, up to 4 bones influence by vertex (skinning) (shader-location = 7)
     /// </summary>
     public float* BoneWeights = default;
 
     /// <summary>
-    /// Animated vertex positions after bones transformations, CPU skinning
+    /// Animated vertex positions (after bones transformations)
     /// </summary>
     public float* AnimVertices = default;
 
     /// <summary>
-    /// Animated normals after bones transformations, CPU skinning
+    /// Animated normals (after bones transformations)
     /// </summary>
     public float* AnimNormals = default;
 
@@ -218,7 +218,7 @@ public unsafe struct Mesh
     public uint VaoId = default;
 
     /// <summary>
-    /// OpenGL Vertex Buffer Objects id (default vertex data, uint[])
+    /// OpenGL Vertex Buffer Objects id (default vertex data)
     /// </summary>
     public uint* VboId = default;
 
