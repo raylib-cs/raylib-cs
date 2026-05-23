@@ -169,7 +169,7 @@ public unsafe struct Model
     }
 
     /// <summary>
-    /// Meshes as span. based on MeshCount length
+    /// Meshes as span. Based on MeshCount length
     /// </summary>
     public Span<Mesh> MeshesAsSpan()
     {
