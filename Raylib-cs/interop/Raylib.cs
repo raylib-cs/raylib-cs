@@ -1096,7 +1096,7 @@ public static unsafe partial class Raylib
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial int GetCharPressed();
 
-    /// <summary>Get gamepad internal name id</summary>
+    /// <summary>Get name of a QWERTY key on the current keyboard layout (eg returns string 'q' for KEY_A on an AZERTY keyboard)</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial sbyte* GetKeyName(KeyboardKey key);
@@ -3328,7 +3328,7 @@ public static unsafe partial class Raylib
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void UpdateModelAnimation(Model model, ModelAnimation anim, float frame);
 
-    /// <summary>// Update model animation pose, blending two animations</summary>
+    /// <summary>Update model animation pose, blending two animations</summary>
     [LibraryImport(NativeLibName)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void UpdateModelAnimationEx(Model model, ModelAnimation anim, float frame, ModelAnimation animB, float frameB, float blend);

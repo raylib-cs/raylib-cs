@@ -482,7 +482,7 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial float GetPointSize();
 
-    /// <summary>Disable wire mode</summary>
+    /// <summary>Enable wire mode</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlEnableWireMode")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void EnableWireMode();
@@ -844,12 +844,12 @@ public static unsafe partial class Rlgl
     /// <summary>Copy framebuffer pixel data to internal buffer</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlCopyFramebuffer")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void rlCopyFramebuffer(int x, int y, int width, int height, int format, void* pixels);
+    public static partial void CopyFramebuffer(int x, int y, int width, int height, int format, void* pixels);
 
-    /// <summary>Copy framebuffer pixel data to internal buffer</summary>
+    /// <summary>Resize internal framebuffer</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlResizeFramebuffer")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
-    public static partial void rlResizeFramebuffer(int width, int height);
+    public static partial void ResizeFramebuffer(int width, int height);
 
     // Shaders management
 
@@ -863,18 +863,18 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial uint LoadShaderProgram(sbyte* vsCode, sbyte* fsCode);
 
-    /// <summary>Load shader from code strings</summary>
+    /// <summary>Load shader program, using already loaded shader ids</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlLoadShaderProgramEx")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial uint LoadShaderProgramEx(uint vsId, uint fsId);
 
-    /// <summary>Load shader from code strings</summary>
+    /// <summary>Load compute shader program</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlLoadShaderProgramCompute")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial uint LoadShaderProgramCompute(uint csId);
 
 
-    /// <summary>Unload shader program</summary>
+    /// <summary>Unload shader, loaded with LoadShader()</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlUnloadShader")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void UnloadShader(uint id);
@@ -884,12 +884,12 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void UnloadShaderProgram(uint id);
 
-    /// <summary>Get shader location uniform</summary>
+    /// <summary>Get shader location uniform, requires shader program id</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlGetLocationUniform")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial int GetLocationUniform(uint shaderId, sbyte* uniformName);
 
-    /// <summary>Get shader location attribute</summary>
+    /// <summary>Get shader location attribute, requires shader program id</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlGetLocationAttrib")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial int GetLocationAttrib(uint shaderId, sbyte* attribName);
