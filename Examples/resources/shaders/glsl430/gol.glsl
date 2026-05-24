@@ -32,7 +32,7 @@ void main()
     neighbourCount += fetchGol(x - 1, y);       // Left
     neighbourCount += fetchGol(x + 1, y);       // Right
     neighbourCount += fetchGol(x - 1, y + 1);   // Bottom left
-    neighbourCount += fetchGol(x, y + 1);       // Bottom middle
+    neighbourCount += fetchGol(x, y + 1);       // Bottom middle   
     neighbourCount += fetchGol(x + 1, y + 1);   // Bottom right
 
     if (neighbourCount == 3) setGol(x, y, 1);
