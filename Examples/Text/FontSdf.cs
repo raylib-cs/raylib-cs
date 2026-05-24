@@ -41,7 +41,7 @@ public class FontSdf
 
         // Loading font data from memory data
         // Parameters > font size: 16, no chars array provided (0), chars count: 95 (autogenerate chars array)
-        fontDefault.Glyphs = LoadFontData(fileData, (int)fileSize, 16, null, 95, FontType.Default);
+        fontDefault.Glyphs = LoadFontData(fileData, (int)fileSize, 16, null, 95, FontType.Default, &fontDefault.GlyphCount);
         // Parameters > chars count: 95, font size: 16, chars padding in image: 4 px, pack method: 0 (default)
         Image atlas = GenImageFontAtlas(fontDefault.Glyphs, &fontDefault.Recs, 95, 16, 4, 0);
         fontDefault.Texture = LoadTextureFromImage(atlas);
@@ -52,7 +52,7 @@ public class FontSdf
         fontSDF.BaseSize = 16;
         fontSDF.GlyphCount = 95;
         // Parameters > font size: 16, no chars array provided (0), chars count: 0 (defaults to 95)
-        fontSDF.Glyphs = LoadFontData(fileData, (int)fileSize, 16, null, 0, FontType.Sdf);
+        fontSDF.Glyphs = LoadFontData(fileData, (int)fileSize, 16, null, 0, FontType.Sdf, &fontDefault.GlyphCount);
         // Parameters > chars count: 95, font size: 16, chars padding in image: 0 px, pack method: 1 (Skyline algorythm)
         atlas = GenImageFontAtlas(fontSDF.Glyphs, &fontSDF.Recs, 95, 16, 0, 1);
         fontSDF.Texture = LoadTextureFromImage(atlas);

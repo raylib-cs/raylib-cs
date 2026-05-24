@@ -10,7 +10,7 @@ varying vec4 fragColor;
 uniform sampler2D texture0;
 uniform vec4 colDiffuse;
 
-// NOTE: Add here your custom variables
+// NOTE: Add your custom variables here
 
 // NOTE: Render size values should be passed from code
 const float renderWidth = 800.0;
@@ -42,5 +42,5 @@ void main()
     tc += center;
     vec4 color = texture2D(texture0, tc/texSize)*colDiffuse*fragColor;;
 
-    gl_FragColor = vec4(color.rgb, 1.0);;
+    gl_FragColor = vec4(color.rgb, 1.0);
 }
