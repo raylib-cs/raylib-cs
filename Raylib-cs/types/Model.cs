@@ -19,7 +19,64 @@ public unsafe struct BoneInfo
     /// Bone parent
     /// </summary>
     public int Parent;
+
+    /// <summary>
+    /// Bone name as string
+    /// </summary>
+    public string NameToString()
+    {
+        fixed (sbyte* name = Name)
+        {
+            return Utf8StringUtils.GetUTF8String(name);
+        }
+    }
 }
+
+/// <summary>
+/// Skeleton, animation bones hierarchy
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public unsafe struct ModelSkeleton
+{
+    /// <summary>
+    /// Number of bones
+    /// </summary>
+    public int BoneCount;
+
+    /// <summary>
+    /// Bones information (skeleton)
+    /// </summary>
+    public BoneInfo* Bones;
+
+    /// <summary>
+    /// Bones base transformation (Transform[])
+    /// </summary>
+    public Transform* BindPose;
+
+    public Span<Transform> BindPoseAsSpan()
+    {
+        if (BindPose == null || BoneCount <= 0)
+        {
+            return Span<Transform>.Empty;
+        }
+
+        return new Span<Transform>(BindPose, BoneCount);
+    }
+
+    public Span<BoneInfo> BonesAsSpan()
+    {
+        if (Bones == null || BoneCount <= 0)
+        {
+            return Span<BoneInfo>.Empty;
+        }
+
+        return new Span<BoneInfo>(Bones, BoneCount);
+    }
+}
+
+// Note:
+// Anim pose, an array of Transform[]
+// typedef Transform *ModelAnimPose; It's just a pointer array.
 
 /// <summary>
 /// Model type
@@ -58,92 +115,128 @@ public unsafe struct Model
     public int* MeshMaterial;
 
     /// <summary>
-    /// Number of bones
+    /// Skeleton for animation
     /// </summary>
-    public int BoneCount;
+    public ModelSkeleton Skeleton;
 
-    //TODO: Span
     /// <summary>
-    /// Bones information (skeleton, BoneInfo *)
+    /// Current animation pose (Transform[])
     /// </summary>
-    public BoneInfo* Bones;
+    public Transform* CurrentPose;
 
-    //TODO: Span
     /// <summary>
-    /// Bones base transformation (pose, Transform *)
+    /// Bones animated transformation matrices
     /// </summary>
-    public Transform* BindPose;
+    public Matrix4x4* BoneMatrices;
+
+    /// <summary>
+    /// Bones animated transformation matrices as span. Based on Skeleton.BoneCount length
+    /// </summary>
+    public Span<Matrix4x4> BoneMatricesAsSpan()
+    {
+        if (BoneMatrices == null || Skeleton.BoneCount <= 0)
+        {
+            return Span<Matrix4x4>.Empty;
+        }
+
+        return new Span<Matrix4x4>(BoneMatrices, Skeleton.BoneCount);
+    }
+
+    /// <summary>
+    /// Current animation pose as span. Based on Skeleton.BoneCount length
+    /// </summary>
+    public Span<Transform> CurrentPoseAsSpan()
+    {
+        if (CurrentPose == null || Skeleton.BoneCount <= 0)
+        {
+            return Span<Transform>.Empty;
+        }
+
+        return new Span<Transform>(CurrentPose, Skeleton.BoneCount);
+    }
+
+    /// <summary>
+    /// Mesh material number as span. Based on MaterialCount length
+    /// </summary>
+    public Span<int> MeshMaterialAsSpan()
+    {
+        if (MeshMaterial == null || MaterialCount <= 0)
+        {
+            return Span<int>.Empty;
+        }
+
+        return new Span<int>(MeshMaterial, MaterialCount);
+    }
+
+    /// <summary>
+    /// Meshes as span. Based on MeshCount length
+    /// </summary>
+    public Span<Mesh> MeshesAsSpan()
+    {
+        if (Meshes == null || MeshCount <= 0)
+        {
+            return Span<Mesh>.Empty;
+        }
+
+        return new Span<Mesh>(Meshes, MeshCount);
+    }
 }
 
 /// <summary>
-/// Model animation
+/// ModelAnimation, contains a full animation sequence
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct ModelAnimation
 {
+    /// <summary>
+    /// Animation name (char[32])
+    /// </summary>
+    public fixed sbyte Name[32];
+
     /// <summary>
     /// Number of bones
     /// </summary>
     public readonly int BoneCount;
 
     /// <summary>
-    /// Number of animation frames
+    /// Number of animation key frames
     /// </summary>
-    public readonly int FrameCount;
+    public readonly int KeyFrameCount;
 
     /// <summary>
-    /// Bones information (skeleton, BoneInfo *)
+    /// Animation sequence keyframe poses [keyframe][pose]
     /// </summary>
-    public readonly BoneInfo* Bones;
+    public Transform** KeyframePoses;
 
-    /// <inheritdoc cref="Bones"/>
-    public readonly ReadOnlySpan<BoneInfo> BoneInfo => new ReadOnlySpan<BoneInfo>(Bones, BoneCount);
 
     /// <summary>
-    /// Poses array by frame (Transform **)
+    /// Animation sequence keyframe poses as span. Based on KeyFrameCount length
     /// </summary>
-    public readonly Transform** FramePoses;
-
-    /// <summary>
-    /// Animation name (char[32])
-    /// </summary>
-    public fixed sbyte Name[32];
-
-    /// <inheritdoc cref="FramePoses"/>
-    public readonly FramePosesCollection FramePosesColl => new FramePosesCollection(FramePoses, FrameCount, BoneCount);
-
-    public readonly struct FramePosesCollection
+    public Span<Transform> GetKeyFramePoseAsSpan(int frame)
     {
-        readonly Transform** _framePoses;
-
-        readonly int _frameCount;
-
-        readonly int _boneCount;
-
-        public readonly FramePoses this[int index] => new FramePoses(_framePoses[index], _boneCount);
-
-        public readonly Transform this[int index1, int index2] => new FramePoses(_framePoses[index1], _boneCount)[index2];
-
-        internal FramePosesCollection(Transform** framePoses, int frameCount, int boneCount)
+        if (KeyframePoses == null || frame < 0 || frame >= KeyFrameCount)
         {
-            this._framePoses = framePoses;
-            this._frameCount = frameCount;
-            this._boneCount = boneCount;
+            return Span<Transform>.Empty;
         }
+
+        var pose = KeyframePoses[frame];
+
+        if (pose == null || BoneCount <= 0)
+        {
+            return Span<Transform>.Empty;
+        }
+
+        return new Span<Transform>(KeyframePoses[frame], KeyFrameCount);
     }
-}
 
-public readonly unsafe struct FramePoses
-{
-    readonly Transform* _poses;
-
-    readonly int _count;
-
-    public readonly ref Transform this[int index] => ref _poses[index];
-
-    internal FramePoses(Transform* poses, int count)
+    /// <summary>
+    /// Animation name as string
+    /// </summary>
+    public string NameToString()
     {
-        this._poses = poses;
-        this._count = count;
+        fixed (sbyte* name = Name)
+        {
+            return Utf8StringUtils.GetUTF8String(name);
+        }
     }
 }

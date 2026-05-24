@@ -35,14 +35,10 @@ fonts:
 | pixantiqua.fnt, pixantiqua.png | Gerhard Großmann | [Freeware](https://www.dafont.com/es/pixantiqua.font) | Atlas made with [BMFont](https://www.angelcode.com/products/bmfont/) by [@raysan5](https://github.com/raysan5) |
 | pixantiqua.ttf                 | Gerhard Großmann | [Freeware](https://www.dafont.com/es/pixantiqua.font) | - |
 | symbola.fnt, symbola.png       | George Douros | [Freeware](https://fontlibrary.org/en/font/symbola) | Atlas made with [BMFont](https://www.angelcode.com/products/bmfont/) by [@raysan5](https://github.com/raysan5) |
-
+| DotGothic16-Regular.ttf        | [The DotGothic16 Project Authors](https://github.com/fontworks-fonts/DotGothic16) | [Open Font License](https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL) | - |
+| NotoSansTC-Regular.ttf         | [Adobe](http://www.adobe.com/) | [SIL Open Font License](https://openfontlicense.org/documents/OFL.txt) | - |
 
 models:
-| resource             | author      | licence | notes |
-| :------------------- | :---------: | :------ | :---- |
-| models/obj/barracks.obj,<br> models/barracks_diffuse.png | [Alberto Cano](https://www.artstation.com/albertocano) | [CC-BY-NC](https://creativecommons.org/licenses/by-nc/4.0/legalcode) | - |
-| models/obj/church.obj,<br> models/church_diffuse.png | [Alberto Cano](https://www.artstation.com/albertocano) | [CC-BY-NC](https://creativecommons.org/licenses/by-nc/4.0/legalcode)  | - |
-| models/obj/watermill.obj,<br> models/watermill_diffuse.png | [Alberto Cano](https://www.artstation.com/albertocano) | [CC-BY-NC](https://creativecommons.org/licenses/by-nc/4.0/legalcode)  | - |
 | models/obj/castle.obj,<br>models/obj/castle_diffuse.png | [Alberto Cano](https://www.artstation.com/albertocano) | [CC-BY-NC](https://creativecommons.org/licenses/by-nc/4.0/legalcode) | - |
 | models/obj/bridge.obj,<br>models/obj/bridge_diffuse.png | [Alberto Cano](https://www.artstation.com/albertocano) | [CC-BY-NC](https://creativecommons.org/licenses/by-nc/4.0/legalcode) | - |
 | models/obj/house.obj,<br>models/obj/house_diffuse.png | [Alberto Cano](https://www.artstation.com/albertocano) | [CC-BY-NC](https://creativecommons.org/licenses/by-nc/4.0/legalcode)  | - |
@@ -56,7 +52,10 @@ models:
 | models/vox/chr_knight.vox |  ❔         | ❔     | - |
 | models/vox/chr_sword.vox  |  ❔         | ❔     | - |
 | models/vox/monu9.vox   |  ❔            | ❔     | - |
-
+| models/barracks.obj,<br> models/barracks_diffuse.png | [Alberto Cano](https://www.artstation.com/albertocano) | [CC-BY-NC](https://creativecommons.org/licenses/by-nc/4.0/legalcode) | - |
+| models/church.obj,<br> models/church_diffuse.png | [Alberto Cano](https://www.artstation.com/albertocano) | [CC-BY-NC](https://creativecommons.org/licenses/by-nc/4.0/legalcode)  | - |
+| models/watermill.obj,<br> models/watermill_diffuse.png | [Alberto Cano](https://www.artstation.com/albertocano) | [CC-BY-NC](https://creativecommons.org/licenses/by-nc/4.0/legalcode)  | - |
+| greenman.glb, greenman_hat.glb, greenman_sword.glb, greenman_shield.glb | [@ip](https://github.com/ipzaur) | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | - |
 
 images:
 | resource             | author      | licence | notes |
@@ -92,4 +91,4 @@ images:
 | dresden_square_1k.hdr  | [HDRIHaven](https://hdrihaven.com/hdri/?h=dresden_square) | [CC0](https://hdrihaven.com/p/license.php) | - |
 | dresden_square_2k.hdr  | [HDRIHaven](https://hdrihaven.com/hdri/?h=dresden_square) | [CC0](https://hdrihaven.com/p/license.php) | - |
 | skybox.png             |  ❔            | ❔     | - |
-
+| mandrill.png         | ❔         | [CC0](https://creativecommons.org/publicdomain/zero/1.0/)     | Mandrill (a.k.a. Baboon) |

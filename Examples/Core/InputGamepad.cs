@@ -1,19 +1,24 @@
 /*******************************************************************************************
-*
-*   raylib [core] example - Gamepad input
-*
-*   NOTE: This example requires a Gamepad connected to the system
-*         raylib is configured to work with the following gamepads:
-*                - Xbox 360 Controller (Xbox 360, Xbox One)
-*                - PLAYSTATION(R)3 Controller
-*         Check raylib.h for buttons configuration
-*
-*   This example has been created using raylib 1.6 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
-*
-*   Copyright (c) 2013-2016 Ramon Santamaria (@raysan5)
-*
-********************************************************************************************/
+   *
+   *   raylib [core] example - input gamepad
+   *
+   *   Example complexity rating: [★☆☆☆] 1/4
+   *
+   *   NOTE: This example requires a Gamepad connected to the system
+   *         raylib is configured to work with the following gamepads:
+   *                - Xbox 360 Controller (Xbox 360, Xbox One)
+   *                - PLAYSTATION(R)3 Controller
+   *         Check raylib.h for buttons configuration
+   *
+   *   Example originally created with raylib 1.1, last time updated with raylib 4.2
+   *
+   *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+   *   BSD-like license that allows static linking with closed source software
+   *
+   *   Copyright (c) 2013-2025 Ramon Santamaria (@raysan5)
+   *
+   ********************************************************************************************/
+
 
 using System.Numerics;
 using Raylib_cs;
@@ -25,10 +30,10 @@ public class InputGamepad
 {
     // NOTE: Gamepad name ID depends on drivers and OS
     // These are some possible names the gamepads could have.
-    public const string XBOX360_LEGACY_NAME_ID = "Xbox Controller";
-    public const string XBOX360_NAME_ID = "Xbox 360 Controller";
-    public const string XBOX360_NAME_ID_RPI = "Microsoft X-Box 360 pad";
-    public const string PS3_NAME_ID = "PLAYSTATION(R)3 Controller";
+    public const string XBOX_ALIAS_1 = "xbox";
+    public const string XBOX_ALIAS_2 = "x-box";
+    public const string PS_ALIAS_1 = "playstation";
+    public const string PS_ALIAS_2 = "sony";
 
     public static int Main()
     {
@@ -47,12 +52,32 @@ public class InputGamepad
         SetTargetFPS(60);
         //--------------------------------------------------------------------------------------
 
+        int gamepad = 0;
+        Rectangle vibrateButton = new Rectangle();
+
         // Main game loop
         while (!WindowShouldClose())
         {
             // Update
             //----------------------------------------------------------------------------------
-            // ...
+            if (IsKeyPressed(KeyboardKey.Left) && gamepad > 0)
+            {
+                gamepad--;
+            }
+
+            if (IsKeyPressed(KeyboardKey.Right))
+            {
+                gamepad++;
+            }
+
+            Vector2 mousePosition = GetMousePosition();
+
+            vibrateButton = new Rectangle(10, 70.0f + 20 * GetGamepadAxisCount(gamepad) + 20, 75, 24);
+            if (IsMouseButtonPressed(MouseButton.Left) && CheckCollisionPointRec(mousePosition, vibrateButton))
+            {
+                SetGamepadVibration(gamepad, 1.0f, 1.0f, 1.0f);
+            }
+
             //----------------------------------------------------------------------------------
 
             // Draw
@@ -60,50 +85,49 @@ public class InputGamepad
             BeginDrawing();
             ClearBackground(Color.RayWhite);
 
-            if (IsGamepadAvailable(0))
+            if (IsGamepadAvailable(gamepad))
             {
-                string gamepadName = GetGamepadName_(0);
-                DrawText($"GP1: {gamepadName}", 10, 10, 10, Color.Black);
+                string gamepadName = GetGamepadName_(gamepad);
+                DrawText($"GP{gamepad}: {gamepadName}", 10, 10, 10, Color.Black);
 
-                if (gamepadName == XBOX360_LEGACY_NAME_ID ||
-                    gamepadName == XBOX360_NAME_ID ||
-                    gamepadName == XBOX360_NAME_ID_RPI)
+                if (gamepadName.Contains(XBOX_ALIAS_1, StringComparison.OrdinalIgnoreCase) ||
+                    gamepadName.Contains(XBOX_ALIAS_2, StringComparison.OrdinalIgnoreCase))
                 {
                     DrawTexture(texXboxPad, 0, 0, Color.DarkGray);
 
                     // Draw buttons: xbox home
-                    if (IsGamepadButtonDown(0, GamepadButton.Middle))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.Middle))
                     {
                         DrawCircle(394, 89, 19, Color.Red);
                     }
 
                     // Draw buttons: basic
-                    if (IsGamepadButtonDown(0, GamepadButton.MiddleRight))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.MiddleRight))
                     {
                         DrawCircle(436, 150, 9, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.MiddleLeft))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.MiddleLeft))
                     {
                         DrawCircle(352, 150, 9, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.RightFaceLeft))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightFaceLeft))
                     {
                         DrawCircle(501, 151, 15, Color.Blue);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.RightFaceDown))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightFaceDown))
                     {
                         DrawCircle(536, 187, 15, Color.Lime);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.RightFaceRight))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightFaceRight))
                     {
                         DrawCircle(572, 151, 15, Color.Maroon);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.RightFaceUp))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightFaceUp))
                     {
                         DrawCircle(536, 115, 15, Color.Gold);
                     }
@@ -111,33 +135,33 @@ public class InputGamepad
                     // Draw buttons: d-pad
                     DrawRectangle(317, 202, 19, 71, Color.Black);
                     DrawRectangle(293, 228, 69, 19, Color.Black);
-                    if (IsGamepadButtonDown(0, GamepadButton.LeftFaceUp))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftFaceUp))
                     {
                         DrawRectangle(317, 202, 19, 26, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.LeftFaceDown))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftFaceDown))
                     {
                         DrawRectangle(317, 202 + 45, 19, 26, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.LeftFaceLeft))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftFaceLeft))
                     {
                         DrawRectangle(292, 228, 25, 19, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.LeftFaceRight))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftFaceRight))
                     {
                         DrawRectangle(292 + 44, 228, 26, 19, Color.Red);
                     }
 
                     // Draw buttons: left-right back
-                    if (IsGamepadButtonDown(0, GamepadButton.LeftTrigger1))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
                     {
                         DrawCircle(259, 61, 20, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.RightTrigger1))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                     {
                         DrawCircle(536, 61, 20, Color.Red);
                     }
@@ -146,8 +170,8 @@ public class InputGamepad
                     DrawCircle(259, 152, 39, Color.Black);
                     DrawCircle(259, 152, 34, Color.LightGray);
                     DrawCircle(
-                        259 + (int)(GetGamepadAxisMovement(0, GamepadAxis.LeftX) * 20),
-                        152 + (int)(GetGamepadAxisMovement(0, GamepadAxis.LeftY) * 20),
+                        259 + (int)(GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) * 20),
+                        152 + (int)(GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) * 20),
                         25,
                         Color.Black
                     );
@@ -156,36 +180,36 @@ public class InputGamepad
                     DrawCircle(461, 237, 38, Color.Black);
                     DrawCircle(461, 237, 33, Color.LightGray);
                     DrawCircle(
-                        461 + (int)(GetGamepadAxisMovement(0, GamepadAxis.RightX) * 20),
-                        237 + (int)(GetGamepadAxisMovement(0, GamepadAxis.RightY) * 20),
+                        461 + (int)(GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) * 20),
+                        237 + (int)(GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) * 20),
                         25, Color.Black
                     );
 
                     // Draw axis: left-right triggers
-                    float leftTriggerX = GetGamepadAxisMovement(0, GamepadAxis.LeftTrigger);
-                    float rightTriggerX = GetGamepadAxisMovement(0, GamepadAxis.RightTrigger);
+                    float leftTriggerX = GetGamepadAxisMovement(gamepad, GamepadAxis.LeftTrigger);
+                    float rightTriggerX = GetGamepadAxisMovement(gamepad, GamepadAxis.RightTrigger);
                     DrawRectangle(170, 30, 15, 70, Color.Gray);
                     DrawRectangle(604, 30, 15, 70, Color.Gray);
                     DrawRectangle(170, 30, 15, (int)(((1.0f + leftTriggerX) / 2.0f) * 70), Color.Red);
                     DrawRectangle(604, 30, 15, (int)(((1.0f + rightTriggerX) / 2.0f) * 70), Color.Red);
                 }
-                else if (gamepadName == PS3_NAME_ID)
+                else if (gamepadName.Contains(PS_ALIAS_1, StringComparison.OrdinalIgnoreCase) || gamepadName.Contains(PS_ALIAS_2, StringComparison.OrdinalIgnoreCase))
                 {
                     DrawTexture(texPs3Pad, 0, 0, Color.DarkGray);
 
                     // Draw buttons: ps
-                    if (IsGamepadButtonDown(0, GamepadButton.Middle))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.Middle))
                     {
                         DrawCircle(396, 222, 13, Color.Red);
                     }
 
                     // Draw buttons: basic
-                    if (IsGamepadButtonDown(0, GamepadButton.MiddleLeft))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.MiddleLeft))
                     {
                         DrawRectangle(328, 170, 32, 13, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.MiddleRight))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.MiddleRight))
                     {
                         DrawTriangle(
                             new Vector2(436, 168),
@@ -195,22 +219,22 @@ public class InputGamepad
                         );
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.RightFaceUp))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightFaceUp))
                     {
                         DrawCircle(557, 144, 13, Color.Lime);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.RightFaceRight))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightFaceRight))
                     {
                         DrawCircle(586, 173, 13, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.RightFaceDown))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightFaceDown))
                     {
                         DrawCircle(557, 203, 13, Color.Violet);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.RightFaceLeft))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightFaceLeft))
                     {
                         DrawCircle(527, 173, 13, Color.Pink);
                     }
@@ -218,33 +242,33 @@ public class InputGamepad
                     // Draw buttons: d-pad
                     DrawRectangle(225, 132, 24, 84, Color.Black);
                     DrawRectangle(195, 161, 84, 25, Color.Black);
-                    if (IsGamepadButtonDown(0, GamepadButton.LeftFaceUp))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftFaceUp))
                     {
                         DrawRectangle(225, 132, 24, 29, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.LeftFaceDown))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftFaceDown))
                     {
                         DrawRectangle(225, 132 + 54, 24, 30, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.LeftFaceLeft))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftFaceLeft))
                     {
                         DrawRectangle(195, 161, 30, 25, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.LeftFaceRight))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftFaceRight))
                     {
                         DrawRectangle(195 + 54, 161, 30, 25, Color.Red);
                     }
 
                     // Draw buttons: left-right back buttons
-                    if (IsGamepadButtonDown(0, GamepadButton.LeftTrigger1))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
                     {
                         DrawCircle(239, 82, 20, Color.Red);
                     }
 
-                    if (IsGamepadButtonDown(0, GamepadButton.RightTrigger1))
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                     {
                         DrawCircle(557, 82, 20, Color.Red);
                     }
@@ -253,8 +277,8 @@ public class InputGamepad
                     DrawCircle(319, 255, 35, Color.Black);
                     DrawCircle(319, 255, 31, Color.LightGray);
                     DrawCircle(
-                        319 + (int)(GetGamepadAxisMovement(0, GamepadAxis.LeftX) * 20),
-                        255 + (int)(GetGamepadAxisMovement(0, GamepadAxis.LeftY) * 20),
+                        319 + (int)(GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) * 20),
+                        255 + (int)(GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) * 20),
                         25,
                         Color.Black
                     );
@@ -263,15 +287,15 @@ public class InputGamepad
                     DrawCircle(475, 255, 35, Color.Black);
                     DrawCircle(475, 255, 31, Color.LightGray);
                     DrawCircle(
-                        475 + (int)(GetGamepadAxisMovement(0, GamepadAxis.RightX) * 20),
-                        255 + (int)(GetGamepadAxisMovement(0, GamepadAxis.RightY) * 20),
+                        475 + (int)(GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) * 20),
+                        255 + (int)(GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) * 20),
                         25,
                         Color.Black
                     );
 
                     // Draw axis: left-right triggers
-                    float leftTriggerX = GetGamepadAxisMovement(0, GamepadAxis.LeftTrigger);
-                    float rightTriggerX = GetGamepadAxisMovement(0, GamepadAxis.RightTrigger);
+                    float leftTriggerX = GetGamepadAxisMovement(gamepad, GamepadAxis.LeftTrigger);
+                    float rightTriggerX = GetGamepadAxisMovement(gamepad, GamepadAxis.RightTrigger);
                     DrawRectangle(169, 48, 15, 70, Color.Gray);
                     DrawRectangle(611, 48, 15, 70, Color.Gray);
                     DrawRectangle(169, 48, 15, (int)(((1.0f - leftTriggerX) / 2.0f) * 70), Color.Red);
@@ -283,18 +307,22 @@ public class InputGamepad
                     // TODO: Draw generic gamepad
                 }
 
-                DrawText($"DETECTED AXIS [{GetGamepadAxisCount(0)}]:", 10, 50, 10, Color.Maroon);
+                DrawText($"DETECTED AXIS [{GetGamepadAxisCount(gamepad)}]:", 10, 50, 10, Color.Maroon);
 
-                for (int i = 0; i < GetGamepadAxisCount(0); i++)
+                for (int i = 0; i < GetGamepadAxisCount(gamepad); i++)
                 {
                     DrawText(
-                        $"AXIS {i}: {GetGamepadAxisMovement(0, (GamepadAxis)i)}",
+                        $"AXIS {i}: {GetGamepadAxisMovement(gamepad, (GamepadAxis)i)}",
                         20,
                         70 + 20 * i,
                         10,
                         Color.DarkGray
                     );
                 }
+
+                DrawRectangleRec(vibrateButton, Color.SkyBlue);
+                DrawText("VIBRATE", (int)(vibrateButton.X + 14), (int)(vibrateButton.Y + 1), 10, Color.DarkGray);
+
 
                 if (GetGamepadButtonPressed() != (int)GamepadButton.Unknown)
                 {
@@ -307,7 +335,7 @@ public class InputGamepad
             }
             else
             {
-                DrawText("GP1: NOT DETECTED", 10, 10, 10, Color.Gray);
+                DrawText($"GP{gamepad}: NOT DETECTED", 10, 10, 10, Color.Gray);
                 DrawTexture(texXboxPad, 0, 0, Color.LightGray);
             }
 

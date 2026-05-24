@@ -181,7 +181,22 @@ public unsafe struct Mesh
 
     #endregion
 
-    #region Animation vertex data
+    #region Skin data for animation
+
+    /// <summary>
+    /// Number of bones (MAX: 256 bones)
+    /// </summary>
+    public int BoneCount;
+
+    /// <summary>
+    /// Vertex bone indices, up to 4 bones influence by vertex (skinning) (shader-location = 6)
+    /// </summary>
+    public byte* BoneIndices = default;
+
+    /// <summary>
+    /// Vertex bone weight, up to 4 bones influence by vertex (skinning) (shader-location = 7)
+    /// </summary>
+    public float* BoneWeights = default;
 
     /// <summary>
     /// Animated vertex positions (after bones transformations)
@@ -193,26 +208,6 @@ public unsafe struct Mesh
     /// </summary>
     public float* AnimNormals = default;
 
-    /// <summary>
-    /// Vertex bone ids, up to 4 bones influence by vertex (skinning)
-    /// </summary>
-    public byte* BoneIds = default;
-
-    /// <summary>
-    /// Vertex bone weight, up to 4 bones influence by vertex (skinning)
-    /// </summary>
-    public float* BoneWeights = default;
-
-    /// <summary>
-    /// Bones animated transformation matrices
-    /// </summary>
-    public Matrix4x4* BoneMatrices = default;
-
-    /// <summary>
-    /// Number of bones
-    /// </summary>
-    public int BoneCount;
-
     #endregion
 
     #region OpenGL identifiers
@@ -223,7 +218,7 @@ public unsafe struct Mesh
     public uint VaoId = default;
 
     /// <summary>
-    /// OpenGL Vertex Buffer Objects id (default vertex data, uint[])
+    /// OpenGL Vertex Buffer Objects id (default vertex data)
     /// </summary>
     public uint* VboId = default;
 
@@ -263,4 +258,6 @@ public unsafe struct Mesh
     public const int VboIdIndexIndices = 6;
 
     #endregion
+
+
 }

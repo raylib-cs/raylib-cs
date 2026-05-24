@@ -1,11 +1,15 @@
 /*******************************************************************************************
 *
-*   raylib [core] examples - Mouse wheel input
+*   raylib [core] example - input mouse wheel
 *
-*   This test has been created using raylib 1.1 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example complexity rating: [★☆☆☆] 1/4
 *
-*   Copyright (c) 2014 Ramon Santamaria (@raysan5)
+*   Example originally created with raylib 1.1, last time updated with raylib 1.3
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2014-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -25,9 +29,7 @@ public class InputMouseWheel
         InitWindow(screenWidth, screenHeight, "raylib [core] example - input mouse wheel");
 
         int boxPositionY = screenHeight / 2 - 40;
-
-        // Scrolling speed in pixels
-        int scrollSpeed = 4;
+        int scrollSpeed = 4;            // Scrolling speed in pixels
 
         SetTargetFPS(60);
         //--------------------------------------------------------------------------------------

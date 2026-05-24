@@ -60,7 +60,7 @@ public class ShapesTextures
             DrawText("USING DEFAULT SHADER", 20, 40, 10, Color.Red);
 
             DrawCircle(80, 120, 35, Color.DarkBlue);
-            DrawCircleGradient(80, 220, 60, Color.Green, Color.SkyBlue);
+            DrawCircleGradient(new Vector2(80, 220), 60, Color.Green, Color.SkyBlue);
             DrawCircleLines(80, 340, 80, Color.DarkBlue);
 
 

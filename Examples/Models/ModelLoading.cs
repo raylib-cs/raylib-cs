@@ -64,7 +64,7 @@ public class ModelLoading
         {
             // Update
             //----------------------------------------------------------------------------------
-            UpdateCamera(ref camera, CameraMode.Free);
+            UpdateCamera(ref camera, CameraMode.Orbital);
 
             if (IsFileDropped())
             {

@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Raylib_cs;
@@ -8,11 +9,6 @@ namespace Raylib_cs;
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct FilePathList
 {
-    /// <summary>
-    /// Filepaths max entries
-    /// </summary>
-    public uint Capacity;
-
     /// <summary>
     /// Filepaths entries count
     /// </summary>

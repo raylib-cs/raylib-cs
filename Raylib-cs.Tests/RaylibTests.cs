@@ -40,6 +40,7 @@ public class RaylibTests
         CheckType<Transform>();
         CheckType<BoneInfo>();
         CheckType<Model>();
+        CheckType<ModelSkeleton>();
         CheckType<ModelAnimation>();
         CheckType<Ray>();
         CheckType<RayCollision>();
