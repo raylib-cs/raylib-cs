@@ -77,8 +77,6 @@ public class JuliaSet
         int incrementSpeed = 0;
         // Show controls
         bool showControls = true;
-        // Pause animation
-        bool pause = false;
 
         SetTargetFPS(60);
         //--------------------------------------------------------------------------------------
