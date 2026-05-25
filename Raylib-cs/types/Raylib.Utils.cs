@@ -256,7 +256,7 @@ public static unsafe partial class Raylib
     }
 
     /// <summary>Save data to file from an unmanaged type</summary>
-    /// <returns>True if the operation was successfully</returns>
+    /// <returns>True if the operation was successful</returns>
     public static CBool SaveFileData<T>(T data, string fileName) where T : unmanaged
     {
         using AnsiBuffer ansiBuffer = fileName.ToAnsiBuffer();
@@ -264,7 +264,7 @@ public static unsafe partial class Raylib
     }
 
     /// <summary>Save data to file from an unmanaged type</summary>
-    /// <returns>True if the operation was successfully</returns>
+    /// <returns>True if the operation was successful</returns>
     public static CBool SaveFileData<T>(T[] data, string fileName) where T : unmanaged
     {
         if (data == null || data.Length == 0)
@@ -290,46 +290,16 @@ public static unsafe partial class Raylib
     }
 
     /// <summary>Load file data as byte array (read)</summary>
-    public static byte* LoadFileData(string fileName, ref int bytesRead)
+    public static byte* LoadFileData(string fileName, ref int dataSize)
     {
         using AnsiBuffer str1 = fileName.ToAnsiBuffer();
-        fixed (int* p = &bytesRead)
+        fixed (int* p = &dataSize)
         {
             return LoadFileData(str1.AsPointer(), p);
         }
     }
 
-    public static byte[] LoadFileData(string fileName)
-    {
-        int length = 0;
-        byte* data = LoadFileData(fileName, ref length);
-
-        if (data == null)
-        {
-            return Array.Empty<byte>();
-        }
-
-
-        byte[] arr = new byte[length];
-        Marshal.Copy((IntPtr)data, arr, 0, length);
-        UnloadFileData(data);
-        return arr;
-    }
-
-    /// <summary>
-    /// Load file data as an array of unmanaged types
-    /// </summary>
-    public static T[] LoadFileData<T>(string fileName) where T : unmanaged
-    {
-        int length = 0;
-        byte* data = LoadFileData(fileName, ref length);
-        Span<T> values = new Span<T>(data, length / sizeof(T));
-        T[] arr = values.ToArray();
-        UnloadFileData(data);
-        return arr;
-    }
-
-    /// <summary>Get dropped files names (memory should be freed)</summary>
+    /// <summary>Get dropped files names</summary>
     public static string[] GetDroppedFiles()
     {
         FilePathList filePathList = LoadDroppedFiles();
@@ -507,6 +477,7 @@ public static unsafe partial class Raylib
         }
     }
 
+    /// <summary>Check if point is within a polygon described by array of vertices</summary>
     public static CBool CheckCollisionPointPoly(Vector2 point, Vector2[] points)
     {
         fixed (Vector2* p = points)
@@ -841,6 +812,16 @@ public static unsafe partial class Raylib
         }
     }
 
+    /// <summary>Draw circle within an image (Vector version)</summary>
+    public static void ImageDrawCircleV(ref Image dst, Vector2 center, int radius, Color color)
+    {
+        fixed (Image* p = &dst)
+        {
+            ImageDrawCircleV(p, center, radius, color);
+        }
+    }
+
+    /// <summary>Draw circle outline within an image</summary>
     public static void ImageDrawCircleLines(ref Image dst, int centerX, int centerY, int radius, Color color)
     {
         fixed (Image* p = &dst)
@@ -849,20 +830,12 @@ public static unsafe partial class Raylib
         }
     }
 
+    /// <summary>Draw circle outline within an image (Vector version)</summary>
     public static void ImageDrawCircleLinesV(ref Image dst, Vector2 center, int radius, Color color)
     {
         fixed (Image* p = &dst)
         {
             ImageDrawCircleLinesV(p, center, radius, color);
-        }
-    }
-
-    /// <summary>Draw circle within an image (Vector version)</summary>
-    public static void ImageDrawCircleV(ref Image dst, Vector2 center, int radius, Color color)
-    {
-        fixed (Image* p = &dst)
-        {
-            ImageDrawCircleV(p, center, radius, color);
         }
     }
 
@@ -1623,9 +1596,9 @@ public static unsafe partial class Raylib
         int temp = min;
         min = Math.Min(min, max);
         max = Math.Max(temp, max);
+
         int* sequence = LoadRandomSequence(count, min, max);
         int[] output = new int[count];
-        //Marshal.Copy((IntPtr)sequence, output, 0, count);
         for (uint i = 0; i < count; i++)
         {
             output[i] = sequence[i];
@@ -1648,6 +1621,7 @@ public static unsafe partial class Raylib
         min = Math.Min(min, max);
         max = Math.Max(temp, max);
         const int maxi = 100000;
+
         int* sequence = LoadRandomSequence(count, 0, maxi);
         float[] output = new float[count];
         for (uint i = 0; i < count; i++)
@@ -1657,6 +1631,7 @@ public static unsafe partial class Raylib
             output[i] = Raymath.Lerp(min, max, norm);
         }
 
+        UnloadRandomSequence(sequence);
         return output;
     }
 
@@ -1673,7 +1648,6 @@ public static unsafe partial class Raylib
     /// <summary>Rename file (if exists)</summary>
     public static int FileRename(string filename, string fileRename)
     {
-
         using AnsiBuffer fileBuffer = filename.ToAnsiBuffer();
         using AnsiBuffer textBuffer = fileRename.ToAnsiBuffer();
         return FileRename(fileBuffer.AsPointer(), textBuffer.AsPointer());
@@ -1815,7 +1789,10 @@ public static unsafe partial class Raylib
         return GetDirectoryFileCount(dirBuffer.AsPointer());
     }
 
-    /// <summary>Get the file count in a directory with extension filtering and recursive directory scan. Use 'DIR' in the filter string to include directories in the result</summary>
+    /// <summary>
+    /// Get the file count in a directory with extension filtering and recursive directory scan.
+    /// Use 'DIR' in the filter string to include directories in the result
+    /// </summary>
     public static int GetDirectoryFileCountEx(string dirPath, string filter, CBool scanSubdirs)
     {
         using AnsiBuffer dirBuffer = dirPath.ToAnsiBuffer();
@@ -1823,14 +1800,16 @@ public static unsafe partial class Raylib
         return GetDirectoryFileCountEx(dirBuffer.AsPointer(), filterBuffer.AsPointer(), scanSubdirs);
     }
 
-    /// <summary>Load directory filepaths with extension filtering and subdir scan; some filters available: "*.*", "FILES*", "DIRS*"</summary>
+    /// <summary>
+    /// Load directory filepaths with extension filtering and subdir scan; some
+    /// filters available: "*.*", "FILES*", "DIRS*"
+    /// </summary>
     public static FilePathList LoadDirectoryFilesEx(string basePath, string filter, CBool scanSubDirs)
     {
         using AnsiBuffer baseBuffer = basePath.ToAnsiBuffer();
         using AnsiBuffer filterBuffer = filter.ToAnsiBuffer();
         return LoadDirectoryFilesEx(baseBuffer.AsPointer(), filterBuffer.AsPointer(), scanSubDirs);
     }
-
 
     /// <summary>Compress data (DEFLATE algorithm)</summary>
     public static byte[] CompressData(byte[] data)
@@ -2038,7 +2017,8 @@ public static unsafe partial class Raylib
     }
 
     /// <summary>
-    /// Loads text from a file, reads it, saves it, unloads the file, and returns the loaded text.
+    /// Loads text from a file, reads it, saves it, unloads the file, and
+    /// returns the loaded text.
     /// </summary>
     /// <returns>The text content of the file on the given path</returns>
     public static string LoadFileText(string fileName)
@@ -2050,6 +2030,9 @@ public static unsafe partial class Raylib
         return text;
     }
 
+    /// <summary>
+    /// Get the screen center position
+    /// </summary>
     public static Vector2 GetScreenCenter()
     {
         Vector2 center = new Vector2();
@@ -2057,5 +2040,4 @@ public static unsafe partial class Raylib
         center.Y = GetScreenHeight() / 2.0f;
         return center;
     }
-
 }
