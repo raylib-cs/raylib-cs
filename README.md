@@ -1,4 +1,4 @@
-![Raylib-cs Logo](https://github.com/raylib-cs/raylib-cs/blob/main/Raylib-cs/logo/raylib-cs_256x256.png "Raylib-cs Logo")
+![Raylib-cs Logo](Raylib-cs/logo/raylib-cs_256x256.png "Raylib-cs Logo")
 
 # Raylib-cs
 
@@ -23,8 +23,7 @@ accepted if they don't have a large maintainence burden.
 This is the prefered method to get started.
 
 1) Pick a folder in which you would like to start a raylib project. For example "MyRaylibCSProj".
-2) Then from a terminal (for example a VSCode terminal), whilst in the directory you just created
-    run the following commands. (Please keep in mind .NET should already be installed on your system)
+2) Then from a terminal whilst in the directory you just created run the following commands. (Please keep in mind .NET should already be installed on your system).
 
 ```
 dotnet new console
@@ -37,9 +36,7 @@ dotnet add package Raylib-cs
 
 If you need to edit Raylib-cs source then you will need to add the bindings as a project (see below).
 
-If you are new to using NuGet (or you've forgotten) and are trying to run the above command in the command prompt,
-remember that you need to be *inside the intended project directory* (not just inside the solution directory)
-otherwise the command won't work.
+Remember if you are trying to run the above commands in the terminal that you need to be *inside the intended project directory* (not just inside the solution directory) otherwise the command won't work.
 
 ## Installation - Manual
 
@@ -47,10 +44,9 @@ otherwise the command won't work.
 
 2. Add [Raylib-cs/Raylib-cs.csproj](Raylib-cs/Raylib-cs.csproj) to your project as an existing project.
 
-3. Download/build the native libraries for the platforms you want using the [official 6.0 release](https://github.com/raysan5/raylib/releases/tag/6.0).
-   **NOTE: the MSVC version is required for Windows platforms**
+3. Download/build the native libraries for the platforms you want using the [official 6.0 release](https://github.com/raysan5/raylib/releases/tag/6.0). **NOTE: the MSVC version is required for Windows platforms**
 
-4. Setup the native libraries so they are in the same directory as the executable/can be found in the [search path](https://www.mono-project.com/docs/advanced/pinvoke/).
+4. Add the native libraries to your project so they are in the same directory as the executable/can be found in the [search path](https://www.mono-project.com/docs/advanced/pinvoke/).
 
 6. Start coding!
 
@@ -63,7 +59,8 @@ namespace HelloWorld;
 
 internal static class Program
 {
-    // STAThread is required if you deploy using NativeAOT on Windows - See https://github.com/raylib-cs/raylib-cs/issues/301
+    // STAThread is required if you deploy using NativeAOT on Windows
+    // See https://github.com/raylib-cs/raylib-cs/issues/301
     [System.STAThread]
     public static void Main()
     {
