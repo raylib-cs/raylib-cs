@@ -20,6 +20,5 @@
 
   <ItemGroup>
     <ProjectReference Include="../Raylib-cs/Raylib-cs.csproj" />
-    <ProjectReference Include="../Raylib-cs.Native/Raylib-cs.Native.csproj" />
   </ItemGroup>
 </Project>

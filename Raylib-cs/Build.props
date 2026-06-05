@@ -3,5 +3,165 @@
     <TargetRaylibTag>6.0</TargetRaylibTag>
     <Version>8.0.0</Version>
     <PackageVersion>8.0.0</PackageVersion>
+    <PackageRids>win-x64;win-x86;linux-x64;osx-x64;osx-arm64;browser-wasm</PackageRids>
+    <NativesRoot>runtimes/</NativesRoot>
+    <DownloadedRuntimesDir>$(TargetDir)/runtimes/</DownloadedRuntimesDir>
   </PropertyGroup>
+
+  <Choose>
+      <When Condition="'$(RuntimeIdentifier)' == 'win-x64'">
+          <PropertyGroup>
+              <RaylibPackageName>raylib-$(TargetRaylibTag)_win64_msvc16</RaylibPackageName>
+              <ArchiveExt>.zip</ArchiveExt>
+              <LibPattern>raylib.dll</LibPattern>
+          </PropertyGroup>
+      </When>
+      <When Condition="'$(RuntimeIdentifier)' == 'win-x86'">
+          <PropertyGroup>
+              <RaylibPackageName>raylib-$(TargetRaylibTag)_win32_msvc16</RaylibPackageName>
+              <ArchiveExt>.zip</ArchiveExt>
+              <LibPattern>raylib.dll</LibPattern>
+          </PropertyGroup>
+      </When>
+      <When Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
+          <PropertyGroup>
+              <RaylibPackageName>raylib-$(TargetRaylibTag)_linux_amd64</RaylibPackageName>
+              <ArchiveExt>.tar.gz</ArchiveExt>
+              <LibPattern>libraylib.so*</LibPattern>
+          </PropertyGroup>
+      </When>
+      <When Condition="'$(RuntimeIdentifier)' == 'osx-x64'">
+          <PropertyGroup>
+              <RaylibPackageName>raylib-$(TargetRaylibTag)_macos</RaylibPackageName>
+              <ArchiveExt>.tar.gz</ArchiveExt>
+              <LibPattern>libraylib.dylib</LibPattern>
+          </PropertyGroup>
+      </When>
+      <When Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">
+          <PropertyGroup>
+              <RaylibPackageName>raylib-$(TargetRaylibTag)_macos</RaylibPackageName>
+              <ArchiveExt>.tar.gz</ArchiveExt>
+              <LibPattern>libraylib.dylib</LibPattern>
+          </PropertyGroup>
+      </When>
+      <When Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">
+          <PropertyGroup>
+              <RaylibPackageName>raylib-$(TargetRaylibTag)_webassembly</RaylibPackageName>
+              <ArchiveExt>.zip</ArchiveExt>
+              <LibPattern>libraylib.web.a</LibPattern>
+          </PropertyGroup>
+      </When>
+  </Choose>
+
+  <!-- ================================================================== -->
+  <!-- TARGET: PACKING -->
+  <!-- ================================================================== -->
+  <Target Name="PrepareNativesForPack" BeforeTargets="_GetPackageFiles">
+      <ItemGroup>
+          <_TargetRids Include="$(PackageRids)"/>
+      </ItemGroup>
+
+      <MSBuild Projects="$(MSBuildThisFileFullPath)"
+                Targets="_DownloadAndExtractInternal"
+                Properties="RuntimeIdentifier=%(_TargetRids.Identity);TargetFramework=$(TargetFramework);TargetRaylibTag=$(TargetRaylibTag)"
+                BuildInParallel="false"/>
+
+      <!-- Direct injection into _PackageFiles -->
+      <ItemGroup>
+          <_PackageFiles Include="$(NativesRoot)win-x64/raylib-$(TargetRaylibTag)_win64_msvc16/lib/raylib.dll">
+              <PackagePath>runtimes/win-x64/native/</PackagePath>
+              <BuildAction>None</BuildAction>
+          </_PackageFiles>
+
+          <_PackageFiles Include="$(NativesRoot)win-x86/raylib-$(TargetRaylibTag)_win32_msvc16/lib/raylib.dll">
+              <PackagePath>runtimes/win-x86/native/</PackagePath>
+              <BuildAction>None</BuildAction>
+          </_PackageFiles>
+
+          <_PackageFiles Include="$(NativesRoot)linux-x64/raylib-$(TargetRaylibTag)_linux_amd64/lib/libraylib.so">
+              <PackagePath>runtimes/linux-x64/native/</PackagePath>
+              <BuildAction>None</BuildAction>
+          </_PackageFiles>
+
+          <_PackageFiles Include="$(NativesRoot)osx-x64/raylib-$(TargetRaylibTag)_macos/lib/libraylib.dylib">
+              <PackagePath>runtimes/osx-x64/native/</PackagePath>
+              <BuildAction>None</BuildAction>
+          </_PackageFiles>
+
+          <_PackageFiles Include="$(NativesRoot)osx-arm64/raylib-$(TargetRaylibTag)_macos/lib/libraylib.dylib">
+              <PackagePath>runtimes/osx-arm64/native/</PackagePath>
+              <BuildAction>None</BuildAction>
+          </_PackageFiles>
+
+          <_PackageFiles Include="$(NativesRoot)browser-wasm/raylib-$(TargetRaylibTag)_webassembly/lib/libraylib.a">
+              <PackagePath>runtimes/browser-wasm/native/raylib.a</PackagePath>
+              <BuildAction>None</BuildAction>
+          </_PackageFiles>
+      </ItemGroup>
+  </Target>
+
+  <!-- ================================================================== -->
+  <!-- TARGET: LOCAL DEVELOPMENT -->
+  <!-- ================================================================== -->
+
+  <Target Name="CopyNativeToOutput" AfterTargets="Build"
+          Condition="'$(GeneratePackageOnBuild)' != 'true' AND '$(RuntimeIdentifier)' != ''">
+
+      <CallTarget Targets="_DownloadAndExtractInternal"/>
+      <ItemGroup>
+          <_NativeToCopy Include="$(NativesRoot)$(RuntimeIdentifier)/**/$(LibPattern)"/>
+      </ItemGroup>
+      <Copy SourceFiles="@(_NativeToCopy)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true"/>
+  </Target>
+
+  <!-- ================================================================== -->
+  <!-- WORKER: DOWNLOADER -->
+  <!-- ================================================================== -->
+
+  <Target Name="_DownloadAndExtractInternal" Condition="'$(RaylibPackageName)' != ''">
+      <PropertyGroup>
+          <_WorkDir>$(NativesRoot)$(RuntimeIdentifier)/</_WorkDir>
+          <_ArchiveFile>$(_WorkDir)$(RaylibPackageName)$(ArchiveExt)</_ArchiveFile>
+          <_ExtractMarker>$(_WorkDir).extracted</_ExtractMarker>
+      </PropertyGroup>
+
+      <Message Text="=== _DownloadAndExtractInternal ===" Importance="high"/>
+      <Message Text="RID = $(RuntimeIdentifier)" Importance="high"/>
+      <Message Text="Archive = $(_ArchiveFile)" Importance="high"/>
+      <Message Text="Marker = $(_ExtractMarker)" Importance="high"/>
+
+      <MakeDir Directories="$(_WorkDir)"/>
+
+      <DownloadFile
+        SourceUrl="https://github.com/raysan5/raylib/releases/download/$(TargetRaylibTag)/$(RaylibPackageName)$(ArchiveExt)"
+        DestinationFolder="$(_WorkDir)"
+        DestinationFileName="$(RaylibPackageName)$(ArchiveExt)"
+        Condition="!Exists('$(_ArchiveFile)')"
+        Retries="3"
+      />
+
+      <Message
+        Text="unZIPping"
+        Importance="high"
+        Condition="'$(ArchiveExt)' == '.zip' AND !Exists('$(_ExtractMarker)')"
+      />
+      <Unzip
+        SourceFiles="$(_ArchiveFile)"
+        DestinationFolder="$(_WorkDir)"
+        OverwriteReadOnlyFiles="true"
+        Condition="'$(ArchiveExt)' == '.zip' AND !Exists('$(_ExtractMarker)')"
+      />
+
+      <Message
+        Text="unTARing"
+        Importance="high"
+        Condition="'$(ArchiveExt)' == '.tar.gz' AND !Exists('$(_ExtractMarker)')"
+      />
+      <Exec Command="tar -xzf &quot;$(RaylibPackageName)$(ArchiveExt)&quot;"
+            WorkingDirectory="$(_WorkDir)"
+            Condition="'$(ArchiveExt)' == '.tar.gz' AND !Exists('$(_ExtractMarker)')"/>
+
+      <Touch Files="$(_ExtractMarker)" AlwaysCreate="true"/>
+      <Message Text="Extraction complete" Importance="high"/>
+  </Target>
 </Project>
