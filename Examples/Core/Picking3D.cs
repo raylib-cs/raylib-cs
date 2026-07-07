@@ -27,8 +27,6 @@ public partial class Picking3d : IExample
 
     public string Title => "raylib [core] example - 3d picking";
 
-    public bool CursorDisabled => true;
-
     private Camera3D camera;
     private Vector3 cubePosition;
     private Vector3 cubeSize;

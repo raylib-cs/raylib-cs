@@ -19,13 +19,18 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Models;
 
+[ExcludeFromBrowser("cubemap generation is too memory-heavy on web (upstream note)")]
 public partial class SkyboxDemo : IExample
 {
     private const int screenWidth = 800;
     private const int screenHeight = 450;
 
     // GLSL version used for shaders (330 desktop, 100 web/GLES)
+#if BROWSER
+    public const int GlslVersion = 100;
+#else
     public const int GlslVersion = 330;
+#endif
 
     public string Name => "Models / Skybox Demo";
 

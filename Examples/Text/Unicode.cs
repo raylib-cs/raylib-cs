@@ -22,10 +22,19 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Text;
 
-public class Unicode
+public partial class Unicode : IExample
 {
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
     const int EmojiPerWidth = 8;
     const int EmojiPerHeight = 4;
+
+    public string Name => "Text / Unicode Emojis";
+
+    public string Title => "raylib [text] example - unicode emojis";
+
+    public ConfigFlags ConfigFlags => ConfigFlags.Msaa4xHint | ConfigFlags.VSyncHint;
 
     // Arrays that holds the random emojis
     struct EmojiInfo
@@ -35,10 +44,10 @@ public class Unicode
         public Color Color;    // Emoji color
     }
 
-    static EmojiInfo[] emoji = new EmojiInfo[EmojiPerWidth * EmojiPerHeight];
+    private EmojiInfo[] emoji;
 
-    static int hovered = -1;
-    static int selected = -1;
+    private int hovered;
+    private int selected;
 
     struct Message
     {
@@ -130,191 +139,187 @@ public class Unicode
         new Message("\xED\x95\x9C\xEA\xB5\xAD\xEB\xA7\x90\x20\xED\x95\x98\xEC\x8B\xA4\x20\xEC\xA4\x84\x20\xEC\x95\x84\xEC\x84\xB8\xEC\x9A\x94\x3F", "Korean"),
     };
 
-    public static int Main()
-    {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
+    private Font fontDefault;
+    private Font fontAsian;
+    private Font fontEmoji;
 
-        SetConfigFlags(ConfigFlags.Msaa4xHint | ConfigFlags.VSyncHint);
-        InitWindow(screenWidth, screenHeight, "raylib [text] example - unicode emojis");
+    private Vector2 hoveredPos;
+    private Vector2 selectedPos;
+
+    public void Init()
+    {
+        emoji = new EmojiInfo[EmojiPerWidth * EmojiPerHeight];
+
+        hovered = -1;
+        selected = -1;
 
         // Load the font resources
         // NOTE: fontAsian is for asian languages,
         // fontEmoji is the emojis and fontDefault is used for everything else
-        Font fontDefault = LoadFont("resources/fonts/dejavu.fnt"); // Requires "resources/fonts/dejavu.png"
-        Font fontAsian = LoadFont("resources/fonts/noto_cjk.fnt"); // Requires "resources/fonts/noto_cjk.png"
-        Font fontEmoji = LoadFont("resources/fonts/symbola.fnt"); // Requires "resources/fonts/symbola.png"
+        fontDefault = LoadFont("resources/fonts/dejavu.fnt"); // Requires "resources/fonts/dejavu.png"
+        fontAsian = LoadFont("resources/fonts/noto_cjk.fnt"); // Requires "resources/fonts/noto_cjk.png"
+        fontEmoji = LoadFont("resources/fonts/symbola.fnt"); // Requires "resources/fonts/symbola.png"
 
-        Vector2 hoveredPos = new(0.0f, 0.0f);
-        Vector2 selectedPos = new(0.0f, 0.0f);
+        hoveredPos = new(0.0f, 0.0f);
+        selectedPos = new(0.0f, 0.0f);
 
         // Set a random set of emojis when starting up
         RandomizeEmoji();
+    }
 
-        SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-        //--------------------------------------------------------------------------------------
-
-        // Main loop
-        while (!WindowShouldClose())    // Detect window close button or ESC key
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        // Add a new set of emojis when SPACE is pressed
+        if (IsKeyPressed(KeyboardKey.Space))
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            // Add a new set of emojis when SPACE is pressed
-            if (IsKeyPressed(KeyboardKey.Space))
-            {
-                RandomizeEmoji();
-            }
-
-            // Set the selected emoji
-            if (IsMouseButtonPressed(MouseButton.Left) && (hovered != -1) && (hovered != selected))
-            {
-                selected = hovered;
-                selectedPos = hoveredPos;
-            }
-
-            Vector2 mouse = GetMousePosition();
-            Vector2 position = new(28.8f, 10.0f);
-            hovered = -1;
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            // Draw random emojis in the background
-            //------------------------------------------------------------------------------
-            for (int i = 0; i < emoji.Length; i++)
-            {
-                string txt = GetEmojiAt(emoji[i].Index);
-                Rectangle emojiRect = new(position.X, position.Y, fontEmoji.BaseSize, fontEmoji.BaseSize);
-
-                if (!CheckCollisionPointRec(mouse, emojiRect))
-                {
-                    DrawTextEx(fontEmoji, txt, position, fontEmoji.BaseSize, 1.0f, selected == i ? emoji[i].Color : Fade(Color.LightGray, 0.4f));
-                }
-                else
-                {
-                    DrawTextEx(fontEmoji, txt, position, fontEmoji.BaseSize, 1.0f, emoji[i].Color);
-                    hovered = i;
-                    hoveredPos = position;
-                }
-
-                if ((i != 0) && (i % EmojiPerWidth == 0))
-                {
-                    position.Y += fontEmoji.BaseSize + 24.25f;
-                    position.X = 28.8f;
-                }
-                else
-                {
-                    position.X += fontEmoji.BaseSize + 28.8f;
-                }
-            }
-            //------------------------------------------------------------------------------
-
-            // Draw the message when a emoji is selected
-            //------------------------------------------------------------------------------
-            if (selected != -1)
-            {
-                int message = emoji[selected].Message;
-                const int horizontalPadding = 20;
-                const int verticalPadding = 30;
-                Font font = fontDefault;
-
-                // Set correct font for asian languages
-                if ((messages[message].Language == "Chinese") ||
-                    (messages[message].Language == "Korean") ||
-                    (messages[message].Language == "Japanese"))
-                {
-                    font = fontAsian;
-                }
-
-                // Calculate size for the message box (approximate the height and width)
-                Vector2 sz = MeasureTextEx(font, messages[message].Text, font.BaseSize, 1.0f);
-                if (sz.X > 300)
-                {
-                    sz.Y *= sz.X / 300;
-                    sz.X = 300;
-                }
-                else if (sz.X < 160)
-                {
-                    sz.X = 160;
-                }
-
-                Rectangle msgRect = new(selectedPos.X - 38.8f, selectedPos.Y, 2 * horizontalPadding + sz.X, 2 * verticalPadding + sz.Y);
-                msgRect.Y -= msgRect.Height;
-
-                // Coordinates for the chat bubble triangle
-                Vector2 a = new(selectedPos.X, msgRect.Y + msgRect.Height);
-                Vector2 b = new(a.X + 8, a.Y + 10);
-                Vector2 c = new(a.X + 10, a.Y);
-
-                // Don't go outside the screen
-                if (msgRect.X < 10)
-                {
-                    msgRect.X += 28;
-                }
-
-                if (msgRect.Y < 10)
-                {
-                    msgRect.Y = selectedPos.Y + 84;
-                    a.Y = msgRect.Y;
-                    c.Y = a.Y;
-                    b.Y = a.Y - 10;
-
-                    // Swap values so we can actually render the triangle :(
-                    Vector2 tmp = a;
-                    a = b;
-                    b = tmp;
-                }
-
-                if (msgRect.X + msgRect.Width > screenWidth)
-                {
-                    msgRect.X -= (msgRect.X + msgRect.Width) - screenWidth + 10;
-                }
-
-                // Draw chat bubble
-                DrawRectangleRec(msgRect, emoji[selected].Color);
-                DrawTriangle(a, b, c, emoji[selected].Color);
-
-                // Draw the main text message
-                Rectangle textRect = new(msgRect.X + (float)horizontalPadding / 2, msgRect.Y + (float)verticalPadding / 2, msgRect.Width - horizontalPadding, msgRect.Height);
-                DrawTextBoxed(font, messages[message].Text, textRect, font.BaseSize, 1.0f, true, Color.White);
-
-                // Draw the info text below the main message
-                int size = Encoding.UTF8.GetByteCount(messages[message].Text);
-                int length = GetCodepointCount(messages[message].Text);
-                string info = $"{messages[message].Language} {length} characters {size} bytes";
-                sz = MeasureTextEx(GetFontDefault(), info, 10, 1.0f);
-
-                DrawText(info, (int)(textRect.X + textRect.Width - sz.X), (int)(msgRect.Y + msgRect.Height - sz.Y - 2), 10, Color.RayWhite);
-            }
-            //------------------------------------------------------------------------------
-
-            // Draw the info text
-            DrawText("These emojis have something to tell you, click each to find out!", (screenWidth - 650) / 2, screenHeight - 40, 20, Color.Gray);
-            DrawText("Each emoji is a unicode character from a font, not a texture... Press [SPACEBAR] to refresh", (screenWidth - 484) / 2, screenHeight - 16, 10, Color.Gray);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            RandomizeEmoji();
         }
 
-        // De-Initialization
-        //--------------------------------------------------------------------------------------
+        // Set the selected emoji
+        if (IsMouseButtonPressed(MouseButton.Left) && (hovered != -1) && (hovered != selected))
+        {
+            selected = hovered;
+            selectedPos = hoveredPos;
+        }
+
+        Vector2 mouse = GetMousePosition();
+        Vector2 position = new(28.8f, 10.0f);
+        hovered = -1;
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        // Draw random emojis in the background
+        //------------------------------------------------------------------------------
+        for (int i = 0; i < emoji.Length; i++)
+        {
+            string txt = GetEmojiAt(emoji[i].Index);
+            Rectangle emojiRect = new(position.X, position.Y, fontEmoji.BaseSize, fontEmoji.BaseSize);
+
+            if (!CheckCollisionPointRec(mouse, emojiRect))
+            {
+                DrawTextEx(fontEmoji, txt, position, fontEmoji.BaseSize, 1.0f, selected == i ? emoji[i].Color : Fade(Color.LightGray, 0.4f));
+            }
+            else
+            {
+                DrawTextEx(fontEmoji, txt, position, fontEmoji.BaseSize, 1.0f, emoji[i].Color);
+                hovered = i;
+                hoveredPos = position;
+            }
+
+            if ((i != 0) && (i % EmojiPerWidth == 0))
+            {
+                position.Y += fontEmoji.BaseSize + 24.25f;
+                position.X = 28.8f;
+            }
+            else
+            {
+                position.X += fontEmoji.BaseSize + 28.8f;
+            }
+        }
+        //------------------------------------------------------------------------------
+
+        // Draw the message when a emoji is selected
+        //------------------------------------------------------------------------------
+        if (selected != -1)
+        {
+            int message = emoji[selected].Message;
+            const int horizontalPadding = 20;
+            const int verticalPadding = 30;
+            Font font = fontDefault;
+
+            // Set correct font for asian languages
+            if ((messages[message].Language == "Chinese") ||
+                (messages[message].Language == "Korean") ||
+                (messages[message].Language == "Japanese"))
+            {
+                font = fontAsian;
+            }
+
+            // Calculate size for the message box (approximate the height and width)
+            Vector2 sz = MeasureTextEx(font, messages[message].Text, font.BaseSize, 1.0f);
+            if (sz.X > 300)
+            {
+                sz.Y *= sz.X / 300;
+                sz.X = 300;
+            }
+            else if (sz.X < 160)
+            {
+                sz.X = 160;
+            }
+
+            Rectangle msgRect = new(selectedPos.X - 38.8f, selectedPos.Y, 2 * horizontalPadding + sz.X, 2 * verticalPadding + sz.Y);
+            msgRect.Y -= msgRect.Height;
+
+            // Coordinates for the chat bubble triangle
+            Vector2 a = new(selectedPos.X, msgRect.Y + msgRect.Height);
+            Vector2 b = new(a.X + 8, a.Y + 10);
+            Vector2 c = new(a.X + 10, a.Y);
+
+            // Don't go outside the screen
+            if (msgRect.X < 10)
+            {
+                msgRect.X += 28;
+            }
+
+            if (msgRect.Y < 10)
+            {
+                msgRect.Y = selectedPos.Y + 84;
+                a.Y = msgRect.Y;
+                c.Y = a.Y;
+                b.Y = a.Y - 10;
+
+                // Swap values so we can actually render the triangle :(
+                Vector2 tmp = a;
+                a = b;
+                b = tmp;
+            }
+
+            if (msgRect.X + msgRect.Width > screenWidth)
+            {
+                msgRect.X -= (msgRect.X + msgRect.Width) - screenWidth + 10;
+            }
+
+            // Draw chat bubble
+            DrawRectangleRec(msgRect, emoji[selected].Color);
+            DrawTriangle(a, b, c, emoji[selected].Color);
+
+            // Draw the main text message
+            Rectangle textRect = new(msgRect.X + (float)horizontalPadding / 2, msgRect.Y + (float)verticalPadding / 2, msgRect.Width - horizontalPadding, msgRect.Height);
+            DrawTextBoxed(font, messages[message].Text, textRect, font.BaseSize, 1.0f, true, Color.White);
+
+            // Draw the info text below the main message
+            int size = Encoding.UTF8.GetByteCount(messages[message].Text);
+            int length = GetCodepointCount(messages[message].Text);
+            string info = $"{messages[message].Language} {length} characters {size} bytes";
+            sz = MeasureTextEx(GetFontDefault(), info, 10, 1.0f);
+
+            DrawText(info, (int)(textRect.X + textRect.Width - sz.X), (int)(msgRect.Y + msgRect.Height - sz.Y - 2), 10, Color.RayWhite);
+        }
+        //------------------------------------------------------------------------------
+
+        // Draw the info text
+        DrawText("These emojis have something to tell you, click each to find out!", (screenWidth - 650) / 2, screenHeight - 40, 20, Color.Gray);
+        DrawText("Each emoji is a unicode character from a font, not a texture... Press [SPACEBAR] to refresh", (screenWidth - 484) / 2, screenHeight - 16, 10, Color.Gray);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
         UnloadFont(fontDefault);    // Unload font resource
         UnloadFont(fontAsian);      // Unload font resource
         UnloadFont(fontEmoji);      // Unload font resource
-
-        CloseWindow();              // Close window and OpenGL context
-        //--------------------------------------------------------------------------------------
-
-        return 0;
     }
 
     // Fills the emoji array with random emoji (only those emojis present in fontEmoji)
-    static void RandomizeEmoji()
+    void RandomizeEmoji()
     {
         hovered = selected = -1;
         int start = GetRandomValue(45, 360);
@@ -509,5 +514,34 @@ public class Unicode
 
             textOffsetX += glyphWidth;
         }
+    }
+
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        SetConfigFlags(ConfigFlags.Msaa4xHint | ConfigFlags.VSyncHint);
+        InitWindow(screenWidth, screenHeight, "raylib [text] example - unicode emojis");
+
+        SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+        //--------------------------------------------------------------------------------------
+
+        var game = new Unicode();
+        game.Init();
+
+        // Main loop
+        while (!WindowShouldClose())    // Detect window close button or ESC key
+        {
+            game.Update();
+        }
+
+        game.Unload();
+
+        // De-Initialization
+        //--------------------------------------------------------------------------------------
+        CloseWindow();              // Close window and OpenGL context
+        //--------------------------------------------------------------------------------------
+
+        return 0;
     }
 }

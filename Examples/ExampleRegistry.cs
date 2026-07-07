@@ -1,15 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
-using Examples.Core;
-using Examples.Models;
-using Examples.Shapes;
 
 namespace Examples;
 
 /// <summary>
-/// Discovers every <see cref="IExample"/> implementation in this assembly via reflection and
-/// derives the per-platform lists: <see cref="DesktopExamples"/> (Program.cs) and
-/// <see cref="BrowserExamples"/> (Web/Host.cs). Ordering is by category (browser dropdown
-/// grouping), then display name.
+/// Discovers every <see cref="IExample"/> implementation in this assembly via reflection:
+/// <see cref="DesktopExamples"/> (Program.cs) is all of them, <see cref="BrowserExamples"/>
+/// (Web/Host.cs) is everything not marked <see cref="ExcludeFromBrowserAttribute"/>.
+/// Ordering is by category (browser dropdown grouping), then display name.
 /// </summary>
 public static class ExampleRegistry
 {
@@ -25,29 +22,12 @@ public static class ExampleRegistry
         "Shaders",
     ];
 
-    /// <summary>Desktop examples omitted from the browser host (platform limitations).</summary>
-    private static readonly Type[] DesktopExcludedFromBrowser =
-    [
-        typeof(DropFiles),
-        typeof(LoadingThread),  // System.Threading.Thread is unsupported on single-threaded wasm
-        typeof(SkyboxDemo),
-    ];
-
-    /// <summary>Browser-only shape examples not registered for desktop CLI runs.</summary>
-    private static readonly Type[] BrowserOnly =
-    [
-        typeof(DrawCircleSector),
-        typeof(DrawRectangleRounded),
-        typeof(DrawRing),
-    ];
-
     private static readonly IExample[] AllExamples = DiscoverAll();
 
-    public static readonly IExample[] DesktopExamples =
-        Array.FindAll(AllExamples, e => Array.IndexOf(BrowserOnly, e.GetType()) < 0);
+    public static readonly IExample[] DesktopExamples = AllExamples;
 
     public static readonly IExample[] BrowserExamples =
-        Array.FindAll(AllExamples, e => Array.IndexOf(DesktopExcludedFromBrowser, e.GetType()) < 0);
+        Array.FindAll(AllExamples, e => !e.GetType().IsDefined(typeof(ExcludeFromBrowserAttribute), inherit: false));
 
     [UnconditionalSuppressMessage("Trimming", "IL2026",
         Justification = "The Examples assembly is rooted via TrimmerRootAssembly in Examples.csproj.")]

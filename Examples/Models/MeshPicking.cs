@@ -30,8 +30,6 @@ public partial class MeshPicking : IExample
 
     public string Title => "raylib [models] example - mesh picking";
 
-    public bool CursorDisabled => true;
-
     private Camera3D camera;
     private Ray ray;
     private Model tower;

@@ -20,6 +20,7 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Core;
 
+[ExcludeFromBrowser]
 public partial class DropFiles : IExample
 {
     private const int screenWidth = 800;

@@ -46,6 +46,14 @@
             background: #000;
         }
         #status { color: #888; font-size: .85rem; margin: 0; }
+        #error {
+            color: #ff6b6b;
+            background: #3a1d1d;
+            border: 1px solid #6b2b2b;
+            border-radius: 4px;
+            padding: .4rem .6rem;
+            font-size: .9rem;
+        }
     </style>
 </head>
 <body>
@@ -60,6 +68,7 @@
             <option value="fit">Fit</option>
         </select>
     </div>
+    <div id="error" hidden>This example crashed — see the browser console for details. Select another example to continue.</div>
     <div id="viewport">
         <canvas id="canvas" width="800" height="450" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
     </div>

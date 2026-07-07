@@ -19,6 +19,7 @@ using static Raylib_cs.ConfigFlags;
 
 namespace Examples.Core;
 
+[ExcludeFromBrowser("runtime window-state flags don't apply to the emscripten canvas")]
 public partial class WindowFlags : IExample
 {
     private const int screenWidth = 800;

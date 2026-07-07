@@ -7,6 +7,7 @@ import {
 } from './scaleUtils.js'
 
 const status = document.getElementById('status');
+const errorBanner = document.getElementById('error');
 const select = document.getElementById('examples');
 const canvas = document.getElementById('canvas');
 const viewport = document.getElementById('viewport');
@@ -74,7 +75,6 @@ function applyDisplayScale() {
     canvas.style.width = `${display.cssWidth}px`;
     canvas.style.height = `${display.cssHeight}px`;
 
-    // Center canvas inside viewport, leaving letterboxing around it.
     viewport.style.justifyContent = 'center';
     viewport.style.alignItems = 'center';
 
@@ -133,11 +133,17 @@ Host = exports.Examples.Web.Host;
 // raylib's GLFW/emscripten backend renders into this canvas.
 dotnet.instance.Module['canvas'] = canvas;
 
-// Runs Host.Main() -> InitWindow + default example Init(). Must come after the canvas is bound.
+// Runs Host.Main() -> InitWindow. Must come after the canvas is bound.
 await runMain();
 applyDisplayScale();
 
-// Populate the navigation dropdown from the registered examples.
+let targetFps = 60;
+function selectExample(name) {
+    const ok = Host.SetExample(name);
+    targetFps = Host.GetCurrentTargetFps();
+    errorBanner.hidden = ok;
+}
+
 select.innerHTML = '';
 for (const name of Host.GetExampleNames().split('\n').filter(n => n.length > 0)) {
     const opt = document.createElement('option');
@@ -145,13 +151,26 @@ for (const name of Host.GetExampleNames().split('\n').filter(n => n.length > 0))
     opt.textContent = name;
     select.appendChild(opt);
 }
-select.addEventListener('change', () => Host.SetExample(select.value));
+select.addEventListener('change', () => selectExample(select.value));
+selectExample(select.value);
 
 setScaleMode(scaleMode, false);
 
-// Drive raylib one frame per animation tick (never block the browser).
-function mainLoop() {
-    Host.UpdateFrame();
+// Drive raylib one frame per animation tick, paced to the example's target FPS here rather
+// than by raylib's limiter (which busy-waits in EndDrawing and would peg the main thread).
+let nextFrameTime = 0;
+function mainLoop(timestamp) {
     requestAnimationFrame(mainLoop);
+
+    if (timestamp < nextFrameTime) {
+        return;
+    }
+
+    // Schedule one interval ahead; resync to now if we've fallen behind (hidden tab).
+    nextFrameTime = Math.max(nextFrameTime + 1000 / targetFps, timestamp);
+
+    if (!Host.UpdateFrame()) {
+        errorBanner.hidden = false;
+    }
 }
 requestAnimationFrame(mainLoop);

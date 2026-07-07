@@ -2,6 +2,9 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+        <!-- The wasm build targets net10 only: net8 + browser-wasm needs the retired
+             wasm-tools-net8 workload, whereas net10 uses the current wasm-tools workload. -->
+        <TargetFrameworks Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">net10.0</TargetFrameworks>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <StartupObject Condition="'$(RuntimeIdentifier)' != 'browser-wasm'">Examples.Program</StartupObject>
         <StartupObject Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">Examples.Web.Host</StartupObject>
@@ -30,10 +33,6 @@
         <WasmNativeStrip Condition="'$(WasmNativeStrip)' == ''">false</WasmNativeStrip>
         <WasmEmitSymbolMap Condition="'$(WasmEmitSymbolMap)' == ''">false</WasmEmitSymbolMap>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Compile Remove="Text/Unicode.cs"/>
-    </ItemGroup>
 
     <ItemGroup Condition="'$(RuntimeIdentifier)' != 'browser-wasm'">
         <Compile Remove="Web/**/*.cs"/>

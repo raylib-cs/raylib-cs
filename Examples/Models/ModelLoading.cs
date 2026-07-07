@@ -79,8 +79,7 @@ public partial class ModelLoading : IExample
         UpdateCamera(ref camera, CameraMode.Orbital);
 
 #if BROWSER
-        // NOTE: Drag & drop file loading (IsFileDropped) is not available in the browser
-        // host, so it is skipped here. The default model stays loaded.
+        // NOTE: drag-and-drop model loading is not supported in the browser host; default loaded model is kept.
 #else
         // Load new models/textures on drag&drop
         if (IsFileDropped())

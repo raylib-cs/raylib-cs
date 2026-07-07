@@ -5,9 +5,6 @@ namespace Examples;
 
 internal static class Program
 {
-    private const int screenWidth = 800;
-    private const int screenHeight = 450;
-
     private static unsafe void Main(string[] args)
     {
         Raylib.SetTraceLogCallback(&Logging.LogConsole);
@@ -50,7 +47,7 @@ internal static class Program
             SetConfigFlags(example.ConfigFlags);
         }
 
-        InitWindow(screenWidth, screenHeight, example.Title);
+        InitWindow(example.Width, example.Height, example.Title);
 
         if (example.CursorDisabled)
         {
@@ -63,16 +60,26 @@ internal static class Program
 
         SetTargetFPS(example.TargetFps);
 
-        example.Init();
-
-        while (!WindowShouldClose())
+        try
         {
-            example.Update();
+            example.Init();
+
+            while (!example.ShouldClose)
+            {
+                example.Update();
+            }
         }
-
-        example.Unload();
-
-        CloseWindow();
+        finally
+        {
+            try
+            {
+                example.Unload();
+            }
+            finally
+            {
+                CloseWindow();
+            }
+        }
     }
 
     private static void RunExampleProcess(

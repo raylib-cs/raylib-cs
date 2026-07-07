@@ -18,6 +18,7 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Core;
 
+[ExcludeFromBrowser("System.Threading.Thread is unsupported on single-threaded wasm")]
 public partial class LoadingThread : IExample
 {
     const int screenWidth = 800;
