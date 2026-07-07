@@ -43,11 +43,11 @@ public static class Rlights
         light.Target = target;
         light.Color = color;
 
-        string enabledName = "lights[" + lightsCount + "].enabled";
-        string typeName = "lights[" + lightsCount + "].type";
-        string posName = "lights[" + lightsCount + "].position";
-        string targetName = "lights[" + lightsCount + "].target";
-        string colorName = "lights[" + lightsCount + "].color";
+        var enabledName = "lights[" + lightsCount + "].enabled";
+        var typeName = "lights[" + lightsCount + "].type";
+        var posName = "lights[" + lightsCount + "].position";
+        var targetName = "lights[" + lightsCount + "].target";
+        var colorName = "lights[" + lightsCount + "].color";
 
         light.EnabledLoc = GetShaderLocation(shader, enabledName);
         light.TypeLoc = GetShaderLocation(shader, typeName);
@@ -78,7 +78,7 @@ public static class Rlights
         Raylib.SetShaderValue(shader, light.TargetLoc, light.Target, ShaderUniformDataType.Vec3);
 
         // Send to shader light color values
-        float[] color = new[]
+        var color = new[]
         {
                 (float)light.Color.R / (float)255,
                 (float)light.Color.G / (float)255,

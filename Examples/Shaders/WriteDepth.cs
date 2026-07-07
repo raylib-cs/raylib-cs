@@ -1,6 +1,8 @@
 /*******************************************************************************************
 *
-*   raylib [shaders] example - Depth buffer writing
+*   raylib [shaders] example - depth writing
+*
+*   Example complexity rating: [★★☆☆] 2/4
 *
 *   Example originally created with raylib 4.2, last time updated with raylib 4.2
 *
@@ -9,7 +11,7 @@
 *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
 *   BSD-like license that allows static linking with closed source software
 *
-*   Copyright (c) 2022-2023 Buğra Alptekin Sarı (@BugraAlptekinSari)
+*   Copyright (c) 2022-2025 Buğra Alptekin Sarı (@BugraAlptekinSari)
 *
 ********************************************************************************************/
 
@@ -18,86 +20,115 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Shaders;
 
-public class WriteDepth
+public class WriteDepth : IExample
 {
-    const int GLSL_VERSION = 330;
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+#if BROWSER
+    const int GlslVersion = 100;    // WebGL1 needs GLSL ES 100
+#else
+    private const int GlslVersion = 330;
+#endif
+
+    public string Name => "Shaders / Write Depth";
+
+    public string Title => "raylib [shaders] example - depth writing";
+
+    private Camera3D camera;
+    private RenderTexture2D target;
+    private Shader shader;
+
+    public void Init()
+    {
+        // Define the camera to look into our 3d world
+        camera = new();
+        camera.Position = new Vector3(2.0f, 2.0f, 3.0f);    // Camera position
+        camera.Target = new Vector3(0.0f, 0.5f, 0.0f);      // Camera looking at point
+        camera.Up = new Vector3(0.0f, 1.0f, 0.0f);          // Camera up vector (rotation towards target)
+        camera.FovY = 45.0f;                                // Camera field-of-view Y
+        camera.Projection = CameraProjection.Perspective;   // Camera projection type
+
+        // Load custom render texture with writable depth texture buffer
+        target = LoadRenderTextureDepthTex(screenWidth, screenHeight);
+
+        // Load depth writing shader
+        // NOTE: The shader inverts the depth buffer by writing into it by `gl_FragDepth = 1 - gl_FragCoord.z;`
+        shader = LoadShader(null, $"resources/shaders/glsl{GlslVersion}/depth_write.fs");
+    }
+
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        UpdateCamera(ref camera, CameraMode.Orbital);
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+
+        // Draw into our custom render texture
+        BeginTextureMode(target);
+        ClearBackground(Color.White);
+
+        BeginMode3D(camera);
+        BeginShaderMode(shader);
+
+        DrawCubeWiresV(new Vector3(0.0f, 0.5f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f), Color.Red);
+        DrawCubeV(new Vector3(0.0f, 0.5f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f), Color.Purple);
+        DrawCubeWiresV(new Vector3(0.0f, 0.5f, -1.0f), new Vector3(1.0f, 1.0f, 1.0f), Color.DarkGreen);
+        DrawCubeV(new Vector3(0.0f, 0.5f, -1.0f), new Vector3(1.0f, 1.0f, 1.0f), Color.Yellow);
+        DrawGrid(10, 1.0f);
+
+        EndShaderMode();
+        EndMode3D();
+        EndTextureMode();
+
+        // Draw into screen our custom render texture
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        DrawTextureRec(
+            target.Texture,
+            new Rectangle(0, 0, screenWidth, -screenHeight),
+            Vector2.Zero,
+            Color.White
+        );
+        DrawFPS(10, 10);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+        UnloadRenderTextureDepthTex(target);
+        UnloadShader(shader);
+    }
 
     public static int Main()
     {
         // Initialization
         //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
+        InitWindow(screenWidth, screenHeight, "raylib [shaders] example - depth writing");
 
-        InitWindow(screenWidth, screenHeight, "raylib [shaders] example - write depth buffer");
-
-        // The shader inverts the depth buffer by writing into it by `gl_FragDepth = 1 - gl_FragCoord.z;`
-        Shader shader = LoadShader(null, $"resources/shaders/glsl{GLSL_VERSION}/write_depth.fs");
-
-        // Use customized function to create writable depth texture buffer
-        RenderTexture2D target = LoadRenderTextureDepthTex(screenWidth, screenHeight);
-
-        // Define the camera to look into our 3d world
-        Camera3D camera;
-        camera.Position = new Vector3(2.0f, 2.0f, 3.0f);
-        camera.Target = new Vector3(0.0f, 0.5f, 0.0f);
-        camera.Up = new Vector3(0.0f, 1.0f, 0.0f);
-        camera.FovY = 45.0f;
-        camera.Projection = CameraProjection.Perspective;
-
-        SetTargetFPS(60);
+        SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
         //--------------------------------------------------------------------------------------
 
+        var game = new WriteDepth();
+        game.Init();
+
         // Main game loop
-        while (!WindowShouldClose())
+        while (!WindowShouldClose())        // Detect window close button or ESC key
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            UpdateCamera(ref camera, CameraMode.Orbital);
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-
-            // Draw into our custom render texture (framebuffer)
-            BeginTextureMode(target);
-            ClearBackground(Color.White);
-
-            BeginMode3D(camera);
-            BeginShaderMode(shader);
-
-            DrawCubeWiresV(new Vector3(0.0f, 0.5f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f), Color.Red);
-            DrawCubeV(new Vector3(0.0f, 0.5f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f), Color.Purple);
-            DrawCubeWiresV(new Vector3(0.0f, 0.5f, -1.0f), new Vector3(1.0f, 1.0f, 1.0f), Color.DarkGreen);
-            DrawCubeV(new Vector3(0.0f, 0.5f, -1.0f), new Vector3(1.0f, 1.0f, 1.0f), Color.Yellow);
-            DrawGrid(10, 1.0f);
-
-            EndShaderMode();
-            EndMode3D();
-            EndTextureMode();
-
-            // Draw custom render texture
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            DrawTextureRec(
-                target.Texture,
-                new Rectangle(0, 0, screenWidth, -screenHeight),
-                Vector2.Zero,
-                Color.White
-            );
-            DrawFPS(10, 10);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            game.Update();
         }
+
+        game.Unload();
 
         // De-Initialization
         //--------------------------------------------------------------------------------------
-        UnloadRenderTextureDepthTex(target);
-        UnloadShader(shader);
-
-        CloseWindow();
+        CloseWindow();        // Close window and OpenGL context
         //--------------------------------------------------------------------------------------
 
         return 0;
@@ -152,7 +183,7 @@ public class WriteDepth
             );
 
             // Check if fbo is complete with attachments (valid)
-            if (Rlgl.FramebufferComplete(target.Id))
+            if (Rlgl.FramebufferComplete(target.Id) != 0)
             {
                 TraceLog(TraceLogLevel.Info, $"FBO: [ID {target.Id}] Framebuffer object created successfully");
             }

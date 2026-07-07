@@ -19,95 +19,122 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Core;
 
-public class InputMouse
+public partial class InputMouse : IExample
 {
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    public string Name => "Core / Input Mouse";
+
+    public string Title => "raylib [core] example - input mouse";
+
+    private Vector2 ballPosition;
+    private Color ballColor;
+
+    public void Init()
+    {
+        ballPosition = new(-100.0f, -100.0f);
+        ballColor = Color.DarkBlue;
+    }
+
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        if (IsKeyPressed(KeyboardKey.H))
+        {
+            if (IsCursorHidden())
+            {
+                ShowCursor();
+            }
+            else
+            {
+                HideCursor();
+            }
+        }
+
+        ballPosition = GetMousePosition();
+
+        if (IsMouseButtonPressed(MouseButton.Left))
+        {
+            ballColor = Color.Maroon;
+        }
+        else if (IsMouseButtonPressed(MouseButton.Middle))
+        {
+            ballColor = Color.Lime;
+        }
+        else if (IsMouseButtonPressed(MouseButton.Right))
+        {
+            ballColor = Color.DarkBlue;
+        }
+        else if (IsMouseButtonPressed(MouseButton.Side))
+        {
+            ballColor = Color.Purple;
+        }
+        else if (IsMouseButtonPressed(MouseButton.Extra))
+        {
+            ballColor = Color.Yellow;
+        }
+        else if (IsMouseButtonPressed(MouseButton.Forward))
+        {
+            ballColor = Color.Orange;
+        }
+        else if (IsMouseButtonPressed(MouseButton.Back))
+        {
+            ballColor = Color.Beige;
+        }
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        DrawCircleV(ballPosition, 40, ballColor);
+
+        DrawText("move ball with mouse and click mouse button to change color", 10, 10, 20, Color.DarkGray);
+        DrawText("Press 'H' to toggle cursor visibility", 10, 30, 20, Color.DarkGray);
+
+        if (IsCursorHidden())
+        {
+            DrawText("CURSOR HIDDEN", 20, 60, 20, Color.Red);
+        }
+        else
+        {
+            DrawText("CURSOR VISIBLE", 20, 60, 20, Color.Lime);
+        }
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+    }
+
     public static int Main()
     {
         // Initialization
         //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
+        InitWindow(screenWidth, screenHeight, "raylib [core] example - input mouse");
 
-        InitWindow(screenWidth, screenHeight, "raylib [core] example - mouse input");
-
-        Vector2 ballPosition = new(-100.0f, -100.0f);
-        Color ballColor = Color.DarkBlue;
-
-        SetTargetFPS(60);
+        SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
         //---------------------------------------------------------------------------------------
 
+        var game = new InputMouse();
+        game.Init();
+
         // Main game loop
-        while (!WindowShouldClose())
+        while (!WindowShouldClose())    // Detect window close button or ESC key
         {
-            // Update
-            //----------------------------------------------------------------------------------
-
-            if (IsKeyPressed(KeyboardKey.H))
-            {
-                if (IsCursorHidden())
-                {
-                    ShowCursor();
-                }
-                else
-                {
-                    HideCursor();
-                }
-            }
-
-            ballPosition = GetMousePosition();
-
-            if (IsMouseButtonPressed(MouseButton.Left))
-            {
-                ballColor = Color.Maroon;
-            }
-            else if (IsMouseButtonPressed(MouseButton.Middle))
-            {
-                ballColor = Color.Lime;
-            }
-            else if (IsMouseButtonPressed(MouseButton.Right))
-            {
-                ballColor = Color.DarkBlue;
-            }
-            else if (IsMouseButtonPressed(MouseButton.Extra))
-            {
-                ballColor = Color.Yellow;
-            }
-            else if (IsMouseButtonPressed(MouseButton.Forward))
-            {
-                ballColor = Color.Orange;
-            }
-            else if (IsMouseButtonPressed(MouseButton.Back))
-            {
-                ballColor = Color.Beige;
-            }
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            DrawCircleV(ballPosition, 40, ballColor);
-
-            DrawText("move ball with mouse and click mouse button to change color", 10, 10, 20, Color.DarkGray);
-            DrawText("Press 'H' to toggle cursor visibility", 10, 30, 20, Color.DarkGray);
-
-            if (IsCursorHidden())
-            {
-                DrawText("CURSOR HIDDEN", 20, 60, 20, Color.Red);
-            }
-            else
-            {
-                DrawText("CURSOR VISIBLE", 20, 60, 20, Color.Lime);
-            }
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            game.Update();
         }
+
+        game.Unload();
 
         // De-Initialization
         //--------------------------------------------------------------------------------------
-        CloseWindow();
+        CloseWindow();        // Close window and OpenGL context
         //--------------------------------------------------------------------------------------
 
         return 0;

@@ -1,12 +1,15 @@
 /*******************************************************************************************
 *
-*   raylib [textures] example - Bunnymark
+*   raylib [textures] example - bunnymark
 *
-*   This example has been created using raylib 1.6 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example complexity rating: [★★★☆] 3/4
 *
-*   Copyright (c) 2014-2019 Ramon Santamaria (@raysan5), 2024 Moritz Voss (@thygrrr)
+*   Example originally created with raylib 1.6, last time updated with raylib 2.5
 *
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2014-2025 Ramon Santamaria (@raysan5), 2024 Moritz Voss (@thygrrr)
 *
 ********************************************************************************************/
 
@@ -16,8 +19,11 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Textures;
 
-public static class Bunnymark
+public partial class Bunnymark : IExample
 {
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
     // limits
     private const int MaxBunnies = 500_000;
     private const int BunnyIncrement = 500;
@@ -27,6 +33,10 @@ public static class Bunnymark
 
     // This is the maximum amount of elements (quads) per batch
     private const int MAX_BATCH_ELEMENTS = Rlgl.DEFAULT_BATCH_BUFFER_ELEMENTS;
+
+    public string Name => "Textures / Bunnymark";
+
+    public string Title => "raylib [textures] example - bunnymark";
 
     private record struct Bunny()
     {
@@ -46,99 +56,123 @@ public static class Bunnymark
             GetRandomValue(100, 240), 255);
     }
 
+    private Texture2D texBunny;
+    private Vector2 halfSize;
+    private Bunny[] bunnies;
+    private int bunniesCount;
+
+    public void Init()
+    {
+        // Load bunny texture
+        texBunny = LoadTexture("resources/wabbit_alpha.png");
+        halfSize = new Vector2(texBunny.Width, texBunny.Height) / 2;
+
+        // Initialize bunnies storage
+        bunnies = new Bunny[MaxBunnies];
+        bunniesCount = 0;
+    }
+
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        Span<Bunny> bunnies = this.bunnies;
+
+        if (IsMouseButtonDown(MouseButton.Left) && bunniesCount < MaxBunnies)
+        {
+            // Add a range of new bunnies
+            foreach (ref var bunny in bunnies[bunniesCount..(bunniesCount + BunnyIncrement)])
+            {
+                bunny = new();
+            }
+            bunniesCount += BunnyIncrement;
+        }
+        else if (IsMouseButtonDown(MouseButton.Right))
+        {
+            // Remove the oldest bunnies, shifting them back in the span
+            if (bunniesCount > BunnyDecrement)
+            {
+                bunnies[BunnyDecrement..bunniesCount].CopyTo(bunnies);
+            }
+            bunniesCount = Math.Max(0, bunniesCount - BunnyDecrement);
+        }
+
+        // Update bunnies
+        foreach (ref var bunny in bunnies[..bunniesCount])
+        {
+            // Integrate position
+            bunny.Position += bunny.Speed;
+
+            // Bounce bunnies off the screen borders
+            bunny.Speed *= (bunny.Position + halfSize) switch
+            {
+                { X: < 0 or > screenWidth, Y: < 40 or > screenHeight } => new(-1, -1),
+                { X: < 0 or > screenWidth } => new(-1, 1),
+                { Y: < 40 or > screenHeight } => new(1, -1),
+                _ => Vector2.One,
+            };
+        }
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        foreach (var bunny in bunnies[..bunniesCount])
+        {
+            // NOTE: When internal batch buffer limit is reached (MAX_BATCH_ELEMENTS),
+            // a draw call is launched and buffer starts being filled again;
+            // before issuing a draw call, updated vertex data from internal CPU buffer is send to GPU...
+            // Process of sending data is costly and it could happen that GPU data has not been completely
+            // processed for drawing while new data is tried to be sent (updating current in-use buffers)
+            // it could generates a stall and consequently a frame drop, limiting the number of drawn bunnies
+            DrawTexture(texBunny, (int)bunny.Position.X, (int)bunny.Position.Y, bunny.Color);
+        }
+
+        DrawRectangle(0, 0, screenWidth, 40, Color.Black);
+        DrawText($"bunnies: {bunniesCount}", 120, 10, 20, Color.Green);
+        DrawText($"batched draw calls: {1 + bunniesCount / MAX_BATCH_ELEMENTS}", 320, 10, 20, Color.Maroon);
+        DrawText("Left Mouse: Add Bunnies!!! :D", 10, 400, 20, Color.LightGray);
+        DrawText("Right Mouse: Remove Bunnies", 10, 420, 20, Color.LightGray);
+
+        DrawFPS(10, 10);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+        UnloadTexture(texBunny);
+#if BROWSER
+        bunnies = null;
+        bunniesCount = 0;
+#endif
+    }
+
     public static int Main()
     {
         // Initialization
         //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
         InitWindow(screenWidth, screenHeight, "raylib [textures] example - bunnymark");
-
-        // Load bunny texture
-        Texture2D texBunny = LoadTexture("resources/wabbit_alpha.png");
-        Vector2 halfSize = new Vector2(texBunny.Width, texBunny.Height) / 2;
-
-        // Initialize bunnies storage
-        Span<Bunny> bunnies = new Bunny[MaxBunnies];
-        int bunniesCount = 0;
 
         SetTargetFPS(TARGET_FPS);
         //--------------------------------------------------------------------------------------
 
+        var game = new Bunnymark();
+        game.Init();
+
         // Main game loop
         while (!WindowShouldClose())
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            if (IsMouseButtonDown(MouseButton.Left) && bunniesCount < MaxBunnies)
-            {
-                // Add a range of new bunnies
-                foreach (ref var bunny in bunnies[bunniesCount..(bunniesCount + BunnyIncrement)])
-                {
-                    bunny = new();
-                }
-                bunniesCount += BunnyIncrement;
-            }
-            else if (IsMouseButtonDown(MouseButton.Right))
-            {
-                // Remove the oldest bunnies, shifting them back in the span
-                if (bunniesCount > BunnyDecrement)
-                {
-                    bunnies[BunnyDecrement..bunniesCount].CopyTo(bunnies);
-                }
-                bunniesCount = Math.Max(0, bunniesCount - BunnyDecrement);
-            }
-
-            // Update bunnies
-            foreach (ref var bunny in bunnies[..bunniesCount])
-            {
-                // Integrate position
-                bunny.Position += bunny.Speed;
-
-                // Bounce bunnies off the screen borders
-                bunny.Speed *= (bunny.Position + halfSize) switch
-                {
-                    { X: < 0 or > screenWidth, Y: < 40 or > screenHeight } => new(-1, -1),
-                    { X: < 0 or > screenWidth } => new(-1, 1),
-                    { Y: < 40 or > screenHeight } => new(1, -1),
-                    _ => Vector2.One,
-                };
-            }
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            foreach (var bunny in bunnies[..bunniesCount])
-            {
-                // NOTE: When internal batch buffer limit is reached (MAX_BATCH_ELEMENTS),
-                // a draw call is launched and buffer starts being filled again;
-                // before issuing a draw call, updated vertex data from internal CPU buffer is send to GPU...
-                // Process of sending data is costly, and it could happen that GPU data has not been completely
-                // processed for drawing while new data is tried to be sent (updating current in-use buffers)
-                // it could generate a stall and consequently a frame drop, limiting the number of drawn bunnies
-                DrawTexture(texBunny, (int)bunny.Position.X, (int)bunny.Position.Y, bunny.Color);
-            }
-
-            DrawRectangle(0, 0, screenWidth, 40, Color.Black);
-            DrawText($"bunnies: {bunniesCount}", 120, 10, 20, Color.Green);
-            DrawText($"batched draw calls: {1 + bunniesCount / MAX_BATCH_ELEMENTS}", 320, 10, 20, Color.Maroon);
-            DrawText("Left Mouse: Add Bunnies!!! :D", 10, 400, 20, Color.LightGray);
-            DrawText("Right Mouse: Remove Bunnies", 10, 420, 20, Color.LightGray);
-
-            DrawFPS(10, 10);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            game.Update();
         }
+
+        game.Unload();
 
         // De-Initialization
         //--------------------------------------------------------------------------------------
-        UnloadTexture(texBunny);
-
         CloseWindow();
         //--------------------------------------------------------------------------------------
 

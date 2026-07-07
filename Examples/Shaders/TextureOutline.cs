@@ -1,15 +1,20 @@
 /*******************************************************************************************
 *
-*   raylib [textures] example - Texture drawing
+*   raylib [shaders] example - texture outline
 *
-*   This example illustrates how to draw on a blank texture using a shader
+*   Example complexity rating: [★★★☆] 3/4
 *
-*   This example has been created using raylib 2.0 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   NOTE: This example requires raylib OpenGL 3.3 or ES2 versions for shaders support,
+*         OpenGL 1.1 does not support shaders, recompile raylib to OpenGL 3.3 version
 *
-*   Example contributed by Michał Ciesielski and reviewed by Ramon Santamaria (@raysan5)
+*   Example originally created with raylib 4.0, last time updated with raylib 4.0
 *
-*   Copyright (c) 2019 Michał Ciesielski and Ramon Santamaria (@raysan5)
+*   Example contributed by Serenity Skiff (@GoldenThumbs) and reviewed by Ramon Santamaria (@raysan5)
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2021-2025 Serenity Skiff (@GoldenThumbs) and Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -17,32 +22,41 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Shaders;
 
-public class TextureOutline
+public class TextureOutline : IExample
 {
-    const int GLSL_VERSION = 330;
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
 
-    public static int Main()
+#if BROWSER
+    const int GlslVersion = 100;    // WebGL1 needs GLSL ES 100
+#else
+    private const int GlslVersion = 330;
+#endif
+
+    public string Name => "Shaders / Texture Outline";
+
+    public string Title => "raylib [shaders] example - texture outline";
+
+    private Texture2D texture;
+    private Shader shdrOutline;
+    private float outlineSize;
+    private int outlineSizeLoc;
+
+    public void Init()
     {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
+        texture = LoadTexture("resources/fudesumi.png");
+        shdrOutline = LoadShader(null, $"resources/shaders/glsl{GlslVersion}/outline.fs");
 
-        InitWindow(screenWidth, screenHeight, "raylib [shaders] example - Apply an outline to a texture");
+        outlineSize = 2.0f;
 
-        Texture2D texture = LoadTexture("resources/fudesumi.png");
-        Shader shdrOutline = LoadShader(null, $"resources/shaders/glsl{GLSL_VERSION}/outline.fs");
-
-        float outlineSize = 2.0f;
-
-        // Normalized red color
-        float[] outlineColor = new[] { 1.0f, 0.0f, 0.0f, 1.0f };
+        // Normalized RED color
+        var outlineColor = new[] { 1.0f, 0.0f, 0.0f, 1.0f };
         float[] textureSize = { (float)texture.Width, (float)texture.Height };
 
         // Get shader locations
-        int outlineSizeLoc = GetShaderLocation(shdrOutline, "outlineSize");
-        int outlineColorLoc = GetShaderLocation(shdrOutline, "outlineColor");
-        int textureSizeLoc = GetShaderLocation(shdrOutline, "textureSize");
+        outlineSizeLoc = GetShaderLocation(shdrOutline, "outlineSize");
+        var outlineColorLoc = GetShaderLocation(shdrOutline, "outlineColor");
+        var textureSizeLoc = GetShaderLocation(shdrOutline, "textureSize");
 
         // Set shader values (they can be changed later)
         Raylib.SetShaderValue(
@@ -63,55 +77,75 @@ public class TextureOutline
             textureSize,
             ShaderUniformDataType.Vec2
         );
+    }
 
-        SetTargetFPS(60);
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        outlineSize += GetMouseWheelMove();
+        if (outlineSize < 1.0f)
+        {
+            outlineSize = 1.0f;
+        }
+
+        Raylib.SetShaderValue(
+            shdrOutline,
+            outlineSizeLoc,
+            outlineSize,
+            ShaderUniformDataType.Float
+        );
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+
+        ClearBackground(Color.RayWhite);
+
+        BeginShaderMode(shdrOutline);
+        DrawTexture(texture, GetScreenWidth() / 2 - texture.Width / 2, -30, Color.White);
+        EndShaderMode();
+
+        DrawText("Shader-based\ntexture\noutline", 10, 10, 20, Color.Gray);
+        DrawText("Scroll mouse wheel to\nchange outline size", 10, 72, 20, Color.Gray);
+        DrawText($"Outline size: {(int)outlineSize} px", 10, 120, 20, Color.Maroon);
+
+        DrawFPS(710, 10);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+        UnloadTexture(texture);
+        UnloadShader(shdrOutline);
+    }
+
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        InitWindow(screenWidth, screenHeight, "raylib [shaders] example - texture outline");
+
+        SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
         //--------------------------------------------------------------------------------------
 
+        var game = new TextureOutline();
+        game.Init();
+
         // Main game loop
-        while (!WindowShouldClose())
+        while (!WindowShouldClose())    // Detect window close button or ESC key
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            outlineSize += GetMouseWheelMove();
-            if (outlineSize < 1.0f)
-            {
-                outlineSize = 1.0f;
-            }
-
-            Raylib.SetShaderValue(
-                shdrOutline,
-                outlineSizeLoc,
-                outlineSize,
-                ShaderUniformDataType.Float
-            );
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-
-            ClearBackground(Color.RayWhite);
-
-            BeginShaderMode(shdrOutline);
-            DrawTexture(texture, GetScreenWidth() / 2 - texture.Width / 2, -30, Color.White);
-            EndShaderMode();
-
-            DrawText("Shader-based\ntexture\noutline", 10, 10, 20, Color.Gray);
-
-            DrawText($"Outline size: {outlineSize} px", 10, 120, 20, Color.Maroon);
-
-            DrawFPS(710, 10);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            game.Update();
         }
+
+        game.Unload();
 
         // De-Initialization
         //--------------------------------------------------------------------------------------
-        UnloadTexture(texture);
-        UnloadShader(shdrOutline);
-
-        CloseWindow();
+        CloseWindow();        // Close window and OpenGL context
         //--------------------------------------------------------------------------------------
 
         return 0;

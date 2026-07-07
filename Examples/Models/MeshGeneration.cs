@@ -1,11 +1,15 @@
 /*******************************************************************************************
 *
-*   raylib example - procedural mesh generation
+*   raylib [models] example - mesh generation
 *
-*   This example has been created using raylib 1.8 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example complexity rating: [★★☆☆] 2/4
 *
-*   Copyright (c) 2017 Ramon Santamaria (Ray San)
+*   Example originally created with raylib 1.8, last time updated with raylib 4.0
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2017-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -14,25 +18,31 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Models;
 
-public class MeshGeneration
+public partial class MeshGeneration : IExample
 {
-    public static int Main()
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    public string Name => "Models / Mesh Generation";
+
+    public string Title => "raylib [models] example - mesh generation";
+
+    private Texture2D texture;
+    private Model[] models;
+    private Camera3D camera;
+    private Vector3 position;
+    private int currentModel;
+
+    public void Init()
     {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
-        InitWindow(screenWidth, screenHeight, "raylib [models] example - mesh generation");
-
-        // We generate a isChecked image for texturing
-        Image isChecked = GenImageChecked(2, 2, 1, 1, Color.Red, Color.Green);
-        Texture2D texture = LoadTextureFromImage(isChecked);
+        // We generate a checked image for texturing
+        var isChecked = GenImageChecked(2, 2, 1, 1, Color.Red, Color.Green);
+        texture = LoadTextureFromImage(isChecked);
         UnloadImage(isChecked);
 
-        Model[] models = new Model[9];
+        models = new Model[9];
 
-        models[0] = LoadModelFromMesh(GenMeshPlane(2, 2, 5, 5));
+        models[0] = LoadModelFromMesh(GenMeshPlane(2, 2, 4, 3));
         models[1] = LoadModelFromMesh(GenMeshCube(2.0f, 1.0f, 2.0f));
         models[2] = LoadModelFromMesh(GenMeshSphere(2, 32, 32));
         models[3] = LoadModelFromMesh(GenMeshHemiSphere(2, 16, 16));
@@ -42,15 +52,17 @@ public class MeshGeneration
         models[7] = LoadModelFromMesh(GenMeshPoly(5, 2.0f));
         models[8] = LoadModelFromMesh(GenMeshCustom());
 
-        // Set isChecked texture as default diffuse component for all models material
-        for (int i = 0; i < models.Length; i++)
+        // NOTE: Generated meshes could be exported using ExportMesh()
+
+        // Set checked texture as default diffuse component for all models material
+        for (var i = 0; i < models.Length; i++)
         {
             // Set map diffuse texture
             Raylib.SetMaterialTexture(ref models[i], 0, MaterialMapIndex.Albedo, ref texture);
         }
 
         // Define the camera to look into our 3d world
-        Camera3D camera = new();
+        camera = new();
         camera.Position = new Vector3(5.0f, 5.0f, 5.0f);
         camera.Target = new Vector3(0.0f, 0.0f, 0.0f);
         camera.Up = new Vector3(0.0f, 1.0f, 0.0f);
@@ -58,92 +70,102 @@ public class MeshGeneration
         camera.Projection = CameraProjection.Perspective;
 
         // Model drawing position
-        Vector3 position = new(0.0f, 0.0f, 0.0f);
+        position = new(0.0f, 0.0f, 0.0f);
 
-        int currentModel = 0;
+        currentModel = 0;
+    }
 
-        SetTargetFPS(60);
-        //--------------------------------------------------------------------------------------
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        UpdateCamera(ref camera, CameraMode.Orbital);
 
-        // Main game loop
-        while (!WindowShouldClose())
+        if (IsMouseButtonPressed(MouseButton.Left))
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            UpdateCamera(ref camera, CameraMode.Orbital);
-
-            if (IsMouseButtonPressed(MouseButton.Left))
-            {
-                // Cycle between the textures
-                currentModel = (currentModel + 1) % models.Length;
-            }
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            BeginMode3D(camera);
-
-            DrawModel(models[currentModel], position, 1.0f, Color.White);
-
-            DrawGrid(10, 1.0f);
-
-            EndMode3D();
-
-            DrawRectangle(30, 400, 310, 30, ColorAlpha(Color.SkyBlue, 0.5f));
-            DrawRectangleLines(30, 400, 310, 30, ColorAlpha(Color.DarkBlue, 0.5f));
-            DrawText("MOUSE LEFT BUTTON to CYCLE PROCEDURAL MODELS", 40, 410, 10, Color.Blue);
-
-            switch (currentModel)
-            {
-                case 0:
-                    DrawText("PLANE", 680, 10, 20, Color.DarkBlue);
-                    break;
-                case 1:
-                    DrawText("CUBE", 680, 10, 20, Color.DarkBlue);
-                    break;
-                case 2:
-                    DrawText("SPHERE", 680, 10, 20, Color.DarkBlue);
-                    break;
-                case 3:
-                    DrawText("HEMISPHERE", 640, 10, 20, Color.DarkBlue);
-                    break;
-                case 4:
-                    DrawText("CYLINDER", 680, 10, 20, Color.DarkBlue);
-                    break;
-                case 5:
-                    DrawText("TORUS", 680, 10, 20, Color.DarkBlue);
-                    break;
-                case 6:
-                    DrawText("KNOT", 680, 10, 20, Color.DarkBlue);
-                    break;
-                case 7:
-                    DrawText("POLY", 680, 10, 20, Color.DarkBlue);
-                    break;
-                case 8:
-                    DrawText("Custom (triagnle)", 580, 10, 20, Color.DarkBlue);
-                    break;
-                default:
-                    break;
-            }
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            currentModel = (currentModel + 1) % models.Length; // Cycle between the textures
         }
 
-        // De-Initialization
-        //--------------------------------------------------------------------------------------
-        for (int i = 0; i < models.Length; i++)
+        if (IsKeyPressed(KeyboardKey.Right))
+        {
+            currentModel++;
+            if (currentModel >= models.Length)
+            {
+                currentModel = 0;
+            }
+        }
+        else if (IsKeyPressed(KeyboardKey.Left))
+        {
+            currentModel--;
+            if (currentModel < 0)
+            {
+                currentModel = models.Length - 1;
+            }
+        }
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        BeginMode3D(camera);
+
+        DrawModel(models[currentModel], position, 1.0f, Color.White);
+        DrawGrid(10, 1.0f);
+
+        EndMode3D();
+
+        DrawRectangle(30, 400, 310, 30, Fade(Color.SkyBlue, 0.5f));
+        DrawRectangleLines(30, 400, 310, 30, Fade(Color.DarkBlue, 0.5f));
+        DrawText("MOUSE LEFT BUTTON to CYCLE PROCEDURAL MODELS", 40, 410, 10, Color.Blue);
+
+        switch (currentModel)
+        {
+            case 0:
+                DrawText("PLANE", 680, 10, 20, Color.DarkBlue);
+                break;
+            case 1:
+                DrawText("CUBE", 680, 10, 20, Color.DarkBlue);
+                break;
+            case 2:
+                DrawText("SPHERE", 680, 10, 20, Color.DarkBlue);
+                break;
+            case 3:
+                DrawText("HEMISPHERE", 640, 10, 20, Color.DarkBlue);
+                break;
+            case 4:
+                DrawText("CYLINDER", 680, 10, 20, Color.DarkBlue);
+                break;
+            case 5:
+                DrawText("TORUS", 680, 10, 20, Color.DarkBlue);
+                break;
+            case 6:
+                DrawText("KNOT", 680, 10, 20, Color.DarkBlue);
+                break;
+            case 7:
+                DrawText("POLY", 680, 10, 20, Color.DarkBlue);
+                break;
+            case 8:
+                DrawText("Custom (triangle)", 580, 10, 20, Color.DarkBlue);
+                break;
+            default:
+                break;
+        }
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+        UnloadTexture(texture); // Unload texture
+
+        // Unload models data (GPU VRAM)
+        for (var i = 0; i < models.Length; i++)
         {
             UnloadModel(models[i]);
         }
-
-        CloseWindow();
-        //--------------------------------------------------------------------------------------
-
-        return 0;
     }
 
     // Generate a simple triangle mesh from code
@@ -153,9 +175,9 @@ public class MeshGeneration
         mesh.AllocVertices();
         mesh.AllocTexCoords();
         mesh.AllocNormals();
-        Span<Vector3> vertices = mesh.VerticesAs<Vector3>();
-        Span<Vector2> texcoords = mesh.TexCoordsAs<Vector2>();
-        Span<Vector3> normals = mesh.NormalsAs<Vector3>();
+        var vertices = mesh.VerticesAs<Vector3>();
+        var texcoords = mesh.TexCoordsAs<Vector2>();
+        var normals = mesh.NormalsAs<Vector3>();
 
         // Vertex at (0, 0, 0)
         vertices[0] = new(0, 0, 0);
@@ -176,5 +198,33 @@ public class MeshGeneration
         UploadMesh(ref mesh, false);
 
         return mesh;
+    }
+
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        InitWindow(screenWidth, screenHeight, "raylib [models] example - mesh generation");
+
+        SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+        //--------------------------------------------------------------------------------------
+
+        var game = new MeshGeneration();
+        game.Init();
+
+        // Main game loop
+        while (!WindowShouldClose())    // Detect window close button or ESC key
+        {
+            game.Update();
+        }
+
+        game.Unload();
+
+        // De-Initialization
+        //--------------------------------------------------------------------------------------
+        CloseWindow();          // Close window and OpenGL context
+        //--------------------------------------------------------------------------------------
+
+        return 0;
     }
 }

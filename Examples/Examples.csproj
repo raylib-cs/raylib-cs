@@ -3,23 +3,69 @@
         <OutputType>Exe</OutputType>
         <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <StartupObject>Examples.Program</StartupObject>
+        <StartupObject Condition="'$(RuntimeIdentifier)' != 'browser-wasm'">Examples.Program</StartupObject>
+        <StartupObject Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">Examples.Web.Host</StartupObject>
         <RunWorkingDirectory>$(MSBuildThisFileDirectory)</RunWorkingDirectory>
         <LangVersion>12</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">
+        <WasmMainJSPath>Web/main.js</WasmMainJSPath>
+        <Nullable>disable</Nullable>
+        <!-- [JSExport] is browser-only by design; these files only compile for browser-wasm. -->
+        <NoWarn>$(NoWarn);CA1416</NoWarn>
+        <DefineConstants>$(DefineConstants);BROWSER</DefineConstants>
+
+        <!-- Link the native raylib.a (shipped by the Raylib-cs package) into the wasm module. -->
+        <WasmBuildNative>true</WasmBuildNative>
+        <WasmAllowUndefinedSymbols>true</WasmAllowUndefinedSymbols>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <EmccFlags>$(EmccFlags) -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=64MB</EmccFlags>
+
+        <!-- Avoid wasm-opt on SDK/workload combinations where Binaryen rejects bulk-memory-opt. -->
+        <EmccLinkOptimizationFlag Condition="'$(EmccLinkOptimizationFlag)' == ''">-O0</EmccLinkOptimizationFlag>
+        <EmccCompileOptimizationFlag Condition="'$(EmccCompileOptimizationFlag)' == ''">-O0</EmccCompileOptimizationFlag>
+        <WasmNativeStrip Condition="'$(WasmNativeStrip)' == ''">false</WasmNativeStrip>
+        <WasmEmitSymbolMap Condition="'$(WasmEmitSymbolMap)' == ''">false</WasmEmitSymbolMap>
+    </PropertyGroup>
+
     <ItemGroup>
-        <Compile Remove="Core/LoadingThread.cs"/>
         <Compile Remove="Text/Unicode.cs"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(RuntimeIdentifier)' != 'browser-wasm'">
+        <Compile Remove="Web/**/*.cs"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">
+        <Compile Remove="Program.cs"/>
+        <!-- Examples are discovered via reflection (ExampleRegistry);
+             therefore they must be excluded from trimming. -->
+        <TrimmerRootAssembly Include="Examples"/>
     </ItemGroup>
 
     <ItemGroup>
         <Using Include="Raylib_cs"/>
+        <Using Include="Raylib_cs.Raylib" Static="true"/>
+        <Using Include="System.Numerics"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Raylib-cs" Version="$(RaylibCsVersion)"/>
+        <ProjectReference Include="..\Raylib-cs\Raylib-cs.csproj"/>
+    </ItemGroup>
+    <Import Project="..\Raylib-cs\Raylib-cs.targets"/>
+
+    <ItemGroup Condition="'$(RuntimeIdentifier)' == 'browser-wasm'">
+        <WasmExtraFilesToDeploy Include="Web/index.html" TargetPath="index.html"/>
+        <WasmExtraFilesToDeploy Include="Web/main.js" TargetPath="main.js"/>
+        <WasmExtraFilesToDeploy Include="Web/scaleUtils.js" TargetPath="scaleUtils.js"/>
+        <WasmExtraFilesToDeploy Include="..\Raylib-cs\logo\raylib-cs.ico" TargetPath="favicon.ico"/>
+
+        <!-- Bundle the example assets into the wasm virtual filesystem at /resources/...
+             so examples load from "resources/..." work unchanged. -->
+        <WasmFilesToIncludeInFileSystem Include="resources\**\*.*"
+                                        TargetPath="resources\%(RecursiveDir)%(Filename)%(Extension)"/>
     </ItemGroup>
 </Project>

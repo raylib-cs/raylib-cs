@@ -7,4 +7,20 @@
   <PropertyGroup Condition="'$(MSBuildProjectName)' == 'Raylib-cs' And '$(RuntimeIdentifier)' == 'browser-wasm'">
     <OutputType>Library</OutputType>
   </PropertyGroup>
+
+  <!-- Raylib-cs 8.1.0 is not on nuget.org yet; pack locally so Examples and tests resolve the package with native runtimes. -->
+  <Target Name="_EnsureLocalRaylibCsPackage"
+          BeforeTargets="Restore"
+          Condition="'$(MSBuildProjectName)' != 'Raylib-cs' And Exists('$(MSBuildThisFileDirectory)Raylib-cs/Raylib-cs.csproj')">
+    <PropertyGroup>
+      <_LocalNuGetDir>$(MSBuildThisFileDirectory)nuget</_LocalNuGetDir>
+      <_LocalRaylibCsNupkg>$(_LocalNuGetDir)/Raylib-cs.$(RaylibCsVersion).nupkg</_LocalRaylibCsNupkg>
+    </PropertyGroup>
+    <MakeDir Directories="$(_LocalNuGetDir)" Condition="!Exists('$(_LocalNuGetDir)')"/>
+    <MSBuild Projects="$(MSBuildThisFileDirectory)Raylib-cs/Raylib-cs.csproj"
+             Targets="Restore;Pack"
+             Properties="Configuration=Release;PackageOutputPath=$(_LocalNuGetDir)"
+             RemoveProperties="RuntimeIdentifier;RuntimeIdentifiers;SelfContained;_IsPublishing"
+             Condition="!Exists('$(_LocalRaylibCsNupkg)') Or '$(ForceRaylibCsPack)' == 'true'"/>
+  </Target>
 </Project>

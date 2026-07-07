@@ -1,21 +1,23 @@
 /*******************************************************************************************
- *
- *   raylib [shaders] example - Basic PBR
- *
- *   Example originally created with raylib 5.0, last time updated with raylib 5.1-dev
- *
- *   Example contributed by Afan OLOVCIC (@_DevDad) and reviewed by Ramon Santamaria (@raysan5)
- *
- *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
- *   BSD-like license that allows static linking with closed source software
- *
- *   Copyright (c) 2023-2024 Afan OLOVCIC (@_DevDad)
- *
- *   Model: "Old Rusty Car" (https://skfb.ly/LxRy) by Renafox,
- *   licensed under Creative Commons Attribution-NonCommercial
- *   (http://creativecommons.org/licenses/by-nc/4.0/)
- *
- ********************************************************************************************/
+*
+*   raylib [shaders] example - basic pbr
+*
+*   Example complexity rating: [★★★★] 4/4
+*
+*   Example originally created with raylib 5.0, last time updated with raylib 5.5
+*
+*   Example contributed by Afan OLOVCIC (@_DevDad) and reviewed by Ramon Santamaria (@raysan5)
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2023-2025 Afan OLOVCIC (@_DevDad)
+*
+*   Model: "Old Rusty Car" (https://skfb.ly/LxRy) by Renafox,
+*   licensed under Creative Commons Attribution-NonCommercial
+*   (http://creativecommons.org/licenses/by-nc/4.0/)
+*
+********************************************************************************************/
 
 using System.Numerics;
 using Examples.Shared;
@@ -23,31 +25,50 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Shaders;
 
-public class BasicPbr
+public class BasicPbr : IExample
 {
-    private const int GLSL_VERSION = 330;
+#if BROWSER
+    const int GlslVersion = 100;    // WebGL1 needs GLSL ES 100
+#else
+    private const int GlslVersion = 330;
+#endif
 
-    public static unsafe int Main()
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    public string Name => "Shaders / Basic PBR";
+
+    public string Title => "raylib [shaders] example - basic pbr";
+
+    public ConfigFlags ConfigFlags => ConfigFlags.Msaa4xHint;
+
+    private Camera3D camera;
+    private Shader shader;
+    private Model car;
+    private Model floor;
+    private PbrLight[] lights;
+
+    private int metallicValueLoc;
+    private int roughnessValueLoc;
+    private int emissiveIntensityLoc;
+    private int emissiveColorLoc;
+    private int textureTilingLoc;
+
+    private Vector2 carTextureTiling;
+    private Vector2 floorTextureTiling;
+
+    public unsafe void Init()
     {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
-        // Enable Multi Sampling Anti Aliasing 4x (if available)
-        SetConfigFlags(ConfigFlags.Msaa4xHint);
-        InitWindow(screenWidth, screenHeight, "raylib [shaders] example - basic pbr");
-
         // Define the camera to look into our 3d world
-        Camera3D camera = new();
-        camera.Position = new Vector3(2.0f, 4.0f, 6.0f);
+        camera = new();
+        camera.Position = new Vector3(2.0f, 2.0f, 6.0f);
         camera.Target = new Vector3(0.0f, 0.5f, 0.0f);
         camera.Up = new Vector3(0.0f, 1.0f, 0.0f);
         camera.FovY = 45.0f;
         camera.Projection = CameraProjection.Perspective;
 
         // Load PBR shader and setup all required locations
-        var shader = LoadShader("resources/shaders/glsl330/pbr.vs", "resources/shaders/glsl330/pbr.fs");
+        shader = LoadShader($"resources/shaders/glsl{GlslVersion}/pbr.vs", $"resources/shaders/glsl{GlslVersion}/pbr.fs");
 
         shader.Locs[(int)ShaderLocationIndex.MapAlbedo] = GetShaderLocation(shader, "albedoMap");
         // WARNING: Metalness, roughness, and ambient occlusion are all packed into a MRA texture
@@ -75,23 +96,25 @@ public class BasicPbr
         SetShaderValue(shader, GetShaderLocation(shader, "ambient"), &ambientIntensity, ShaderUniformDataType.Float);
 
         // Get location for shader parameters that can be modified in real time
-        var emissiveIntensityLoc = GetShaderLocation(shader, "emissivePower");
-        var emissiveColorLoc = GetShaderLocation(shader, "emissiveColor");
-        var textureTilingLoc = GetShaderLocation(shader, "tiling");
+        metallicValueLoc = GetShaderLocation(shader, "metallicValue");
+        roughnessValueLoc = GetShaderLocation(shader, "roughnessValue");
+        emissiveIntensityLoc = GetShaderLocation(shader, "emissivePower");
+        emissiveColorLoc = GetShaderLocation(shader, "emissiveColor");
+        textureTilingLoc = GetShaderLocation(shader, "tiling");
 
         // Load old car model using PBR maps and shader
         // WARNING: We know this model consists of a single model.meshes[0] and
         // that model.materials[0] is by default assigned to that mesh
         // There could be more complex models consisting of multiple meshes and
         // multiple materials defined for those meshes... but always 1 mesh = 1 material
-        var car = LoadModel("resources/models/gltf/old_car_new.glb");
+        car = LoadModel("resources/models/gltf/old_car_new.glb");
 
         // Assign already setup PBR shader to model.materials[0], used by models.meshes[0]
         car.Materials[0].Shader = shader;
 
         // Setup materials[0].maps default parameters
         car.Materials[0].Maps[(int)MaterialMapIndex.Albedo].Color = Color.White;
-        car.Materials[0].Maps[(int)MaterialMapIndex.Metalness].Value = 0.0f;
+        car.Materials[0].Maps[(int)MaterialMapIndex.Metalness].Value = 1.0f;
         car.Materials[0].Maps[(int)MaterialMapIndex.Roughness].Value = 0.0f;
         car.Materials[0].Maps[(int)MaterialMapIndex.Occlusion].Value = 1.0f;
         car.Materials[0].Maps[(int)MaterialMapIndex.Emission].Color = new Color(255, 162, 0, 255);
@@ -104,7 +127,7 @@ public class BasicPbr
 
         // Load floor model mesh and assign material parameters
         // NOTE: A basic plane shape can be generated instead of being loaded from a model file
-        var floor = LoadModel("resources/models/gltf/plane.glb");
+        floor = LoadModel("resources/models/gltf/plane.glb");
         //Mesh floorMesh = GenMeshPlane(10, 10, 10, 10);
         //GenMeshTangents(&floorMesh);      // TODO: Review tangents generation
         //Model floor = LoadModelFromMesh(floorMesh);
@@ -113,8 +136,8 @@ public class BasicPbr
         floor.Materials[0].Shader = shader;
 
         floor.Materials[0].Maps[(int)MaterialMapIndex.Albedo].Color = Color.White;
-        floor.Materials[0].Maps[(int)MaterialMapIndex.Metalness].Value = 0.0f;
-        floor.Materials[0].Maps[(int)MaterialMapIndex.Roughness].Value = 0.0f;
+        floor.Materials[0].Maps[(int)MaterialMapIndex.Metalness].Value = 0.8f;
+        floor.Materials[0].Maps[(int)MaterialMapIndex.Roughness].Value = 0.1f;
         floor.Materials[0].Maps[(int)MaterialMapIndex.Occlusion].Value = 1.0f;
         floor.Materials[0].Maps[(int)MaterialMapIndex.Emission].Color = Color.Black;
 
@@ -124,11 +147,11 @@ public class BasicPbr
 
         // Models texture tiling parameter can be stored in the Material struct if required (CURRENTLY NOT USED)
         // NOTE: Material.params[4] are available for generic parameters storage (float)
-        var carTextureTiling = new Vector2(0.5f, 0.5f);
-        var floorTextureTiling = new Vector2(0.5f, 0.5f);
+        carTextureTiling = new Vector2(0.5f, 0.5f);
+        floorTextureTiling = new Vector2(0.5f, 0.5f);
 
         // Create some lights
-        var lights = new PbrLight[4];
+        lights = new PbrLight[4];
         lights[0] = PbrLights.CreateLight(
             0,
             PbrLightType.Point,
@@ -167,104 +190,113 @@ public class BasicPbr
         SetShaderValue(shader, GetShaderLocation(shader, "useTexNormal"), &usage, ShaderUniformDataType.Int);
         SetShaderValue(shader, GetShaderLocation(shader, "useTexMRA"), &usage, ShaderUniformDataType.Int);
         SetShaderValue(shader, GetShaderLocation(shader, "useTexEmissive"), &usage, ShaderUniformDataType.Int);
+    }
 
-        SetTargetFPS(60); // Set our game to run at 60 frames-per-second
-        //---------------------------------------------------------------------------------------
+    public unsafe void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        UpdateCamera(ref camera, CameraMode.Orbital);
 
-        // Main game loop
-        while (!WindowShouldClose()) // Detect window close button or ESC key
+        // Update the shader with the camera view vector (points towards { 0.0f, 0.0f, 0.0f })
+        var cameraPos = camera.Position;
+        SetShaderValue(shader, shader.Locs[(int)ShaderLocationIndex.VectorView], cameraPos, ShaderUniformDataType.Vec3);
+
+        // Check key inputs to enable/disable lights
+        if (IsKeyPressed(KeyboardKey.One))
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            UpdateCamera(&camera, CameraMode.Orbital);
-
-            // Update the shader with the camera view vector (points towards { 0.0f, 0.0f, 0.0f })
-            var cameraPos = camera.Position;
-            SetShaderValue(shader, shader.Locs[(int)ShaderLocationIndex.VectorView], cameraPos, ShaderUniformDataType.Vec3);
-
-            // Check key inputs to enable/disable lights
-            if (IsKeyPressed(KeyboardKey.One))
-            {
-                lights[2].Enabled = !lights[2].Enabled;
-            }
-
-            if (IsKeyPressed(KeyboardKey.Two))
-            {
-                lights[1].Enabled = !lights[1].Enabled;
-            }
-
-            if (IsKeyPressed(KeyboardKey.Three))
-            {
-                lights[3].Enabled = !lights[3].Enabled;
-            }
-
-            if (IsKeyPressed(KeyboardKey.Four))
-            {
-                lights[0].Enabled = !lights[0].Enabled;
-            }
-
-            // Update light values on shader (actually, only enable/disable them)
-            for (var i = 0; i < 4; i++)
-            {
-                UpdateLight(shader, lights[i]);
-            }
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-
-            ClearBackground(Color.Black);
-
-            BeginMode3D(camera);
-
-            // Set floor model texture tiling and emissive color parameters on shader
-            SetShaderValue(shader, textureTilingLoc, &floorTextureTiling, ShaderUniformDataType.Vec2);
-            var floorEmissiveColor = ColorNormalize(floor.Materials[0].Maps[(int)MaterialMapIndex.Emission].Color);
-            SetShaderValue(shader, emissiveColorLoc, &floorEmissiveColor, ShaderUniformDataType.Vec4);
-
-            DrawModel(floor, Vector3.Zero, 5.0f, Color.White); // Draw floor model
-
-            // Set old car model texture tiling, emissive color and emissive intensity parameters on shader
-            SetShaderValue(shader, textureTilingLoc, &carTextureTiling, ShaderUniformDataType.Vec2);
-            var carEmissiveColor = ColorNormalize(car.Materials[0].Maps[(int)MaterialMapIndex.Emission].Color);
-            SetShaderValue(shader, emissiveColorLoc, &carEmissiveColor, ShaderUniformDataType.Vec4);
-            var emissiveIntensity = 0.01f;
-            SetShaderValue(shader, emissiveIntensityLoc, &emissiveIntensity, ShaderUniformDataType.Float);
-
-            DrawModel(car, Vector3.Zero, 0.25f, Color.White); // Draw car model
-
-            // Draw spheres to show the lights positions
-            for (var i = 0; i < 4; i++)
-            {
-                var color = lights[i].Color;
-                var lightColor = new Color((byte)(color.X * 255), (byte)(color.Y * 255), (byte)(color.Z * 255),
-                    (byte)(color.W * 255));
-
-                if (lights[i].Enabled)
-                {
-                    DrawSphereEx(lights[i].Position, 0.2f, 8, 8, lightColor);
-                }
-                else
-                {
-                    DrawSphereWires(lights[i].Position, 0.2f, 8, 8, ColorAlpha(lightColor, 0.3f));
-                }
-            }
-
-            EndMode3D();
-
-            DrawText("Toggle lights: [1][2][3][4]", 10, 40, 20, Color.LightGray);
-
-            DrawText("(c) Old Rusty Car model by Renafox (https://skfb.ly/LxRy)", screenWidth - 320, screenHeight - 20, 10, Color.LightGray);
-
-            DrawFPS(10, 10);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            lights[2].Enabled = !lights[2].Enabled;
         }
 
-        // De-Initialization
-        //--------------------------------------------------------------------------------------
+        if (IsKeyPressed(KeyboardKey.Two))
+        {
+            lights[1].Enabled = !lights[1].Enabled;
+        }
+
+        if (IsKeyPressed(KeyboardKey.Three))
+        {
+            lights[3].Enabled = !lights[3].Enabled;
+        }
+
+        if (IsKeyPressed(KeyboardKey.Four))
+        {
+            lights[0].Enabled = !lights[0].Enabled;
+        }
+
+        // Update light values on shader (actually, only enable/disable them)
+        for (var i = 0; i < 4; i++)
+        {
+            UpdateLight(shader, lights[i]);
+        }
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+
+        ClearBackground(Color.Black);
+
+        BeginMode3D(camera);
+
+        // Set floor model texture tiling and emissive color parameters on shader
+        SetShaderValue(shader, textureTilingLoc, floorTextureTiling, ShaderUniformDataType.Vec2);
+        var floorEmissiveColor = ColorNormalize(floor.Materials[0].Maps[(int)MaterialMapIndex.Emission].Color);
+        SetShaderValue(shader, emissiveColorLoc, &floorEmissiveColor, ShaderUniformDataType.Vec4);
+
+        // Set floor metallic and roughness values
+        var floorMetallicValue = floor.Materials[0].Maps[(int)MaterialMapIndex.Metalness].Value;
+        SetShaderValue(shader, metallicValueLoc, &floorMetallicValue, ShaderUniformDataType.Float);
+        var floorRoughnessValue = floor.Materials[0].Maps[(int)MaterialMapIndex.Roughness].Value;
+        SetShaderValue(shader, roughnessValueLoc, &floorRoughnessValue, ShaderUniformDataType.Float);
+
+        DrawModel(floor, Vector3.Zero, 5.0f, Color.White); // Draw floor model
+
+        // Set old car model texture tiling, emissive color and emissive intensity parameters on shader
+        SetShaderValue(shader, textureTilingLoc, carTextureTiling, ShaderUniformDataType.Vec2);
+        var carEmissiveColor = ColorNormalize(car.Materials[0].Maps[(int)MaterialMapIndex.Emission].Color);
+        SetShaderValue(shader, emissiveColorLoc, &carEmissiveColor, ShaderUniformDataType.Vec4);
+        var emissiveIntensity = 0.01f;
+        SetShaderValue(shader, emissiveIntensityLoc, &emissiveIntensity, ShaderUniformDataType.Float);
+
+        // Set old car metallic and roughness values
+        var carMetallicValue = car.Materials[0].Maps[(int)MaterialMapIndex.Metalness].Value;
+        SetShaderValue(shader, metallicValueLoc, &carMetallicValue, ShaderUniformDataType.Float);
+        var carRoughnessValue = car.Materials[0].Maps[(int)MaterialMapIndex.Roughness].Value;
+        SetShaderValue(shader, roughnessValueLoc, &carRoughnessValue, ShaderUniformDataType.Float);
+
+        DrawModel(car, Vector3.Zero, 0.25f, Color.White); // Draw car model
+
+        // Draw spheres to show the lights positions
+        for (var i = 0; i < 4; i++)
+        {
+            var color = lights[i].Color;
+            var lightColor = new Color((byte)(color.X * 255), (byte)(color.Y * 255), (byte)(color.Z * 255),
+                (byte)(color.W * 255));
+
+            if (lights[i].Enabled)
+            {
+                DrawSphereEx(lights[i].Position, 0.2f, 8, 8, lightColor);
+            }
+            else
+            {
+                DrawSphereWires(lights[i].Position, 0.2f, 8, 8, ColorAlpha(lightColor, 0.3f));
+            }
+        }
+
+        EndMode3D();
+
+        DrawText("Toggle lights: [1][2][3][4]", 10, 40, 20, Color.LightGray);
+
+        DrawText("(c) Old Rusty Car model by Renafox (https://skfb.ly/LxRy)", screenWidth - 320, screenHeight - 20, 10, Color.LightGray);
+
+        DrawFPS(10, 10);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public unsafe void Unload()
+    {
         // Unbind (disconnect) shader from car.material[0]
         // to avoid UnloadMaterial() trying to unload it automatically
         car.Materials[0].Shader = new();
@@ -278,7 +310,32 @@ public class BasicPbr
         UnloadModel(floor);
 
         UnloadShader(shader);
+    }
 
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        // Enable Multi Sampling Anti Aliasing 4x (if available)
+        SetConfigFlags(ConfigFlags.Msaa4xHint);
+        InitWindow(screenWidth, screenHeight, "raylib [shaders] example - basic pbr");
+
+        SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+        //---------------------------------------------------------------------------------------
+
+        var game = new BasicPbr();
+        game.Init();
+
+        // Main game loop
+        while (!WindowShouldClose()) // Detect window close button or ESC key
+        {
+            game.Update();
+        }
+
+        game.Unload();
+
+        // De-Initialization
+        //--------------------------------------------------------------------------------------
         CloseWindow();
         //--------------------------------------------------------------------------------------
 
@@ -287,8 +344,8 @@ public class BasicPbr
 
     private static void UpdateLight(Shader shader, PbrLight light)
     {
-        SetShaderValue(shader, light.EnabledLoc, light.Enabled, ShaderUniformDataType.Int);
-        SetShaderValue(shader, light.TypeLoc, light.Type, ShaderUniformDataType.Int);
+        SetShaderValue(shader, light.EnabledLoc, light.Enabled ? 1 : 0, ShaderUniformDataType.Int);
+        SetShaderValue(shader, light.TypeLoc, (int)light.Type, ShaderUniformDataType.Int);
 
         // Send to shader light position values
         SetShaderValue(shader, light.PositionLoc, light.Position, ShaderUniformDataType.Vec3);

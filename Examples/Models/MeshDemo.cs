@@ -3,19 +3,24 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Models;
 
-public class MeshDemo
+public partial class MeshDemo : IExample
 {
-    public unsafe static int Main()
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    public string Name => "Models / Mesh Demo";
+
+    public string Title => "raylib [models] example - mesh demo";
+
+    private Camera3D camera;
+    private Model model;
+    private Texture2D texture;
+    private float rotationAngle;
+
+    public void Init()
     {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
-        InitWindow(screenWidth, screenHeight, "raylib [models] example - mesh demo");
-
         // Define the camera to look into our 3d world
-        Camera3D camera = new();
+        camera = new();
         camera.Position = Vector3.One * 1.5f;
         camera.Target = Vector3.Zero;
         camera.Up = Vector3.UnitY;
@@ -28,10 +33,10 @@ public class MeshDemo
         tetrahedron.AllocTexCoords();
         tetrahedron.AllocColors();
         tetrahedron.AllocIndices();
-        Span<Vector3> vertices = tetrahedron.VerticesAs<Vector3>();
-        Span<Vector2> texcoords = tetrahedron.TexCoordsAs<Vector2>();
-        Span<Color> colors = tetrahedron.ColorsAs<Color>();
-        Span<ushort> indices = tetrahedron.IndicesAs<ushort>();
+        var vertices = tetrahedron.VerticesAs<Vector3>();
+        var texcoords = tetrahedron.TexCoordsAs<Vector2>();
+        var colors = tetrahedron.ColorsAs<Color>();
+        var indices = tetrahedron.IndicesAs<ushort>();
 
         // Coordinates for a regular tetrahedron
         vertices[0] = new(MathF.Sqrt(8f / 9f), 0f, -1f / 3f);
@@ -65,49 +70,69 @@ public class MeshDemo
         indices[10] = 3;
         indices[11] = 2;
 
-        float rotationAngle = 0f;
+        rotationAngle = 0f;
         Raylib.UploadMesh(ref tetrahedron, false);
-        Model model = Raylib.LoadModelFromMesh(tetrahedron);
+        model = Raylib.LoadModelFromMesh(tetrahedron);
 
-        Image image = Raylib.GenImagePerlinNoise(16, 16, 0, 0, 1000f);
+        var image = Raylib.GenImagePerlinNoise(16, 16, 0, 0, 1000f);
         Raylib.ImageBlurGaussian(ref image, 2);
         Raylib.ImageColorBrightness(ref image, 100);
         Raylib.ImageDither(ref image, 4, 4, 4, 4);
-        Texture2D texture = Raylib.LoadTextureFromImage(image);
+        texture = Raylib.LoadTextureFromImage(image);
         Raylib.UnloadImage(image);
 
         Raylib.SetMaterialTexture(ref model, 0, MaterialMapIndex.Diffuse, ref texture);
+    }
+
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        UpdateCamera(ref camera, CameraMode.Free);
+        rotationAngle = Raymath.Wrap(rotationAngle += 1f, 0f, 360f);
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        BeginMode3D(camera);
+        Raylib.DrawModelEx(model, Vector3.Zero, Vector3.UnitX, rotationAngle, Vector3.One, Color.White);
+        EndMode3D();
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+        UnloadTexture(texture);
+        UnloadModel(model);
+    }
+
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        InitWindow(screenWidth, screenHeight, "raylib [models] example - mesh demo");
 
         SetTargetFPS(60);
         //--------------------------------------------------------------------------------------
 
+        var game = new MeshDemo();
+        game.Init();
+
         // Main game loop
         while (!WindowShouldClose())
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            UpdateCamera(ref camera, CameraMode.Free);
-            rotationAngle = Raymath.Wrap(rotationAngle += 1f, 0f, 360f);
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            BeginMode3D(camera);
-            Raylib.DrawModelEx(model, Vector3.Zero, Vector3.UnitX, rotationAngle, Vector3.One, Color.White);
-            EndMode3D();
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            game.Update();
         }
+
+        game.Unload();
 
         // De-Initialization
         //--------------------------------------------------------------------------------------
-        UnloadTexture(texture);
-        UnloadModel(model);
-
         CloseWindow();
         //--------------------------------------------------------------------------------------
 
