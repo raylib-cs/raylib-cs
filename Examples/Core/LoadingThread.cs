@@ -1,153 +1,184 @@
 /*******************************************************************************************
 *
-*   raylib example - loading thread
+*   raylib [core] example - loading thread
 *
-*   This example has been created using raylib 2.5 (www.raylib.com)
+*   NOTE: raylib is NOT thread-safe: the loading thread only updates plain data
+*   (progress counter and loaded flag); all raylib calls happen on the main thread.
+*
+*   Example originally created with raylib 2.5 (www.raylib.com)
 *   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
 *
-*   Copyright (c) 2014-2019 Ramon Santamaria (@raysan5)
+*   Copyright (c) 2014-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
+using System.Diagnostics;
 using System.Threading;
 using static Raylib_cs.Raylib;
-using static Raylib_cs.Color;
-using static Raylib_cs.KeyboardKey;
 
 namespace Examples.Core;
 
-enum State
+public partial class LoadingThread : IExample
 {
-    STATE_WAITING,
-    STATE_LOADING,
-    STATE_FINISHED
-}
+    const int screenWidth = 800;
+    const int screenHeight = 450;
 
-public class LoadingThread
-{
-    // C# bool is atomic. Used for synchronization
-    // https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/variables#atomicity-of-variable-references
-    // Data Loaded completion indicator
-    static bool dataLoaded = false;
+    public string Name => "Core / Loading Thread";
 
-    // Data progress accumulator
-    static int dataProgress = 0;
+    public string Title => "raylib [core] example - loading thread";
+
+    enum State
+    {
+        Waiting,
+        Loading,
+        Finished
+    }
+
+    // Loading data thread; a Thread can only be started once, so a fresh one
+    // is created for every load
+    Thread loadingThread;
+
+    // Data loaded completion indicator; volatile so the main thread sees the
+    // background thread's writes
+    volatile bool dataLoaded;
+
+    // Data progress accumulator (0..500, the progress bar width in pixels)
+    volatile int dataProgress;
+
+    State state;
+    int framesCounter;
+
+    public void Init()
+    {
+        loadingThread = null;
+        dataLoaded = false;
+        dataProgress = 0;
+
+        state = State.Waiting;
+        framesCounter = 0;
+    }
+
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        switch (state)
+        {
+            case State.Waiting:
+                if (IsKeyPressed(KeyboardKey.Enter))
+                {
+                    loadingThread = new Thread(LoadDataThread) { IsBackground = true };
+                    loadingThread.Start();
+                    TraceLog(TraceLogLevel.Info, "Loading thread initialized successfully");
+
+                    state = State.Loading;
+                }
+                break;
+
+            case State.Loading:
+                framesCounter++;
+                if (dataLoaded)
+                {
+                    framesCounter = 0;
+                    loadingThread.Join();
+                    TraceLog(TraceLogLevel.Info, "Loading thread terminated");
+
+                    state = State.Finished;
+                }
+                break;
+
+            case State.Finished:
+                if (IsKeyPressed(KeyboardKey.Enter))
+                {
+                    // Reset everything to launch again
+                    dataLoaded = false;
+                    dataProgress = 0;
+
+                    state = State.Waiting;
+                }
+                break;
+
+            default:
+                break;
+        }
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        switch (state)
+        {
+            case State.Waiting:
+                DrawText("PRESS ENTER to START LOADING DATA", 150, 170, 20, Color.DarkGray);
+                break;
+
+            case State.Loading:
+                DrawRectangle(150, 200, dataProgress, 60, Color.SkyBlue);
+                if ((framesCounter / 15) % 2 == 0)
+                {
+                    DrawText("LOADING DATA...", 240, 210, 40, Color.DarkBlue);
+                }
+                break;
+
+            case State.Finished:
+                DrawRectangle(150, 200, 500, 60, Color.Lime);
+                DrawText("DATA LOADED!", 250, 210, 40, Color.Green);
+                break;
+
+            default:
+                break;
+        }
+
+        DrawRectangleLines(150, 200, 500, 60, Color.DarkGray);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+    }
 
     public static int Main()
     {
         // Initialization
         //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
         InitWindow(screenWidth, screenHeight, "raylib [core] example - loading thread");
 
-        // Loading data thread id
-        Thread thread = new(new ThreadStart(LoadDataThread));
-
-        State state = State.STATE_WAITING;
-        int framesCounter = 0;
-
-        SetTargetFPS(60);
+        SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
         //--------------------------------------------------------------------------------------
 
+        var game = new LoadingThread();
+        game.Init();
+
         // Main game loop
-        while (!WindowShouldClose()) // Detect window close button or ESC key
+        while (!WindowShouldClose())    // Detect window close button or ESC key
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            switch (state)
-            {
-                case State.STATE_WAITING:
-                    {
-                        if (IsKeyPressed(KEY_ENTER))
-                        {
-                            thread.Start();
-                            //int error = pthread_create(ref, NULL, ref, NULL);
-                            //if (error != 0) TraceLog(TraceLogLevel.LOG_ERROR, "Error creating loading thread");
-                            //else TraceLog(TraceLogLevel.LOG_INFO, "Loading thread initialized successfully");
-
-                            state = State.STATE_LOADING;
-                        }
-                    }
-                    break;
-                case State.STATE_LOADING:
-                    {
-                        framesCounter++;
-                        if (dataLoaded)
-                        {
-                            framesCounter = 0;
-                            state = State.STATE_FINISHED;
-                        }
-                    }
-                    break;
-                case State.STATE_FINISHED:
-                    {
-                        if (IsKeyPressed(KEY_ENTER))
-                        {
-                            // Reset everything to launch again
-                            // atomic_store(ref, false);
-                            dataProgress = 0;
-                            state = State.STATE_WAITING;
-                        }
-                    }
-                    break;
-                default: break;
-            }
-
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(RAYWHITE);
-
-            switch (state)
-            {
-                case State.STATE_WAITING:
-                    DrawText("PRESS ENTER to START LOADING DATA", 150, 170, 20, DARKGRAY);
-                    break;
-                case State.STATE_LOADING:
-                    {
-                        DrawRectangle(150, 200, dataProgress, 60, SKYBLUE);
-                        if ((framesCounter / 15) % 2 == 0) DrawText("LOADING DATA...", 240, 210, 40, DARKBLUE);
-                    }
-                    break;
-                case State.STATE_FINISHED:
-                    {
-                        DrawRectangle(150, 200, 500, 60, LIME);
-                        DrawText("DATA LOADED!", 250, 210, 40, GREEN);
-                    }
-                    break;
-                default: break;
-            }
-
-            DrawRectangleLines(150, 200, 500, 60, DARKGRAY);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            game.Update();
         }
+
+        game.Unload();
 
         // De-Initialization
         //--------------------------------------------------------------------------------------
-        CloseWindow(); // Close window and OpenGL context
+        CloseWindow();          // Close window and OpenGL context
         //--------------------------------------------------------------------------------------
 
         return 0;
     }
 
     // Loading data thread function definition
-    static void LoadDataThread()
+    void LoadDataThread()
     {
-        int timeCounter = 0;               // Time counted in ms
-                                           // clock_t prevTime = clock();     // Previous time
+        int timeCounter = 0;                        // Time counted in ms
+        var stopwatch = Stopwatch.StartNew();
 
         // We simulate data loading with a time counter for 5 seconds
         while (timeCounter < 5000)
         {
-            //clock_t currentTime = clock() - prevTime;
-            //timeCounter = currentTime*1000/CLOCKS_PER_SEC;
-            timeCounter += 1;
+            timeCounter = (int)stopwatch.ElapsedMilliseconds;
 
             // We accumulate time over a global variable to be used in
             // main thread as a progress bar
@@ -158,4 +189,3 @@ public class LoadingThread
         dataLoaded = true;
     }
 }
-

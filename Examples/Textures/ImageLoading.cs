@@ -1,13 +1,17 @@
 /*******************************************************************************************
 *
-*   raylib [textures] example - Image loading and texture creation
+*   raylib [textures] example - image loading
+*
+*   Example complexity rating: [★☆☆☆] 1/4
 *
 *   NOTE: Images are loaded in CPU memory (RAM); textures are loaded in GPU memory (VRAM)
 *
-*   This example has been created using raylib 1.3 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example originally created with raylib 1.3, last time updated with raylib 1.3
 *
-*   Copyright (c) 2015 Ramon Santamaria (@raysan5)
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2015-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -15,56 +19,74 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Textures;
 
-public class ImageLoading
+public partial class ImageLoading : IExample
 {
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    public string Name => "Textures / Image Loading";
+
+    public string Title => "raylib [textures] example - image loading";
+
+    private Texture2D texture;
+
+    public void Init()
+    {
+        // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
+
+        var image = LoadImage("resources/raylib-cs_logo.png");  // Loaded in CPU memory (RAM)
+        texture = LoadTextureFromImage(image);          // Image converted to texture, GPU memory (VRAM)
+        UnloadImage(image);   // Once image has been converted to texture and uploaded to VRAM, it can be unloaded from RAM
+    }
+
+    public void Update()
+    {
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        DrawTexture(
+            texture,
+            screenWidth / 2 - texture.Width / 2,
+            screenHeight / 2 - texture.Height / 2,
+            Color.White
+        );
+
+        DrawText("this IS a texture loaded from an image!", 300, 370, 10, Color.Gray);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+        UnloadTexture(texture);       // Texture unloading
+    }
+
     public static int Main()
     {
         // Initialization
         //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
         InitWindow(screenWidth, screenHeight, "raylib [textures] example - image loading");
 
-        // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
-
-        Image image = LoadImage("resources/raylib-cs_logo.png");
-        Texture2D texture = LoadTextureFromImage(image);
-
-        UnloadImage(image);
+        SetTargetFPS(60);     // Set our game to run at 60 frames-per-second
         //---------------------------------------------------------------------------------------
 
+        var game = new ImageLoading();
+        game.Init();
+
         // Main game loop
-        while (!WindowShouldClose())
+        while (!WindowShouldClose())    // Detect window close button or ESC key
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            // TODO: Update your variables here
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            DrawTexture(
-                texture,
-                screenWidth / 2 - texture.Width / 2,
-                screenHeight / 2 - texture.Height / 2,
-                Color.White
-            );
-
-            DrawText("this IS a texture loaded from an image!", 300, 370, 10, Color.Gray);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            game.Update();
         }
+
+        game.Unload();
 
         // De-Initialization
         //--------------------------------------------------------------------------------------
-        UnloadTexture(texture);
-
-        CloseWindow();
+        CloseWindow();                // Close window and OpenGL context
         //--------------------------------------------------------------------------------------
 
         return 0;

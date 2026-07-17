@@ -1,13 +1,15 @@
 /*******************************************************************************************
 *
-*   raylib [text] example - Codepoints loading
+*   raylib [text] example - codepoints loading
 *
-*   Example originally created with raylib 4.2, last time updated with raylib 2.5
+*   Example complexity rating: [★★★☆] 3/4
+*
+*   Example originally created with raylib 4.2, last time updated with raylib 4.2
 *
 *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
 *   BSD-like license that allows static linking with closed source software
 *
-*   Copyright (c) 2022-2023 Ramon Santamaria (@raysan5)
+*   Copyright (c) 2022-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -19,32 +21,37 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Text;
 
-class CodepointsLoading
+public partial class CodepointsLoading : IExample
 {
-    public unsafe static int Main()
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    // Text to be displayed, must be UTF-8 (save this code file as UTF-8)
+    // NOTE: It can contain all the required text for the game,
+    // this text will be scanned to get all the required codepoints
+    private const string text =
+        "いろはにほへと　ちりぬるを\nわかよたれそ　つねならむ\nうゐのおくやま　けふこえて\nあさきゆめみし　ゑひもせす";
+
+    public string Name => "Text / Codepoints Loading";
+
+    public string Title => "raylib [text] example - codepoints loading";
+
+    private List<int> codepoints;
+    private int[] codepointsNoDuplicates;
+    private Font font;
+    private bool showFontAtlas;
+
+    public void Init()
     {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
-        InitWindow(screenWidth, screenHeight, "raylib [text] example - codepoints loading");
-
-        // Text to be displayed, must be UTF-8 (save this code file as UTF-8)
-        // NOTE: It can contain all the required text for the game,
-        // this text will be scanned to get all the required codepoints
-        const string text =
-            "いろはにほへと　ちりぬるを\nわかよたれそ　つねならむ\nうゐのおくやま　けふこえて\nあさきゆめみし　ゑひもせす";
-
         // Get codepoints from text
-        List<int> codepoints = GetCodePoints(text);
+        codepoints = GetCodePoints(text);
 
         // Remove duplicate codepoints to generate smaller font atlas
-        int[] codepointsNoDuplicates = codepoints.Distinct().ToArray();
+        codepointsNoDuplicates = codepoints.Distinct().ToArray();
 
         // Load font containing all the provided codepoint glyphs
         // A texture font atlas is automatically generated
-        Font font = LoadFontEx(
+        font = LoadFontEx(
             "resources/fonts/DotGothic16-Regular.ttf",
             36,
             codepointsNoDuplicates,
@@ -54,64 +61,58 @@ class CodepointsLoading
         // Set bilinear scale filter for better font scaling
         SetTextureFilter(font.Texture, TextureFilter.Bilinear);
 
-        bool showFontAtlas = false;
+        SetTextLineSpacing(20);         // Set line spacing for multiline text (when line breaks are included '\n')
 
-        SetTargetFPS(60);
-        //--------------------------------------------------------------------------------------
+        showFontAtlas = false;
+    }
 
-        // Main game loop
-        while (!WindowShouldClose())
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        if (IsKeyPressed(KeyboardKey.Space))
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            if (IsKeyPressed(KeyboardKey.Space))
-            {
-                showFontAtlas = !showFontAtlas;
-            }
-            //----------------------------------------------------------------------------------
+            showFontAtlas = !showFontAtlas;
+        }
+        //----------------------------------------------------------------------------------
 
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
 
-            ClearBackground(Color.RayWhite);
+        ClearBackground(Color.RayWhite);
 
-            DrawRectangle(0, 0, GetScreenWidth(), 70, Color.Black);
-            DrawText($"Total codepoints contained in provided text: {codepoints.Count}", 10, 10, 20, Color.Green);
-            DrawText(
-                $"Total codepoints required for font atlas (duplicates excluded): {codepointsNoDuplicates.Length}",
-                10,
-                40,
-                20,
-                Color.Green
-            );
+        DrawRectangle(0, 0, GetScreenWidth(), 70, Color.Black);
+        DrawText($"Total codepoints contained in provided text: {codepoints.Count}", 10, 10, 20, Color.Green);
+        DrawText(
+            $"Total codepoints required for font atlas (duplicates excluded): {codepointsNoDuplicates.Length}",
+            10,
+            40,
+            20,
+            Color.Green
+        );
 
-            if (showFontAtlas)
-            {
-                // Draw generated font texture atlas containing provided codepoints
-                DrawTexture(font.Texture, 150, 100, Color.Black);
-                DrawRectangleLines(150, 100, font.Texture.Width, font.Texture.Height, Color.Black);
-            }
-            else
-            {
-                // Draw provided text with laoded font, containing all required codepoint glyphs
-                DrawTextEx(font, text, new Vector2(160, 110), 48, 5, Color.Black);
-            }
-
-            DrawText("Press SPACE to toggle font atlas view!", 10, GetScreenHeight() - 30, 20, Color.Gray);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+        if (showFontAtlas)
+        {
+            // Draw generated font texture atlas containing provided codepoints
+            DrawTexture(font.Texture, 150, 100, Color.Black);
+            DrawRectangleLines(150, 100, font.Texture.Width, font.Texture.Height, Color.Black);
+        }
+        else
+        {
+            // Draw provided text with loaded font, containing all required codepoint glyphs
+            DrawTextEx(font, text, new Vector2(160, 110), 48, 5, Color.Black);
         }
 
-        // De-Initialization
-        //--------------------------------------------------------------------------------------
-        UnloadFont(font);
+        DrawText("Press SPACE to toggle font atlas view!", 10, GetScreenHeight() - 30, 20, Color.Gray);
 
-        CloseWindow();
-        //--------------------------------------------------------------------------------------
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
 
-        return 0;
+    public void Unload()
+    {
+        UnloadFont(font);     // Unload font
     }
 
     private static List<int> GetCodePoints(string text)
@@ -119,14 +120,42 @@ class CodepointsLoading
         List<int> codePoints = new();
 
         StringInfo stringInfo = new(text);
-        TextElementEnumerator enumerator = StringInfo.GetTextElementEnumerator(text);
+        var enumerator = StringInfo.GetTextElementEnumerator(text);
 
         while (enumerator.MoveNext())
         {
-            int codePoint = char.ConvertToUtf32(enumerator.Current.ToString(), 0);
+            var codePoint = char.ConvertToUtf32(enumerator.Current.ToString(), 0);
             codePoints.Add(codePoint);
         }
 
         return codePoints;
+    }
+
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        InitWindow(screenWidth, screenHeight, "raylib [text] example - codepoints loading");
+
+        SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+        //--------------------------------------------------------------------------------------
+
+        var game = new CodepointsLoading();
+        game.Init();
+
+        // Main game loop
+        while (!WindowShouldClose())    // Detect window close button or ESC key
+        {
+            game.Update();
+        }
+
+        game.Unload();
+
+        // De-Initialization
+        //--------------------------------------------------------------------------------------
+        CloseWindow();        // Close window and OpenGL context
+        //--------------------------------------------------------------------------------------
+
+        return 0;
     }
 }

@@ -65,25 +65,6 @@ otherwise the command won't work.
 
 5. Start coding!
 
-## Building from source
-
-The `Examples` and `Raylib-cs.Tests` projects consume the binding as a NuGet package, and the in-repo
-version may not be published on nuget.org yet. Pack it once into the local feed before the first build:
-
-```
-dotnet pack Raylib-cs -c Release -o nuget
-dotnet build
-```
-
-`NuGet.config` points restore at the local `./nuget` feed, so both projects pick up the freshly packed
-package. If you skip the pack step on a fresh clone, restore fails with NU1301 (the `./nuget` source
-doesn't exist) or NU1102 (Raylib-cs not found) — running the pack command fixes both.
-
-When iterating on the binding itself, note that NuGet caches the extracted package by version and
-ignores repacks of the same version. After repacking, delete the old package from `./nuget` and clear
-the cached copy (`dotnet nuget locals global-packages --clear`, or delete
-`~/.nuget/packages/raylib-cs/<version>`) before restoring again.
-
 ## Hello, World!
 
 ```csharp
@@ -113,6 +94,22 @@ internal static class Program
         Raylib.CloseWindow();
     }
 }
+```
+
+## Building the examples locally
+
+The `Examples` project references the sibling `Raylib-cs` project by default, so local changes to the
+bindings are picked up directly:
+
+```
+dotnet run --project Examples
+```
+
+To build the examples against the Raylib-cs NuGet package instead (the version set by
+`RaylibCsVersion` in [Directory.Build.props](Directory.Build.props)), set `UseRaylibCsPackage`:
+
+```
+dotnet run --project Examples -p:UseRaylibCsPackage=true
 ```
 
 ## Contributing

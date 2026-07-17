@@ -1,14 +1,18 @@
 /*******************************************************************************************
 *
-*   raylib [text] example - raylib font loading and usage
+*   raylib [text] example - sprite fonts
+*
+*   Example complexity rating: [★☆☆☆] 1/4
 *
 *   NOTE: raylib is distributed with some free to use fonts (even for commercial pourposes!)
 *         To view details and credits for those fonts, check raylib license file
 *
-*   This example has been created using raylib 1.7 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example originally created with raylib 1.7, last time updated with raylib 3.7
 *
-*   Copyright (c) 2017 Ramon Santamaria (@raysan5)
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2017-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -17,32 +21,38 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Text;
 
-public class RaylibFonts
+public partial class RaylibFonts : IExample
 {
     public const int MaxFonts = 8;
 
-    public static int Main()
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    public string Name => "Text / Raylib Fonts";
+
+    public string Title => "raylib [text] example - sprite fonts";
+
+    private Font[] fonts;
+    private string[] messages;
+    private int[] spacings;
+    private Vector2[] positions;
+    private Color[] colors;
+
+    public void Init()
     {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
-        InitWindow(screenWidth, screenHeight, "raylib [text] example - raylib fonts");
-
         // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
-        Font[] fonts = new Font[MaxFonts];
+        fonts = new Font[MaxFonts];
 
-        fonts[0] = LoadFont("resources/fonts/alagard.png");
-        fonts[1] = LoadFont("resources/fonts/pixelplay.png");
-        fonts[2] = LoadFont("resources/fonts/mecha.png");
-        fonts[3] = LoadFont("resources/fonts/setback.png");
-        fonts[4] = LoadFont("resources/fonts/romulus.png");
-        fonts[5] = LoadFont("resources/fonts/pixantiqua.png");
-        fonts[6] = LoadFont("resources/fonts/alpha_beta.png");
-        fonts[7] = LoadFont("resources/fonts/jupiter_crash.png");
+        fonts[0] = LoadFont("resources/sprite_fonts/alagard.png");
+        fonts[1] = LoadFont("resources/sprite_fonts/pixelplay.png");
+        fonts[2] = LoadFont("resources/sprite_fonts/mecha.png");
+        fonts[3] = LoadFont("resources/sprite_fonts/setback.png");
+        fonts[4] = LoadFont("resources/sprite_fonts/romulus.png");
+        fonts[5] = LoadFont("resources/sprite_fonts/pixantiqua.png");
+        fonts[6] = LoadFont("resources/sprite_fonts/alpha_beta.png");
+        fonts[7] = LoadFont("resources/sprite_fonts/jupiter_crash.png");
 
-        string[] messages = new string[MaxFonts] {
+        messages = new string[MaxFonts] {
                 "ALAGARD FONT designed by Hewett Tsoi",
                 "PIXELPLAY FONT designed by Aleksander Shevchuk",
                 "MECHA FONT designed by Captain Falcon",
@@ -53,12 +63,12 @@ public class RaylibFonts
                 "JUPITER_CRASH FONT designed by Brian Kent (AEnigma)"
             };
 
-        int[] spacings = new int[MaxFonts] { 2, 4, 8, 4, 3, 4, 4, 1 };
-        Vector2[] positions = new Vector2[MaxFonts];
+        spacings = new int[MaxFonts] { 2, 4, 8, 4, 3, 4, 4, 1 };
+        positions = new Vector2[MaxFonts];
 
-        for (int i = 0; i < MaxFonts; i++)
+        for (var i = 0; i < MaxFonts; i++)
         {
-            float halfWidth = MeasureTextEx(fonts[i], messages[i], fonts[i].BaseSize * 2, spacings[i]).X / 2;
+            var halfWidth = MeasureTextEx(fonts[i], messages[i], fonts[i].BaseSize * 2, spacings[i]).X / 2;
             positions[i].X = screenWidth / 2 - halfWidth;
             positions[i].Y = 60 + fonts[i].BaseSize + 45 * i;
         }
@@ -68,7 +78,7 @@ public class RaylibFonts
         positions[4].Y += 2;
         positions[7].Y -= 8;
 
-        Color[] colors = new Color[MaxFonts] {
+        colors = new Color[MaxFonts] {
                 Color.Maroon,
                 Color.Orange,
                 Color.DarkGreen,
@@ -78,44 +88,61 @@ public class RaylibFonts
                 Color.Gold,
                 Color.Red
             };
-        //--------------------------------------------------------------------------------------
+    }
 
-        // Main game loop
-        while (!WindowShouldClose())
+    public void Update()
+    {
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        DrawText("free sprite fonts included with raylib", 220, 20, 20, Color.DarkGray);
+        DrawLine(220, 50, 600, 50, Color.DarkGray);
+
+        for (var i = 0; i < MaxFonts; i++)
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            // TODO: Update your variables here
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            DrawText("free fonts included with raylib", 250, 20, 20, Color.DarkGray);
-            DrawLine(220, 50, 590, 50, Color.DarkGray);
-
-            for (int i = 0; i < MaxFonts; i++)
-            {
-                DrawTextEx(fonts[i], messages[i], positions[i], fonts[i].BaseSize * 2, spacings[i], colors[i]);
-            }
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            DrawTextEx(fonts[i], messages[i], positions[i], fonts[i].BaseSize * 2, spacings[i], colors[i]);
         }
 
-        // De-Initialization
-        //--------------------------------------------------------------------------------------
-        for (int i = 0; i < MaxFonts; i++)
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+        // Fonts unloading
+        for (var i = 0; i < MaxFonts; i++)
         {
             UnloadFont(fonts[i]);
         }
+    }
 
-        CloseWindow();
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        InitWindow(screenWidth, screenHeight, "raylib [text] example - sprite fonts");
+
+        SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+        //--------------------------------------------------------------------------------------
+
+        var game = new RaylibFonts();
+        game.Init();
+
+        // Main game loop
+        while (!WindowShouldClose())    // Detect window close button or ESC key
+        {
+            game.Update();
+        }
+
+        game.Unload();
+
+        // De-Initialization
+        //--------------------------------------------------------------------------------------
+        CloseWindow();                 // Close window and OpenGL context
         //--------------------------------------------------------------------------------------
 
         return 0;
     }
 }
-

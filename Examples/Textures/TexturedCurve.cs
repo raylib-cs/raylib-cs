@@ -1,11 +1,37 @@
+/*******************************************************************************************
+*
+*   raylib [textures] example - textured curve
+*
+*   Example complexity rating: [★★★☆] 3/4
+*
+*   Example originally created with raylib 4.5, last time updated with raylib 4.5
+*
+*   Example contributed by Jeffery Myers (@JeffM2501) and reviewed by Ramon Santamaria (@raysan5)
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2022-2025 Jeffery Myers (@JeffM2501) and Ramon Santamaria (@raysan5)
+*
+********************************************************************************************/
+
 using System;
 using System.Numerics;
 using static Raylib_cs.Raylib;
 
 namespace Examples.Textures;
 
-public unsafe class TexturedCurve
+public unsafe partial class TexturedCurve : IExample
 {
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    public string Name => "Textures / Textured Curve";
+
+    public string Title => "raylib [textures] example - textured curve";
+
+    public ConfigFlags ConfigFlags => ConfigFlags.VSyncHint | ConfigFlags.Msaa4xHint;
+
     public class CurvePoint
     {
         public Vector2 value;
@@ -17,26 +43,18 @@ public unsafe class TexturedCurve
         public static implicit operator Vector2(CurvePoint v) => v.value;
     }
 
-    static Texture2D texRoad;
-    static bool showCurve = false;
-    static float curveWidth = 50;
-    static int curveSegments = 24;
-    static CurvePoint curveStartPosition;
-    static CurvePoint curveStartPositionTangent;
-    static CurvePoint curveEndPosition;
-    static CurvePoint curveEndPositionTangent;
-    static CurvePoint curveSelectedPoint;
+    private Texture2D texRoad;
+    private bool showCurve;
+    private float curveWidth;
+    private int curveSegments;
+    private CurvePoint curveStartPosition;
+    private CurvePoint curveStartPositionTangent;
+    private CurvePoint curveEndPosition;
+    private CurvePoint curveEndPositionTangent;
+    private CurvePoint curveSelectedPoint;
 
-    public static int Main()
+    public void Init()
     {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
-        SetConfigFlags(ConfigFlags.VSyncHint | ConfigFlags.Msaa4xHint);
-        InitWindow(screenWidth, screenHeight, "raylib [textures] examples - textured curve");
-
         // Load the road texture
         texRoad = LoadTexture("resources/road.png");
         SetTextureFilter(texRoad, TextureFilter.Bilinear);
@@ -48,45 +66,42 @@ public unsafe class TexturedCurve
         curveEndPosition = new Vector2(700, 350);
         curveEndPositionTangent = new Vector2(600, 100);
 
-        SetTargetFPS(60);
-        //--------------------------------------------------------------------------------------
-
-        // Main game loop
-        while (!WindowShouldClose())
-        {
-            // Update
-            //----------------------------------------------------------------------------------
-            UpdateCurve();
-            UpdateOptions();
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            DrawTexturedCurve();
-            DrawCurve();
-
-            DrawText("Drag points to move curve, press SPACE to show/hide base curve", 10, 10, 10, Color.DarkGray);
-            DrawText($"Curve width: {curveWidth} (Use + and - to adjust)", 10, 30, 10, Color.DarkGray);
-            DrawText($"Curve segments: {curveSegments} (Use LEFT and RIGHT to adjust)", 10, 50, 10, Color.DarkGray);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
-        }
-
-        // De-Initialization
-        //--------------------------------------------------------------------------------------
-        UnloadTexture(texRoad);
-
-        CloseWindow();
-        //--------------------------------------------------------------------------------------
-
-        return 0;
+        showCurve = false;
+        curveWidth = 50;
+        curveSegments = 24;
+        curveSelectedPoint = null;
     }
 
-    static void DrawCurve()
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        UpdateCurve();
+        UpdateOptions();
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        DrawTexturedCurve();
+        DrawCurve();
+
+        DrawText("Drag points to move curve, press SPACE to show/hide base curve", 10, 10, 10, Color.DarkGray);
+        DrawText($"Curve width: {curveWidth} (Use + and - to adjust)", 10, 30, 10, Color.DarkGray);
+        DrawText($"Curve segments: {curveSegments} (Use LEFT and RIGHT to adjust)", 10, 50, 10, Color.DarkGray);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+        UnloadTexture(texRoad);
+    }
+
+    private void DrawCurve()
     {
         if (showCurve)
         {
@@ -104,7 +119,7 @@ public unsafe class TexturedCurve
         DrawLineV(curveStartPosition, curveStartPositionTangent, Color.SkyBlue);
         DrawLineV(curveStartPositionTangent, curveEndPositionTangent, Fade(Color.LightGray, 0.4f));
         DrawLineV(curveEndPosition, curveEndPositionTangent, Color.Purple);
-        Vector2 mouse = GetMousePosition();
+        var mouse = GetMousePosition();
 
         if (CheckCollisionPointCircle(mouse, curveStartPosition, 6))
         {
@@ -131,11 +146,12 @@ public unsafe class TexturedCurve
         DrawCircleV(curveEndPositionTangent, 5, Color.DarkGreen);
     }
 
-    static void UpdateCurve()
+    private void UpdateCurve()
     {
         // If the mouse is not down, we are not editing the curve so clear the selection
         if (!IsMouseButtonDown(MouseButton.Left))
         {
+            curveSelectedPoint = null;
             return;
         }
 
@@ -146,7 +162,7 @@ public unsafe class TexturedCurve
         }
 
         // The mouse is down, and nothing was selected, so see if anything was picked
-        Vector2 mouse = GetMousePosition();
+        var mouse = GetMousePosition();
 
         if (CheckCollisionPointCircle(mouse, curveStartPosition, 6))
         {
@@ -166,28 +182,28 @@ public unsafe class TexturedCurve
         }
     }
 
-    static void DrawTexturedCurve()
+    private void DrawTexturedCurve()
     {
-        float step = 1.0f / curveSegments;
+        var step = 1.0f / curveSegments;
 
         Vector2 previous = curveStartPosition;
-        Vector2 previousTangent = Vector2.Zero;
+        var previousTangent = Vector2.Zero;
         float previousV = 0;
 
         // We can't compute a tangent for the first point, so we need to reuse the tangent from the first segment
-        bool tangentSet = false;
+        var tangentSet = false;
 
-        Vector2 current = Vector2.Zero;
-        float t = 0.0f;
+        var current = Vector2.Zero;
+        var t = 0.0f;
 
-        for (int i = 1; i <= curveSegments; i++)
+        for (var i = 1; i <= curveSegments; i++)
         {
             // Segment the curve
             t = step * i;
-            float a = MathF.Pow(1 - t, 3);
-            float b = 3 * MathF.Pow(1 - t, 2) * t;
-            float c = 3 * (1 - t) * MathF.Pow(t, 2);
-            float d = MathF.Pow(t, 3);
+            var a = MathF.Pow(1 - t, 3);
+            var b = 3 * MathF.Pow(1 - t, 2) * t;
+            var c = 3 * (1 - t) * MathF.Pow(t, 2);
+            var d = MathF.Pow(t, 3);
 
             // Compute the endpoint for this segment
             current.Y = a * curveStartPosition.Y + b * curveStartPositionTangent.Y;
@@ -199,10 +215,10 @@ public unsafe class TexturedCurve
             Vector2 delta = new(current.X - previous.X, current.Y - previous.Y);
 
             // The right hand normal to the delta vector
-            Vector2 normal = Vector2.Normalize(new Vector2(-delta.Y, delta.X));
+            var normal = Vector2.Normalize(new Vector2(-delta.Y, delta.X));
 
-            // The v teXture coordinate of the segment (add up the length of all the segments so far)
-            float v = previousV + delta.Length();
+            // The v texture coordinate of the segment (add up the length of all the segments so far)
+            var v = previousV + delta.Length() / (texRoad.Height * 2);
 
             // Make sure the start point has a normal
             if (!tangentSet)
@@ -211,12 +227,12 @@ public unsafe class TexturedCurve
                 tangentSet = true;
             }
 
-            // EXtend out the normals from the previous and current points to get the quad for this segment
-            Vector2 prevPosNormal = previous + (previousTangent * curveWidth);
-            Vector2 prevNegNormal = previous + (previousTangent * -curveWidth);
+            // Extend out the normals from the previous and current points to get the quad for this segment
+            var prevPosNormal = previous + (previousTangent * curveWidth);
+            var prevNegNormal = previous + (previousTangent * -curveWidth);
 
-            Vector2 currentPosNormal = current + (normal * curveWidth);
-            Vector2 currentNegNormal = current + (normal * -curveWidth);
+            var currentPosNormal = current + (normal * curveWidth);
+            var currentNegNormal = current + (normal * -curveWidth);
 
             // Draw the segment as a quad
             Rlgl.SetTexture(texRoad.Id);
@@ -239,21 +255,21 @@ public unsafe class TexturedCurve
 
             Rlgl.End();
 
-            // The current step is the start of the neXt step
+            // The current step is the start of the next step
             previous = current;
             previousTangent = normal;
             previousV = v;
         }
     }
 
-    static void UpdateOptions()
+    private void UpdateOptions()
     {
         if (IsKeyPressed(KeyboardKey.Space))
         {
             showCurve = !showCurve;
         }
 
-        // Update with
+        // Update width
         if (IsKeyPressed(KeyboardKey.Equal))
         {
             curveWidth += 2;
@@ -281,5 +297,34 @@ public unsafe class TexturedCurve
         {
             curveSegments = 2;
         }
+    }
+
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        SetConfigFlags(ConfigFlags.VSyncHint | ConfigFlags.Msaa4xHint);
+        InitWindow(screenWidth, screenHeight, "raylib [textures] example - textured curve");
+
+        SetTargetFPS(60);
+        //--------------------------------------------------------------------------------------
+
+        var game = new TexturedCurve();
+        game.Init();
+
+        // Main game loop
+        while (!WindowShouldClose())    // Detect window close button or ESC key
+        {
+            game.Update();
+        }
+
+        game.Unload();
+
+        // De-Initialization
+        //--------------------------------------------------------------------------------------
+        CloseWindow();        // Close window and OpenGL context
+        //--------------------------------------------------------------------------------------
+
+        return 0;
     }
 }

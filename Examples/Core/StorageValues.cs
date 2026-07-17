@@ -1,11 +1,15 @@
 /*******************************************************************************************
 *
-*   raylib [core] example - Storage save/load values
+*   raylib [core] example - storage values
 *
-*   This example has been created using raylib 1.4 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example complexity rating: [★★☆☆] 2/4
 *
-*   Copyright (c) 2015 Ramon Santamaria (@raysan5)
+*   Example originally created with raylib 1.4, last time updated with raylib 4.2
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2015-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -13,79 +17,104 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Core;
 
-public class StorageValues
+public partial class StorageValues : IExample
 {
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+    private const string storageDataFile = "storage.data";
+
     // NOTE: Storage positions must start with 0, directly related to file memory layout
-    enum StorageData
+    private enum StorageData
     {
         Score,
         HiScore
+    }
+
+    public string Name => "Core / Storage Values";
+
+    public string Title => "raylib [core] example - storage values";
+
+    private int score = 0;
+    private int hiscore = 0;
+    private int framesCounter = 0;
+
+    public void Init()
+    {
+        score = 0;
+        hiscore = 0;
+        framesCounter = 0;
+    }
+
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        if (IsKeyPressed(KeyboardKey.R))
+        {
+            score = GetRandomValue(1000, 2000);
+            hiscore = GetRandomValue(2000, 4000);
+        }
+
+        if (IsKeyPressed(KeyboardKey.Enter))
+        {
+            SaveStorageValue(storageDataFile, (int)StorageData.Score, score);
+            SaveStorageValue(storageDataFile, (int)StorageData.HiScore, hiscore);
+        }
+        else if (IsKeyPressed(KeyboardKey.Space))
+        {
+            // NOTE: If requested position could not be found, value 0 is returned
+            score = LoadStorageValue(storageDataFile, (int)StorageData.Score);
+            hiscore = LoadStorageValue(storageDataFile, (int)StorageData.HiScore);
+        }
+
+        framesCounter++;
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        DrawText($"SCORE: {score}", 280, 130, 40, Color.Maroon);
+        DrawText($"HI-SCORE: {hiscore}", 210, 200, 50, Color.Black);
+
+        DrawText($"frames: {framesCounter}", 10, 10, 20, Color.Lime);
+
+        DrawText("Press R to generate random numbers", 220, 40, 20, Color.LightGray);
+        DrawText("Press ENTER to SAVE values", 250, 310, 20, Color.LightGray);
+        DrawText("Press SPACE to LOAD values", 252, 350, 20, Color.LightGray);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
     }
 
     public static int Main()
     {
         // Initialization
         //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-        const string storageDataFile = "storage.data";
+        InitWindow(screenWidth, screenHeight, "raylib [core] example - storage values");
 
-        InitWindow(screenWidth, screenHeight, "raylib [core] example - storage save/load values");
-
-        int score = 0;
-        int hiscore = 0;
-        int framesCounter = 0;
-
-        SetTargetFPS(60);
+        SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
         //--------------------------------------------------------------------------------------
 
+        var game = new StorageValues();
+        game.Init();
+
         // Main game loop
-        while (!WindowShouldClose())
+        while (!WindowShouldClose())    // Detect window close button or ESC key
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            if (IsKeyPressed(KeyboardKey.R))
-            {
-                score = GetRandomValue(1000, 2000);
-                hiscore = GetRandomValue(2000, 4000);
-            }
-
-            if (IsKeyPressed(KeyboardKey.Enter))
-            {
-                SaveStorageValue(storageDataFile, (int)StorageData.Score, score);
-                SaveStorageValue(storageDataFile, (int)StorageData.HiScore, hiscore);
-            }
-            else if (IsKeyPressed(KeyboardKey.Space))
-            {
-                // NOTE: If requested position could not be found, value 0 is returned
-                score = LoadStorageValue(storageDataFile, (int)StorageData.Score);
-                hiscore = LoadStorageValue(storageDataFile, (int)StorageData.HiScore);
-            }
-
-            framesCounter++;
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            DrawText($"SCORE: {score}", 280, 130, 40, Color.Maroon);
-            DrawText($"HI-SCORE: {hiscore}", 210, 200, 50, Color.Black);
-
-            DrawText($"frames: {framesCounter}", 10, 10, 20, Color.Lime);
-
-            DrawText("Press R to generate random numbers", 220, 40, 20, Color.LightGray);
-            DrawText("Press ENTER to SAVE values", 250, 310, 20, Color.LightGray);
-            DrawText("Press SPACE to LOAD values", 252, 350, 20, Color.LightGray);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            game.Update();
         }
+
+        game.Unload();
 
         // De-Initialization
         //--------------------------------------------------------------------------------------
-        CloseWindow();
+        CloseWindow();        // Close window and OpenGL context
         //--------------------------------------------------------------------------------------
 
         return 0;
@@ -97,11 +126,11 @@ public class StorageValues
     {
         using var fileNameBuffer = fileName.ToUtf8Buffer();
 
-        bool success = false;
-        int dataSize = 0;
-        int newDataSize = 0;
+        var success = false;
+        var dataSize = 0;
+        var newDataSize = 0;
 
-        byte* fileData = LoadFileData(fileNameBuffer.AsPointer(), &dataSize);
+        var fileData = LoadFileData(fileNameBuffer.AsPointer(), &dataSize);
         byte* newFileData = null;
 
         if (fileData != null)
@@ -115,13 +144,13 @@ public class StorageValues
                 if (newFileData != null)
                 {
                     // RL_REALLOC succeded
-                    int* dataPtr = (int*)newFileData;
+                    var dataPtr = (int*)newFileData;
                     dataPtr[position] = value;
                 }
                 else
                 {
                     // RL_REALLOC failed
-                    int positionInBytes = position * sizeof(int);
+                    var positionInBytes = position * sizeof(int);
                     TraceLog(
                         TraceLogLevel.Warning,
                         @$"FILEIO: [{fileName}] Failed to realloc data ({dataSize}),
@@ -140,7 +169,7 @@ public class StorageValues
                 newDataSize = dataSize;
 
                 // Replace value on selected position
-                int* dataPtr = (int*)newFileData;
+                var dataPtr = (int*)newFileData;
                 dataPtr[position] = value;
             }
 
@@ -155,7 +184,7 @@ public class StorageValues
 
             dataSize = (position + 1) * sizeof(int);
             fileData = (byte*)MemAlloc((uint)dataSize);
-            int* dataPtr = (int*)fileData;
+            var dataPtr = (int*)fileData;
             dataPtr[position] = value;
 
             success = SaveFileData(fileNameBuffer.AsPointer(), fileData, dataSize);
@@ -173,9 +202,9 @@ public class StorageValues
     {
         using var fileNameBuffer = fileName.ToUtf8Buffer();
 
-        int value = 0;
-        int dataSize = 0;
-        byte* fileData = LoadFileData(fileNameBuffer.AsPointer(), &dataSize);
+        var value = 0;
+        var dataSize = 0;
+        var fileData = LoadFileData(fileNameBuffer.AsPointer(), &dataSize);
 
         if (fileData != null)
         {
@@ -188,7 +217,7 @@ public class StorageValues
             }
             else
             {
-                int* dataPtr = (int*)fileData;
+                var dataPtr = (int*)fileData;
                 value = dataPtr[position];
             }
 

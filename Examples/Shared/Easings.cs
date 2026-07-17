@@ -132,26 +132,26 @@ public static class Easings
     // Back Easing functions
     public static float EaseBackIn(float t, float b, float c, float d)
     {
-        float s = 1.70158f;
-        float postFix = t /= d;
+        var s = 1.70158f;
+        var postFix = t /= d;
         return (c * (postFix) * t * ((s + 1) * t - s) + b);
     }
 
     public static float EaseBackOut(float t, float b, float c, float d)
     {
-        float s = 1.70158f;
+        var s = 1.70158f;
         return (c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b);
     }
 
     public static float EaseBackInOut(float t, float b, float c, float d)
     {
-        float s = 1.70158f;
+        var s = 1.70158f;
         if ((t /= d / 2) < 1)
         {
             return (c / 2 * (t * t * (((s *= (1.525f)) + 1) * t - s)) + b);
         }
 
-        float postFix = t -= 2;
+        var postFix = t -= 2;
         return (c / 2 * ((postFix) * t * (((s *= (1.525f)) + 1) * t + s) + 2) + b);
     }
 
@@ -164,17 +164,17 @@ public static class Easings
         }
         else if (t < (2 / 2.75f))
         {
-            float postFix = t -= (1.5f / 2.75f);
+            var postFix = t -= (1.5f / 2.75f);
             return (c * (7.5625f * (postFix) * t + 0.75f) + b);
         }
         else if (t < (2.5 / 2.75))
         {
-            float postFix = t -= (2.25f / 2.75f);
+            var postFix = t -= (2.25f / 2.75f);
             return (c * (7.5625f * (postFix) * t + 0.9375f) + b);
         }
         else
         {
-            float postFix = t -= (2.625f / 2.75f);
+            var postFix = t -= (2.625f / 2.75f);
             return (c * (7.5625f * (postFix) * t + 0.984375f) + b);
         }
     }
@@ -208,10 +208,10 @@ public static class Easings
             return (b + c);
         }
 
-        float p = d * 0.3f;
-        float a = c;
-        float s = p / 4;
-        float postFix = a * MathF.Pow(2, 10 * (t -= 1));
+        var p = d * 0.3f;
+        var a = c;
+        var s = p / 4;
+        var postFix = a * MathF.Pow(2, 10 * (t -= 1));
 
         return (-(postFix * MathF.Sin((t * d - s) * (2 * MathF.PI) / p)) + b);
     }
@@ -227,9 +227,9 @@ public static class Easings
             return (b + c);
         }
 
-        float p = d * 0.3f;
-        float a = c;
-        float s = p / 4;
+        var p = d * 0.3f;
+        var a = c;
+        var s = p / 4;
 
         return (a * MathF.Pow(2, -10 * t) * MathF.Sin((t * d - s) * (2 * MathF.PI) / p) + c + b);
     }
@@ -245,11 +245,11 @@ public static class Easings
             return (b + c);
         }
 
-        float p = d * (0.3f * 1.5f);
-        float a = c;
-        float s = p / 4;
+        var p = d * (0.3f * 1.5f);
+        var a = c;
+        var s = p / 4;
 
-        float postFix = 0f;
+        var postFix = 0f;
         if (t < 1)
         {
             postFix = a * MathF.Pow(2, 10 * (t -= 1));

@@ -1,32 +1,49 @@
 /*******************************************************************************************
 *
-*   raylib [models] example - Skybox loading and drawing
+*   raylib [models] example - skybox rendering
 *
-*   This example has been created using raylib 1.8 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example complexity rating: [★★☆☆] 2/4
 *
-*   Copyright (c) 2017 Ramon Santamaria (@raysan5)
+*   Example originally created with raylib 1.8, last time updated with raylib 4.0
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2017-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
+using System;
 using System.Numerics;
 using static Raylib_cs.Raylib;
 
 namespace Examples.Models;
 
-public class SkyboxDemo
+public partial class SkyboxDemo : IExample
 {
-    public static int Main()
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    // GLSL version used for shaders (330 desktop, 100 web/GLES)
+    public const int GlslVersion = 330;
+
+    public string Name => "Models / Skybox Demo";
+
+    public string Title => "raylib [models] example - skybox rendering";
+
+    public bool CursorDisabled => true;
+
+    private Camera3D camera;
+    private Model skybox;
+    private bool useHdr;
+    private Shader shdrCubemap;
+    private string skyboxFileName;
+    private Texture2D panorama;
+
+    public void Init()
     {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
-        InitWindow(screenWidth, screenHeight, "raylib [models] example - skybox loading and drawing");
-
         // Define the camera to look into our 3d world
-        Camera3D camera = new();
+        camera = new();
         camera.Position = new Vector3(1.0f, 1.0f, 1.0f);
         camera.Target = new Vector3(4.0f, 1.0f, 4.0f);
         camera.Up = new Vector3(0.0f, 1.0f, 0.0f);
@@ -34,14 +51,19 @@ public class SkyboxDemo
         camera.Projection = CameraProjection.Perspective;
 
         // Load skybox model
-        Mesh cube = GenMeshCube(1.0f, 1.0f, 1.0f);
-        Model skybox = LoadModelFromMesh(cube);
+        var cube = GenMeshCube(1.0f, 1.0f, 1.0f);
+        skybox = LoadModelFromMesh(cube);
 
-        bool useHdr = false;
+        // Set this to true to use an HDR Texture
+        // NOTE: raylib must be built with HDR Support for this to work: SUPPORT_FILEFORMAT_HDR
+        useHdr = false;
 
         // Load skybox shader and set required locations
         // NOTE: Some locations are automatically set at shader loading
-        Shader shdrSkybox = LoadShader("resources/shaders/glsl330/skybox.vs", "resources/shaders/glsl330/skybox.fs");
+        var shdrSkybox = LoadShader(
+            $"resources/shaders/glsl{GlslVersion}/skybox.vs",
+            $"resources/shaders/glsl{GlslVersion}/skybox.fs"
+        );
 
         Raylib.SetShaderValue(
             shdrSkybox,
@@ -67,9 +89,9 @@ public class SkyboxDemo
         Raylib.SetMaterialShader(ref skybox, 0, ref shdrSkybox);
 
         // Load cubemap shader and setup required shader locations
-        Shader shdrCubemap = LoadShader(
-            "resources/shaders/glsl330/cubemap.vs",
-            "resources/shaders/glsl330/cubemap.fs"
+        shdrCubemap = LoadShader(
+            $"resources/shaders/glsl{GlslVersion}/cubemap.vs",
+            $"resources/shaders/glsl{GlslVersion}/cubemap.fs"
         );
         Raylib.SetShaderValue(
             shdrCubemap,
@@ -79,14 +101,12 @@ public class SkyboxDemo
         );
 
         // Load skybox
-        string skyboxFileName = "resources/dresden_square_2k.hdr";
-
-        Texture2D panorama;
+        skyboxFileName = "resources/dresden_square_2k.hdr";
 
         if (useHdr)
         {
             panorama = LoadTexture(skyboxFileName);
-            Texture2D cubemap = GenTextureCubemap(
+            var cubemap = GenTextureCubemap(
                 shdrCubemap,
                 panorama,
                 1024,
@@ -97,108 +117,130 @@ public class SkyboxDemo
         }
         else
         {
-            Image img = LoadImage("resources/skybox.png");
-            Texture2D cubemap = LoadTextureCubemap(img, CubemapLayout.AutoDetect);
+            // TODO: WARNING: On PLATFORM_WEB it requires a big amount of memory to process input image
+            // and generate the required cubemap image to be passed to rlLoadTextureCubemap()
+            var img = LoadImage("resources/skybox.png");
+            var cubemap = LoadTextureCubemap(img, CubemapLayout.AutoDetect);
             SetMaterialTexture(ref skybox, 0, MaterialMapIndex.Cubemap, ref cubemap);
             UnloadImage(img);
         }
+    }
 
-        DisableCursor();
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        UpdateCamera(ref camera, CameraMode.FirstPerson);
 
-        SetTargetFPS(60);
-        //--------------------------------------------------------------------------------------
-
-        // Main game loop
-        while (!WindowShouldClose())
+        // Load new cubemap texture on drag & drop
+        if (IsFileDropped())
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            UpdateCamera(ref camera, CameraMode.FirstPerson);
+            var files = Raylib.GetDroppedFiles();
 
-            // Load new cubemap texture on drag & drop
-            if (IsFileDropped())
+            if (files.Length == 1)
             {
-                string[] files = Raylib.GetDroppedFiles();
-
-                if (files.Length == 1)
+                if (IsFileExtension(files[0], ".png;.jpg;.hdr;.bmp;.tga"))
                 {
-                    if (IsFileExtension(files[0], ".png;.jpg;.hdr;.bmp;.tga"))
+                    // Unload cubemap texture and load new one
+                    UnloadTexture(Raylib.GetMaterialTexture(ref skybox, 0, MaterialMapIndex.Cubemap));
+
+                    if (useHdr)
                     {
-                        // Unload cubemap texture and load new one
-                        UnloadTexture(Raylib.GetMaterialTexture(ref skybox, 0, MaterialMapIndex.Cubemap));
-
-                        if (useHdr)
-                        {
-                            panorama = LoadTexture(files[0]);
-                            Texture2D cubemap = GenTextureCubemap(
-                                shdrCubemap,
-                                panorama,
-                                1024,
-                                PixelFormat.UncompressedR8G8B8A8
-                            );
-                            SetMaterialTexture(ref skybox, 0, MaterialMapIndex.Cubemap, ref cubemap);
-                            UnloadTexture(panorama);
-                        }
-                        else
-                        {
-                            Image img = LoadImage(files[0]);
-                            Texture2D cubemap = LoadTextureCubemap(img, CubemapLayout.AutoDetect);
-                            SetMaterialTexture(ref skybox, 0, MaterialMapIndex.Cubemap, ref cubemap);
-                            UnloadImage(img);
-                        }
-
-                        skyboxFileName = files[0];
+                        panorama = LoadTexture(files[0]);
+                        var cubemap = GenTextureCubemap(
+                            shdrCubemap,
+                            panorama,
+                            1024,
+                            PixelFormat.UncompressedR8G8B8A8
+                        );
+                        SetMaterialTexture(ref skybox, 0, MaterialMapIndex.Cubemap, ref cubemap);
+                        UnloadTexture(panorama);
                     }
+                    else
+                    {
+                        var img = LoadImage(files[0]);
+                        var cubemap = LoadTextureCubemap(img, CubemapLayout.AutoDetect);
+                        SetMaterialTexture(ref skybox, 0, MaterialMapIndex.Cubemap, ref cubemap);
+                        UnloadImage(img);
+                    }
+
+                    skyboxFileName = files[0];
                 }
             }
-            //----------------------------------------------------------------------------------
+        }
+        //----------------------------------------------------------------------------------
 
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
 
-            BeginMode3D(camera);
+        BeginMode3D(camera);
 
-            // We are inside the cube, we need to disable backface culling!
-            Rlgl.DisableBackfaceCulling();
-            Rlgl.DisableDepthMask();
-            DrawModel(skybox, Vector3.Zero, 1.0f, Color.White);
-            Rlgl.EnableBackfaceCulling();
-            Rlgl.EnableDepthMask();
+        // We are inside the cube, we need to disable backface culling!
+        Rlgl.DisableBackfaceCulling();
+        Rlgl.DisableDepthMask();
+        DrawModel(skybox, Vector3.Zero, 1.0f, Color.White);
+        Rlgl.EnableBackfaceCulling();
+        Rlgl.EnableDepthMask();
 
-            DrawGrid(10, 1.0f);
+        DrawGrid(10, 1.0f);
 
-            EndMode3D();
+        EndMode3D();
 
-            if (useHdr)
-            {
-                DrawText(
-                    $"Panorama image from hdrihaven.com: {skyboxFileName}",
-                    10,
-                    GetScreenHeight() - 20,
-                    10,
-                    Color.Black
-                );
-            }
-            else
-            {
-                DrawText($": {skyboxFileName}", 10, GetScreenHeight() - 20, 10, Color.Black);
-            }
-
-            DrawFPS(10, 10);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+        if (useHdr)
+        {
+            DrawText(
+                $"Panorama image from hdrihaven.com: {skyboxFileName}",
+                10,
+                GetScreenHeight() - 20,
+                10,
+                Color.Black
+            );
+        }
+        else
+        {
+            DrawText($": {skyboxFileName}", 10, GetScreenHeight() - 20, 10, Color.Black);
         }
 
-        // De-Initialization
-        //--------------------------------------------------------------------------------------
+        DrawFPS(10, 10);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
         UnloadShader(Raylib.GetMaterial(ref skybox, 0).Shader);
         UnloadTexture(Raylib.GetMaterialTexture(ref skybox, 0, MaterialMapIndex.Cubemap));
 
         UnloadModel(skybox);
+    }
 
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        InitWindow(screenWidth, screenHeight, "raylib [models] example - skybox rendering");
+
+        DisableCursor();                    // Limit cursor to relative movement inside the window
+
+        SetTargetFPS(60);
+        //--------------------------------------------------------------------------------------
+
+        var game = new SkyboxDemo();
+        game.Init();
+
+        // Main game loop
+        while (!WindowShouldClose())
+        {
+            game.Update();
+        }
+
+        game.Unload();
+
+        // De-Initialization
+        //--------------------------------------------------------------------------------------
         CloseWindow();
         //--------------------------------------------------------------------------------------
 
@@ -215,10 +257,10 @@ public class SkyboxDemo
 
         // STEP 1: Setup framebuffer
         //------------------------------------------------------------------------------------------
-        uint rbo = Rlgl.LoadTextureDepth(size, size, true);
+        var rbo = Rlgl.LoadTextureDepth(size, size, true);
         cubemap.Id = Rlgl.LoadTextureCubemap(null, size, format, 1);
 
-        uint fbo = Rlgl.LoadFramebuffer();
+        var fbo = Rlgl.LoadFramebuffer();
         Rlgl.FramebufferAttach(
             fbo,
             rbo,
@@ -235,7 +277,7 @@ public class SkyboxDemo
         );
 
         // Check if framebuffer is complete with attachments (valid)
-        if (Rlgl.FramebufferComplete(fbo))
+        if (Rlgl.FramebufferComplete(fbo) != 0)
         {
             Console.WriteLine($"FBO: [ID {fbo}] Framebuffer object created successfully");
         }
@@ -247,7 +289,7 @@ public class SkyboxDemo
         Rlgl.EnableShader(shader.Id);
 
         // Define projection matrix and send it to shader
-        Matrix4x4 matFboProjection = Raymath.MatrixPerspective(
+        var matFboProjection = Raymath.MatrixPerspective(
             90.0f * DEG2RAD,
             1.0f,
             Rlgl.CULL_DISTANCE_NEAR,
@@ -256,14 +298,14 @@ public class SkyboxDemo
         Rlgl.SetUniformMatrix(shader.Locs[(int)ShaderLocationIndex.MatrixProjection], matFboProjection);
 
         // Define view matrix for every side of the cubemap
-        Matrix4x4[] fboViews = new[]
+        var fboViews = new[]
         {
-            Raymath.MatrixLookAt(Vector3.Zero, new Vector3(-1.0f,  0.0f,  0.0f), new Vector3( 0.0f, -1.0f,  0.0f)),
             Raymath.MatrixLookAt(Vector3.Zero, new Vector3( 1.0f,  0.0f,  0.0f), new Vector3( 0.0f, -1.0f,  0.0f)),
+            Raymath.MatrixLookAt(Vector3.Zero, new Vector3(-1.0f,  0.0f,  0.0f), new Vector3( 0.0f, -1.0f,  0.0f)),
             Raymath.MatrixLookAt(Vector3.Zero, new Vector3( 0.0f,  1.0f,  0.0f), new Vector3( 0.0f,  0.0f,  1.0f)),
             Raymath.MatrixLookAt(Vector3.Zero, new Vector3( 0.0f, -1.0f,  0.0f), new Vector3( 0.0f,  0.0f, -1.0f)),
-            Raymath.MatrixLookAt(Vector3.Zero, new Vector3( 0.0f,  0.0f, -1.0f), new Vector3( 0.0f, -1.0f,  0.0f)),
             Raymath.MatrixLookAt(Vector3.Zero, new Vector3( 0.0f,  0.0f,  1.0f), new Vector3( 0.0f, -1.0f,  0.0f)),
+            Raymath.MatrixLookAt(Vector3.Zero, new Vector3( 0.0f,  0.0f, -1.0f), new Vector3( 0.0f, -1.0f,  0.0f)),
         };
 
         // Set viewport to current fbo dimensions
@@ -273,7 +315,7 @@ public class SkyboxDemo
         Rlgl.ActiveTextureSlot(0);
         Rlgl.EnableTexture(panorama.Id);
 
-        for (int i = 0; i < 6; i++)
+        for (var i = 0; i < 6; i++)
         {
             // Set the view matrix for the current cube face
             Rlgl.SetUniformMatrix(shader.Locs[(int)ShaderLocationIndex.MatrixView], fboViews[i]);

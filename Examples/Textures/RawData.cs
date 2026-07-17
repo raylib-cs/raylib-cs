@@ -1,13 +1,17 @@
 /*******************************************************************************************
 *
-*   raylib [textures] example - Load textures from raw data
+*   raylib [textures] example - raw data
+*
+*   Example complexity rating: [★★★☆] 3/4
 *
 *   NOTE: Images are loaded in CPU memory (RAM); textures are loaded in GPU memory (VRAM)
 *
-*   This example has been created using raylib 1.3 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*   Example originally created with raylib 1.3, last time updated with raylib 3.5
 *
-*   Copyright (c) 2015 Ramon Santamaria (@raysan5)
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2015-2025 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 
@@ -15,98 +19,125 @@ using static Raylib_cs.Raylib;
 
 namespace Examples.Textures;
 
-public class RawData
+public partial class RawData : IExample
 {
-    public unsafe static int Main()
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    public string Name => "Textures / Raw Data";
+
+    public string Title => "raylib [textures] example - raw data";
+
+    private Texture2D fudesumi;
+    private Texture2D checkedTex;
+
+    public unsafe void Init()
     {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
-
-        InitWindow(screenWidth, screenHeight, "raylib [textures] example - texture from raw data");
-
         // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
 
         // Load RAW image data (512x512, 32bit RGBA, no file header)
-        Image fudesumiRaw = LoadImageRaw(
+        var fudesumiRaw = LoadImageRaw(
             "resources/fudesumi.raw",
             384,
             512,
             PixelFormat.UncompressedR8G8B8A8,
             0
         );
-        Texture2D fudesumi = LoadTextureFromImage(fudesumiRaw);
-        UnloadImage(fudesumiRaw);
+        fudesumi = LoadTextureFromImage(fudesumiRaw);   // Upload CPU (RAM) image to GPU (VRAM)
+        UnloadImage(fudesumiRaw);                       // Unload CPU (RAM) image data
 
         // Generate a checked texture by code
-        int width = 960;
-        int height = 480;
+        var imWidth = 960;
+        var imHeight = 480;
 
-        // Store pixel data
-        Color* pixels = (Color*)Raylib.MemAlloc((uint)(width * height * sizeof(Color)));
-        for (int y = 0; y < height; y++)
+        // Dynamic memory allocation to store pixels data (Color type)
+        // WARNING: Using raylib provided MemAlloc() that uses default raylib
+        // internal memory allocator, so this data can be freed using UnloadImage()
+        // that also uses raylib internal memory de-allocator
+        var pixels = (Color*)Raylib.MemAlloc((uint)(imWidth * imHeight * sizeof(Color)));
+
+        for (var y = 0; y < imHeight; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (var x = 0; x < imWidth; x++)
             {
                 if (((x / 32 + y / 32) / 1) % 2 == 0)
                 {
-                    pixels[y * width + x] = Color.Orange;
+                    pixels[y * imWidth + x] = Color.Orange;
                 }
                 else
                 {
-                    pixels[y * width + x] = Color.Gold;
+                    pixels[y * imWidth + x] = Color.Gold;
                 }
             }
         }
 
         // Load pixels data into an image structure and create texture
-        Image checkedIm = new Image
+        // NOTE: We can assign pixels directly to data because Color is R8G8B8A8
+        // data structure defining that pixelformat, format must be set properly
+        var checkedIm = new Image
         {
             Data = pixels,
-            Width = width,
-            Height = height,
+            Width = imWidth,
+            Height = imHeight,
             Format = PixelFormat.UncompressedR8G8B8A8,
             Mipmaps = 1,
         };
-        Texture2D checkedTex = LoadTextureFromImage(checkedIm);
-        Raylib.MemFree(pixels);
+
+        checkedTex = LoadTextureFromImage(checkedIm);
+        Raylib.MemFree(pixels);         // Unload CPU (RAM) image data (pixels)
+    }
+
+    public void Update()
+    {
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        var x = screenWidth / 2 - checkedTex.Width / 2;
+        var y = screenHeight / 2 - checkedTex.Height / 2;
+        DrawTexture(checkedTex, x, y, Fade(Color.White, 0.5f));
+        DrawTexture(fudesumi, 430, -30, Color.White);
+
+        DrawText("CHECKED TEXTURE ", 84, 85, 30, Color.Brown);
+        DrawText("GENERATED by CODE", 72, 148, 30, Color.Brown);
+        DrawText("and RAW IMAGE LOADING", 46, 210, 30, Color.Brown);
+
+        DrawText("(c) Fudesumi sprite by Eiden Marsal", 310, screenHeight - 20, 10, Color.Brown);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
+        UnloadTexture(fudesumi);    // Texture unloading
+        UnloadTexture(checkedTex);  // Texture unloading
+    }
+
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        InitWindow(screenWidth, screenHeight, "raylib [textures] example - raw data");
+
+        SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
         //---------------------------------------------------------------------------------------
 
+        var game = new RawData();
+        game.Init();
+
         // Main game loop
-        while (!WindowShouldClose())
+        while (!WindowShouldClose())    // Detect window close button or ESC key
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            // TODO: Update your variables here
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            int x = screenWidth / 2 - checkedTex.Width / 2;
-            int y = screenHeight / 2 - checkedTex.Height / 2;
-            DrawTexture(checkedTex, x, y, ColorAlpha(Color.White, 0.5f));
-            DrawTexture(fudesumi, 430, -30, Color.White);
-
-            DrawText("CHECKED TEXTURE ", 84, 85, 30, Color.Brown);
-            DrawText("GENERATED by CODE", 72, 148, 30, Color.Brown);
-            DrawText("and RAW IMAGE LOADING", 46, 210, 30, Color.Brown);
-
-            DrawText("(c) Fudesumi sprite by Eiden Marsal", 310, screenHeight - 20, 10, Color.Brown);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            game.Update();
         }
+
+        game.Unload();
 
         // De-Initialization
         //--------------------------------------------------------------------------------------
-        UnloadTexture(fudesumi);
-        UnloadTexture(checkedTex);
-
-        CloseWindow();
+        CloseWindow();              // Close window and OpenGL context
         //--------------------------------------------------------------------------------------
 
         return 0;

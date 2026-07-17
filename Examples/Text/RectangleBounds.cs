@@ -1,153 +1,172 @@
+/*******************************************************************************************
+*
+*   raylib [text] example - rectangle bounds
+*
+*   Example complexity rating: [★★★★] 4/4
+*
+*   Example originally created with raylib 2.5, last time updated with raylib 4.0
+*
+*   Example contributed by Vlad Adrian (@demizdor) and reviewed by Ramon Santamaria (@raysan5)
+*
+*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+*   BSD-like license that allows static linking with closed source software
+*
+*   Copyright (c) 2018-2025 Vlad Adrian (@demizdor) and Ramon Santamaria (@raysan5)
+*
+********************************************************************************************/
+
 using System.Numerics;
 using static Raylib_cs.Raylib;
 
 namespace Examples.Text;
 
-public class RectangleBounds
+public partial class RectangleBounds : IExample
 {
-    public static int Main()
+    private const int screenWidth = 800;
+    private const int screenHeight = 450;
+
+    // Minimum width and heigh for the container rectangle
+    private const float minWidth = 60;
+    private const float minHeight = 60;
+    private const float maxWidth = screenWidth - 50.0f;
+    private const float maxHeight = screenHeight - 160.0f;
+
+    public string Name => "Text / Rectangle Bounds";
+
+    public string Title => "raylib [text] example - rectangle bounds";
+
+    private string text;
+    private bool resizing;
+    private bool wordWrap;
+
+    private Rectangle container;
+    private Rectangle resizer;
+
+    private Vector2 lastMouse;
+    private Color borderColor;
+    private Font font;
+
+    public void Init()
     {
-        // Initialization
-        //--------------------------------------------------------------------------------------
-        const int screenWidth = 800;
-        const int screenHeight = 450;
+        text = "Text cannot escape\tthis container\t...word wrap also works when active so here's " +
+            "a long text for testing.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod " +
+            "tempor incididunt ut labore et dolore magna aliqua. Nec ullamcorper sit amet risus nullam eget felis eget.";
 
-        InitWindow(screenWidth, screenHeight, "raylib [text] example - draw text inside a rectangle");
+        resizing = false;
+        wordWrap = true;
 
-        string text = "";
-        text += "Text cannot escape this container ...word wrap also works when active so here's a long text for testing.";
-        text += "\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ";
-        text += "incididunt ut labore et dolore magna aliqua. Nec ullamcorper sit amet risus nullam eget felis eget.";
-
-        bool resizing = false;
-        bool wordWrap = true;
-
-        Rectangle container = new(25, 25, screenWidth - 50, screenHeight - 250);
-        Rectangle resizer = new(
+        container = new(25.0f, 25.0f, screenWidth - 50.0f, screenHeight - 250.0f);
+        resizer = new(
             container.X + container.Width - 17,
             container.Y + container.Height - 17,
             14,
             14
         );
 
-        // Minimum width and heigh for the container rectangle
-        const int minWidth = 60;
-        const int minHeight = 60;
-        const int maxWidth = screenWidth - 50;
-        const int maxHeight = screenHeight - 160;
+        lastMouse = new(0.0f, 0.0f); // Stores last mouse coordinates
+        borderColor = Color.Maroon;  // Container border color
+        font = GetFontDefault();     // Get default system font
+    }
 
-        Vector2 lastMouse = new(0.0f, 0.0f);
-        Color borderColor = Color.Maroon;
-        Font font = GetFontDefault();
-
-        SetTargetFPS(60);
-        //--------------------------------------------------------------------------------------
-
-        // Main game loop
-        while (!WindowShouldClose())
+    public void Update()
+    {
+        // Update
+        //----------------------------------------------------------------------------------
+        if (IsKeyPressed(KeyboardKey.Space))
         {
-            // Update
-            //----------------------------------------------------------------------------------
-            if (IsKeyPressed(KeyboardKey.Space))
-            {
-                wordWrap = !wordWrap;
-            }
-
-            Vector2 mouse = GetMousePosition();
-
-            // Check if the mouse is inside the container and toggle border color
-            if (CheckCollisionPointRec(mouse, container))
-            {
-                borderColor = ColorAlpha(Color.Maroon, 0.4f);
-            }
-            else if (!resizing)
-            {
-                borderColor = Color.Maroon;
-            }
-
-            // Container resizing logic
-            if (resizing)
-            {
-                if (IsMouseButtonReleased(MouseButton.Left))
-                {
-                    resizing = false;
-                }
-
-                int width = (int)(container.Width + (mouse.X - lastMouse.X));
-                container.Width = (width > minWidth) ? ((width < maxWidth) ? width : maxWidth) : minWidth;
-
-                int height = (int)(container.Height + (mouse.Y - lastMouse.Y));
-                container.Height = (height > minHeight) ? ((height < maxHeight) ? height : maxHeight) : minHeight;
-            }
-            else
-            {
-                // Check if we're resizing
-                if (IsMouseButtonDown(MouseButton.Left) && CheckCollisionPointRec(mouse, resizer))
-                {
-                    resizing = true;
-                }
-            }
-
-            // Move resizer rectangle properly
-            resizer.X = container.X + container.Width - 17;
-            resizer.Y = container.Y + container.Height - 17;
-
-            lastMouse = mouse; // Update mouse
-            //----------------------------------------------------------------------------------
-
-            // Draw
-            //----------------------------------------------------------------------------------
-            BeginDrawing();
-            ClearBackground(Color.RayWhite);
-
-            // Draw container border
-            DrawRectangleLinesEx(container, 3, borderColor);
-
-            // Draw text in container (add some padding)
-            DrawTextBoxed(
-                font,
-                text,
-                new Rectangle(container.X + 4, container.Y + 4, container.Width - 4, container.Height - 4),
-                20.0f,
-                2.0f,
-                wordWrap,
-                Color.Gray
-            );
-
-            DrawRectangleRec(resizer, borderColor);
-
-            // Draw bottom info
-            DrawRectangle(0, screenHeight - 54, screenWidth, 54, Color.Gray);
-            DrawRectangleRec(new Rectangle(382, screenHeight - 34, 12, 12), Color.Maroon);
-
-            DrawText("Word Wrap: ", 313, screenHeight - 115, 20, Color.Black);
-
-            if (wordWrap)
-            {
-                DrawText("ON", 447, screenHeight - 115, 20, Color.Red);
-            }
-            else
-            {
-                DrawText("OFF", 447, screenHeight - 115, 20, Color.Black);
-            }
-
-            DrawText("Press [SPACE] to toggle word wrap", 218, screenHeight - 86, 20, Color.Gray);
-            DrawText("Click hold & drag the    to resize the container", 155, screenHeight - 38, 20, Color.RayWhite);
-
-            EndDrawing();
-            //----------------------------------------------------------------------------------
+            wordWrap = !wordWrap;
         }
 
-        // De-Initialization
-        //--------------------------------------------------------------------------------------
-        CloseWindow();
-        //--------------------------------------------------------------------------------------
+        var mouse = GetMousePosition();
 
-        return 0;
+        // Check if the mouse is inside the container and toggle border color
+        if (CheckCollisionPointRec(mouse, container))
+        {
+            borderColor = Fade(Color.Maroon, 0.4f);
+        }
+        else if (!resizing)
+        {
+            borderColor = Color.Maroon;
+        }
+
+        // Container resizing logic
+        if (resizing)
+        {
+            if (IsMouseButtonReleased(MouseButton.Left))
+            {
+                resizing = false;
+            }
+
+            var width = container.Width + (mouse.X - lastMouse.X);
+            container.Width = (width > minWidth) ? ((width < maxWidth) ? width : maxWidth) : minWidth;
+
+            var height = container.Height + (mouse.Y - lastMouse.Y);
+            container.Height = (height > minHeight) ? ((height < maxHeight) ? height : maxHeight) : minHeight;
+        }
+        else
+        {
+            // Check if we're resizing
+            if (IsMouseButtonDown(MouseButton.Left) && CheckCollisionPointRec(mouse, resizer))
+            {
+                resizing = true;
+            }
+        }
+
+        // Move resizer rectangle properly
+        resizer.X = container.X + container.Width - 17;
+        resizer.Y = container.Y + container.Height - 17;
+
+        lastMouse = mouse; // Update mouse
+        //----------------------------------------------------------------------------------
+
+        // Draw
+        //----------------------------------------------------------------------------------
+        BeginDrawing();
+        ClearBackground(Color.RayWhite);
+
+        DrawRectangleLinesEx(container, 3, borderColor);    // Draw container border
+
+        // Draw text in container (add some padding)
+        DrawTextBoxed(
+            font,
+            text,
+            new Rectangle(container.X + 4, container.Y + 4, container.Width - 4, container.Height - 4),
+            20.0f,
+            2.0f,
+            wordWrap,
+            Color.Gray
+        );
+
+        DrawRectangleRec(resizer, borderColor);             // Draw the resize box
+
+        // Draw bottom info
+        DrawRectangle(0, screenHeight - 54, screenWidth, 54, Color.Gray);
+        DrawRectangleRec(new Rectangle(382, screenHeight - 34, 12, 12), Color.Maroon);
+
+        DrawText("Word Wrap: ", 313, screenHeight - 115, 20, Color.Black);
+
+        if (wordWrap)
+        {
+            DrawText("ON", 447, screenHeight - 115, 20, Color.Red);
+        }
+        else
+        {
+            DrawText("OFF", 447, screenHeight - 115, 20, Color.Black);
+        }
+
+        DrawText("Press [SPACE] to toggle word wrap", 218, screenHeight - 86, 20, Color.Gray);
+        DrawText("Click hold & drag the    to resize the container", 155, screenHeight - 38, 20, Color.RayWhite);
+
+        EndDrawing();
+        //----------------------------------------------------------------------------------
+    }
+
+    public void Unload()
+    {
     }
 
     // Draw text using font inside rectangle limits
-    static void DrawTextBoxed(
+    private static void DrawTextBoxed(
         Font font,
         string text,
         Rectangle rec,
@@ -161,7 +180,7 @@ public class RectangleBounds
     }
 
     // Draw text using font inside rectangle limits with support for text selection
-    static unsafe void DrawTextBoxedSelectable(
+    private static unsafe void DrawTextBoxedSelectable(
         Font font,
         string text,
         Rectangle rec,
@@ -175,37 +194,37 @@ public class RectangleBounds
         Color selectBackTint
     )
     {
-        int length = text.Length;
+        var length = text.Length;
 
         // Offset between lines (on line break '\n')
         float textOffsetY = 0;
 
         // Offset X to next character to draw
-        float textOffsetX = 0.0f;
+        var textOffsetX = 0.0f;
 
         // Character rectangle scaling factor
-        float scaleFactor = fontSize / (float)font.BaseSize;
+        var scaleFactor = fontSize / (float)font.BaseSize;
 
         // Word/character wrapping mechanism variables
-        bool shouldMeasure = wordWrap;
+        var shouldMeasure = wordWrap;
 
         // Index where to begin drawing (where a line begins)
-        int startLine = -1;
+        var startLine = -1;
 
         // Index where to stop drawing (where a line ends)
-        int endLine = -1;
+        var endLine = -1;
 
         // Holds last value of the character position
-        int lastk = -1;
+        var lastk = -1;
 
         using var textNative = new Utf8Buffer(text);
 
         for (int i = 0, k = 0; i < length; i++, k++)
         {
             // Get next codepoint from byte string and glyph index in font
-            int codepointByteCount = 0;
-            int codepoint = GetCodepoint(&textNative.AsPointer()[i], &codepointByteCount);
-            int index = GetGlyphIndex(font, codepoint);
+            var codepointByteCount = 0;
+            var codepoint = GetCodepoint(&textNative.AsPointer()[i], &codepointByteCount);
+            var index = GetGlyphIndex(font, codepoint);
 
             // NOTE: Normally we exit the decoding sequence as soon as a bad byte is found (and return 0x3f)
             // but we need to draw all of the bad bytes using the '?' symbol moving one byte
@@ -275,7 +294,7 @@ public class RectangleBounds
                     glyphWidth = 0;
 
                     // Save character position when we switch states
-                    int tmp = lastk;
+                    var tmp = lastk;
                     lastk = k - 1;
                     k = tmp;
                 }
@@ -305,7 +324,7 @@ public class RectangleBounds
                     }
 
                     // Draw selection background
-                    bool isGlyphSelected = false;
+                    var isGlyphSelected = false;
                     if ((selectStart >= 0) && (k >= selectStart) && (k < (selectStart + selectLength)))
                     {
                         DrawRectangleRec(
@@ -353,5 +372,33 @@ public class RectangleBounds
                 textOffsetX += glyphWidth;
             }
         }
+    }
+
+    public static int Main()
+    {
+        // Initialization
+        //--------------------------------------------------------------------------------------
+        InitWindow(screenWidth, screenHeight, "raylib [text] example - rectangle bounds");
+
+        SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
+        //--------------------------------------------------------------------------------------
+
+        var game = new RectangleBounds();
+        game.Init();
+
+        // Main game loop
+        while (!WindowShouldClose())        // Detect window close button or ESC key
+        {
+            game.Update();
+        }
+
+        game.Unload();
+
+        // De-Initialization
+        //--------------------------------------------------------------------------------------
+        CloseWindow();        // Close window and OpenGL context
+        //--------------------------------------------------------------------------------------
+
+        return 0;
     }
 }
