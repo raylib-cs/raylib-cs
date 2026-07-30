@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>raylib-cs — browser examples</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico"/>
+    <link rel="modulepreload" href="./main.js"/>
+    <link rel="modulepreload" href="./_framework/dotnet.js"/>
+    <style>
+        html, body { height: 100%; }
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 0;
+            padding: 0.75rem;
+            box-sizing: border-box;
+            background: #1d1d1d;
+            color: #eaeaea;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        h1 { font-size: 1.1rem; font-weight: 600; }
+        #toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 0.25rem; }
+        #examples { font-size: 1rem; padding: .3rem .5rem; }
+        #previousExample, #nextExample { font-size: .9rem; padding: .3rem .6rem; }
+        #scaleMode { font-size: 0.95rem; padding: .2rem .4rem; }
+        #viewport {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+            background: #111;
+        }
+        canvas {
+            border: 1px solid #444;
+            display: block;
+            flex: 0 0 auto;
+            width: 800px;
+            height: 450px;
+            max-width: none;
+            max-height: none;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            background: #000;
+        }
+        #status { color: #888; font-size: .85rem; margin: 0; }
+        #error {
+            color: #ff6b6b;
+            background: #3a1d1d;
+            border: 1px solid #6b2b2b;
+            border-radius: 4px;
+            padding: .4rem .6rem;
+            font-size: .9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>raylib-cs running in the browser (WebAssembly)</h1>
+    <div id="toolbar">
+        <label for="examples">Example:&nbsp;</label>
+        <select id="examples"><option>loading…</option></select>
+        <button id="previousExample" type="button">Prev</button>
+        <button id="nextExample" type="button">Next</button>
+        <label for="scaleMode">&nbsp;Scale:&nbsp;</label>
+        <select id="scaleMode">
+            <option value="integer">Integer</option>
+            <option value="native">Native (1x)</option>
+            <option value="fit">Fit</option>
+        </select>
+    </div>
+    <div id="error" hidden>This example crashed — see the browser console for details. Select another example to continue.</div>
+    <div id="viewport">
+        <canvas id="canvas" width="800" height="450" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
+    </div>
+    <div id="status">Initializing .NET + raylib…</div>
+
+    <script type="module" src="./main.js"></script>
+</body>
+</html>

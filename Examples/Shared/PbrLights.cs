@@ -1,6 +1,3 @@
-using static Raylib_cs.Raylib;
-using System.Numerics;
-
 namespace Examples.Shared;
 
 public struct PbrLight
@@ -54,12 +51,12 @@ public class PbrLights
         );
         light.Intensity = intensity;
 
-        string enabledName = "lights[" + lightsCount + "].enabled";
-        string typeName = "lights[" + lightsCount + "].type";
-        string posName = "lights[" + lightsCount + "].position";
-        string targetName = "lights[" + lightsCount + "].target";
-        string colorName = "lights[" + lightsCount + "].color";
-        string intensityName = "lights[" + lightsCount + "].intensity";
+        var enabledName = "lights[" + lightsCount + "].enabled";
+        var typeName = "lights[" + lightsCount + "].type";
+        var posName = "lights[" + lightsCount + "].position";
+        var targetName = "lights[" + lightsCount + "].target";
+        var colorName = "lights[" + lightsCount + "].color";
+        var intensityName = "lights[" + lightsCount + "].intensity";
 
         light.EnabledLoc = GetShaderLocation(shader, enabledName);
         light.TypeLoc = GetShaderLocation(shader, typeName);

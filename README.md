@@ -115,6 +115,22 @@ internal static class Program
 }
 ```
 
+## Building the examples locally
+
+The `Examples` project references the sibling `Raylib-cs` project by default, so local changes to the
+bindings are picked up directly:
+
+```
+dotnet run --project Examples
+```
+
+To build the examples against the Raylib-cs NuGet package instead (the version set by
+`RaylibCsVersion` in [Directory.Build.props](Directory.Build.props)), set `UseRaylibCsPackage`:
+
+```
+dotnet run --project Examples -p:UseRaylibCsPackage=true
+```
+
 ## Contributing
 
 Feel free to open an issue. If you'd like to contribute, please fork the repository and make
