@@ -46,7 +46,7 @@ public partial class EllipseCollision : IExample
     }
 
     // Check if two ellipses collide
-    // Uses radial boundary distance in the direction between centers — scales correctly with radii
+    // Uses radial boundary distance in the direction between centers - scales correctly with radii
     private static bool CheckCollisionEllipses(Vector2 c1, float rx1, float ry1, Vector2 c2, float rx2, float ry2)
     {
         float dx = c2.X - c1.X;

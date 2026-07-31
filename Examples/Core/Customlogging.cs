@@ -80,7 +80,7 @@ public unsafe partial class CustomLogging : IExample
     {
 #if !BROWSER
         // Restore the default formatting logger on desktop. On WebAssembly we leave the (wasm-safe)
-        // custom logger in place — Logging.LogConsole formats via vsprintf, which traps on wasm.
+        // custom logger in place - Logging.LogConsole formats via vsprintf, which traps on wasm.
         SetTraceLogCallback(&Logging.LogConsole);
 #endif
     }

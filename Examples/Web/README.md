@@ -1,4 +1,4 @@
-# Examples/Web — raylib-cs in the browser (WebAssembly)
+# Examples/Web - raylib-cs in the browser (WebAssembly)
 
 Runs the raylib examples in the browser via WebAssembly, with a dropdown and Prev/Next buttons
 to switch between them.
@@ -73,7 +73,7 @@ page), so frames are driven from JavaScript:
 
 ## Adding more examples
 
-Examples are **auto-discovered by reflection** (`ExampleRegistry.DiscoverAll`) — no list to edit.
+Examples are **auto-discovered by reflection** (`ExampleRegistry.DiscoverAll`) - no list to edit.
 Drop a new `.cs` file in the matching category folder implementing `IExample`, splitting the
 original monolithic `Main` as:
 
