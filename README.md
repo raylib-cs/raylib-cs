@@ -34,8 +34,9 @@ accepted if they don't have a large maintenance burden.
 
 This is the preferred method to get started.
 
-1) Pick a folder in which you would like to start a raylib project. For example, "HelloRaylibCS."
-2) Then from a terminal (for example, a VSCode terminal), whilst in the directory you just created
+1. Pick a folder in which you would like to start a raylib project. For example, "HelloRaylibCS."
+
+2. Then from a terminal (for example, a VSCode terminal), whilst in the directory you just created
     run the following commands. (Please keep in mind .NET should already be installed on your system)
 
 ```sh
@@ -47,23 +48,29 @@ dotnet add package Raylib-cs
 
 [![NuGet](https://img.shields.io/nuget/dt/raylib-cs)](https://www.nuget.org/packages/Raylib-cs/)
 
-If you need to edit the Raylib-cs source, then you will need to add the bindings as a project (see below).
-
 If you are new to using NuGet (or you've forgotten) and are trying to run the above command in the command prompt,
 remember that you need to be *inside the intended project directory* (not just inside the solution directory); 
 otherwise the command won't work.
 
-## Installation - Manual
+## Installation - Source
 
-1. Download/clone the repo
+1. Pick a folder in which you would like to start a raylib project. For example, "HelloRaylibCS."
 
-2. Add [Raylib-cs/Raylib-cs.csproj](Raylib-cs/Raylib-cs.csproj) to your project as an existing project.
+2. Download or clone the repo.
 
-3. Download/build the native libraries for the platforms you want using the [official 6.0 release](https://github.com/raysan5/raylib/releases/tag/6.0). **NOTE: the MSVC version is required for Windows platforms**
+3. Add [Raylib-cs/Raylib-cs.csproj](Raylib-cs/Raylib-cs.csproj) to your project as an existing project.
 
-4. Set up the native libraries, so they are in the same directory as the executable/can be found in the [search path](https://www.mono-project.com/docs/advanced/pinvoke/).
+4. Choose one of the following options to include the native libraries.
 
-5. Start coding!
+Automatic:
+
+1. Import [Raylib-cs/Raylib-cs.targets](Raylib-cs/Raylib-cs.targets) into your project to add native libraries automatically.
+
+Manual:
+
+1. Download or build the native libraries for the platforms you want using the [official 6.0 release](https://github.com/raysan5/raylib/releases/tag/6.0). **NOTE: the MSVC version is required for Windows platforms**.
+
+2. Set up the native libraries, so they are in the same directory as the executable/can be found in the [search path](https://www.mono-project.com/docs/advanced/pinvoke/).
 
 ## Hello, World!
 
@@ -79,7 +86,7 @@ internal static class Program
     [System.STAThread]
     public static void Main()
     {
-        Raylib.InitWindow(800, 480, "Hello World");
+        Raylib.InitWindow(800, 480, "Hello, World");
 
         while (!Raylib.WindowShouldClose())
         {
@@ -96,9 +103,9 @@ internal static class Program
 }
 ```
 
-## Building from source
+## Development
 
-The `Examples` and `Raylib-cs.Tests` projects reference the sibling `Raylib-cs` project by default, so local changes to the the bindings are picked up directly:
+The `Examples` and `Raylib-cs.Tests` projects reference the sibling `Raylib-cs` project by default, so local changes to the bindings are picked up directly:
 
 ```sh
 dotnet run --project Examples
@@ -107,9 +114,10 @@ dotnet run --project Examples
 dotnet test
 ```
 
-Both projects can also consume the binding as a NuGet package but the in-repo version may not be published on nuget.org 
-yet. Pack it once into the local feed before the first build. Then to run against the Raylib-cs NuGet package (the 
-version set by `RaylibCsVersion` in [Directory.Build.props](Directory.Build.props)), set `UseRaylibCsPackage`:
+Both projects can also consume the binding as a NuGet package but the in-repo version may not be published on 
+nuget.org yet. Pack it once into the local feed before the first build. Then to run against the Raylib-cs NuGet 
+package (the version set by `RaylibCsVersion` in [Directory.Build.props](Directory.Build.props)), set 
+`UseRaylibCsPackage`:
 
 ```sh
 dotnet pack Raylib-cs -c Release -o nuget
