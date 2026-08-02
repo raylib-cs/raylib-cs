@@ -9,9 +9,9 @@ namespace Raylib_cs;
 public unsafe struct Wave
 {
     /// <summary>
-    /// Number of samples
+    /// Total number of frames (considering channels)
     /// </summary>
-    public uint SampleCount;
+    public uint FrameCount;
 
     /// <summary>
     /// Frequency (samples per second)
