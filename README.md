@@ -117,17 +117,17 @@ dotnet test
 Both projects can also consume the binding as a NuGet package but the in-repo version may not be published on 
 nuget.org yet. Pack it once into the local feed before the first build. Then to run against the Raylib-cs NuGet 
 package (the version set by `RaylibCsVersion` in [Directory.Build.props](Directory.Build.props)), set 
-`UseRaylibCsPackage`:
+`RaylibCsForceLocalNuget`:
 
 ```sh
 dotnet pack Raylib-cs -c Release -o nuget
 dotnet build
 ```
 ```sh
-dotnet run --project Examples -p:UseRaylibCsPackage=true
+dotnet run --project Examples -p:RaylibCsForceLocalNuget=true
 ```
 ```sh
-dotnet test -p:UseRaylibCsPackage=true
+dotnet test -p:RaylibCsForceLocalNuget=true
 ```
 
 Note that `NuGet.config` points restore at the local `./nuget` feed, so both projects pick up the freshly packed

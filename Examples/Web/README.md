@@ -12,7 +12,7 @@ The browser-wasm configuration only activates when publishing with
 
 - .NET 10 SDK
 - `dotnet workload install wasm-tools`
-- Raylib-cs (works with the local project, or nuget if MSBuild property `<UseRaylibCsPackage>` is `true`
+- Raylib-cs (works with the local project, or nuget if MSBuild property `<RaylibCsForceLocalNuget>` is `true`
 
 ## Build
 
