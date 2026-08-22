@@ -130,9 +130,9 @@ dotnet run --project Examples -p:RaylibCsForceLocalNuget=true
 dotnet test -p:RaylibCsForceLocalNuget=true
 ```
 
-Note that `NuGet.config` points restore at the local `./Raylib-cs/nuget` feed, so both projects pick up the freshly packed
-package. If you skip the pack step on a fresh clone, restore fails with NU1301 (the `./Raylib-cs/nuget` source
-doesn't exist) or NU1102 (Raylib-cs not found) - running the pack command fixes both.
+Note that `NuGet.config` points restore at the local `./Raylib-cs/nuget` feed, so both projects pick up the freshly 
+packed package. If you skip the pack step on a fresh clone, restore fails with NU1102 (Raylib-cs not found) - running 
+the pack command fixes this.
 
 When iterating on the binding itself, note that NuGet caches the extracted package by version and
 ignores repacks of the same version. After repacking, delete the old package from `./Raylib-cs/nuget` and clear
