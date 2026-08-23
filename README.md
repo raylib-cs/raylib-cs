@@ -23,6 +23,7 @@ to build the native libraries.
 - **win-x86** *(raylib-6.0_win32_msvc16)*
 
 The following frameworks are deprecated (fall back to Version 7.x if required):
+
 - net6.0 (end of life)
 
 ## Status
@@ -121,7 +122,6 @@ package (the version set by `RaylibCsVersion` in [Directory.Build.props](Directo
 
 ```sh
 dotnet pack Raylib-cs -c Release -o Raylib-cs/nuget
-dotnet build
 ```
 ```sh
 dotnet run --project Examples -p:RaylibCsForceLocalNuget=true
