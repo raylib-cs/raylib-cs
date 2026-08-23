@@ -13,7 +13,7 @@ C# bindings for raylib, a simple and easy-to-use library to learn video games pr
 Raylib-cs targets net8.0, net10.0 and uses the [official 6.0 release](https://github.com/raysan5/raylib/releases/tag/6.0)
 to build the native libraries.
 
-### Version 8.1.0 of Raylib-cs supports the following runtimes:
+### Version 8.1.0-rc.1 of Raylib-cs supports the following runtimes:
 
 - **browser-wasm** *(raylib-6.0_webassembly)* 🆕
 - **linux-x64** *(raylib-6.0_linux_amd64)*
