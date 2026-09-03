@@ -26,21 +26,31 @@ public static unsafe partial class Raylib
 
     public static IntPtr ResolveDllImport(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
     {
-        IntPtr handle = IntPtr.Zero;
-        string libraryPath = GetLibraryPath(libraryName);
-
-        if (NativeLibrary.TryLoad(libraryName, assembly, searchPath, out handle))
+        string resolveNameError;
+        try
         {
+            IntPtr handle = NativeLibrary.Load(libraryName, assembly, searchPath);
             return handle;
         }
-
-        if (NativeLibrary.TryLoad(libraryPath, out handle))
+        catch (Exception ex)
         {
+            resolveNameError = ex.Message;
+        }
+
+        string resolvePathError;
+        string libraryPath = GetLibraryPath(libraryName);
+        try
+        {
+            IntPtr handle = NativeLibrary.Load(libraryPath);
             return handle;
+        }
+        catch (Exception ex)
+        {
+            resolvePathError = ex.Message;
         }
 
         throw new DllNotFoundException(
-            $"Failed to load {libraryName}."
+            string.Join("\n", string.Empty, resolveNameError, resolvePathError)
         );
     }
 
