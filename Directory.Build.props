@@ -1,7 +1,7 @@
 <Project>
   <!-- Auto-imported by every project in the repo; referenced via $(RaylibCsVersion). -->
   <PropertyGroup>
-    <RaylibCsVersion>8.1.0-rc.1</RaylibCsVersion>
+    <RaylibCsVersion>8.1.0</RaylibCsVersion>
   </PropertyGroup>
 
   <!-- The net8-era wasm workload treats any browser-wasm project as a wasm *app* and hooks
