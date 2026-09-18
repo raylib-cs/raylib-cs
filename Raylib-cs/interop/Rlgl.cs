@@ -41,6 +41,11 @@ public static unsafe partial class Rlgl
     public const int TEXTURE_WRAP_MIRROR_REPEAT = 0x8370;
     public const int TEXTURE_WRAP_MIRROR_CLAMP = 0x8742;
 
+    // Primitive assembly draw modes
+    public const int LINES = 0x0001;
+    public const int TRIANGLES = 0x0004;
+    public const int QUADS = 0x0007;
+
     // GL equivalent data types
     public const int UNSIGNED_BYTE = 0x1401;
     public const int FLOAT = 0x1406;
