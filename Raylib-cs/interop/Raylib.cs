@@ -1626,8 +1626,8 @@ public static unsafe partial class Raylib
         Rectangle rec,
         Color topLeft,
         Color bottomLeft,
-        Color topRight,
-        Color bottomRight
+        Color bottomRight,
+        Color topRight
     );
 
     /// <summary>Draw rectangle outline</summary>
