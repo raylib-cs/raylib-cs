@@ -123,15 +123,33 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void Translatef(float x, float y, float z);
 
+    /// <inheritdoc cref="Translatef(float, float, float)"/>
+    public static void Translatef(Vector3 v)
+    {
+        Translatef(v.X, v.Y, v.Z);
+    }
+
     /// <summary>Multiply the current matrix by a rotation matrix</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlRotatef")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void Rotatef(float angle, float x, float y, float z);
 
+    /// <inheritdoc cref="Rotatef(float, float, float, float)"/>
+    public static void Rotatef(float angle, Vector3 v)
+    {
+        Rotatef(angle, v.X, v.Y, v.Z);
+    }
+
     /// <summary>Multiply the current matrix by a scaling matrix</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlScalef")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void Scalef(float x, float y, float z);
+
+    /// <inheritdoc cref="Scalef(float, float, float)"/>
+    public static void Scalef(Vector3 v)
+    {
+        Scalef(v.X, v.Y, v.Z);
+    }
 
     /// <summary>
     /// Multiply the current matrix by another matrix<br/>
@@ -200,6 +218,7 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void Begin(int mode);
 
+    /// <inheritdoc cref="Begin(int)"/>
     public static void Begin(DrawMode mode)
     {
         Begin((int)mode);
@@ -220,25 +239,55 @@ public static unsafe partial class Rlgl
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void Vertex2f(float x, float y);
 
+    /// <inheritdoc cref="Vertex2f(float, float)"/>
+    public static void Vertex2f(Vector2 v)
+    {
+        Vertex2f(v.X, v.Y);
+    }
+
     /// <summary>Define one vertex (position) - 3 float</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlVertex3f")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void Vertex3f(float x, float y, float z);
+
+    /// <inheritdoc cref="Vertex3f(float, float, float)"/>
+    public static void Vertex3f(Vector3 v)
+    {
+        Vertex3f(v.X, v.Y, v.Z);
+    }
 
     /// <summary>Define one vertex (texture coordinate) - 2 float</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlTexCoord2f")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void TexCoord2f(float x, float y);
 
+    /// <inheritdoc cref="TexCoord2f(float, float)"/>
+    public static void TexCoord2f(Vector2 v)
+    {
+        TexCoord2f(v.X, v.Y);
+    }
+
     /// <summary>Define one vertex (normal) - 3 float</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlNormal3f")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void Normal3f(float x, float y, float z);
 
+    /// <inheritdoc cref="Normal3f(float, float, float)"/>
+    public static void Normal3f(Vector3 v)
+    {
+        Normal3f(v.X, v.Y, v.Z);
+    }
+
     /// <summary>Define one vertex (color) - 4 byte</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlColor4ub")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void Color4ub(byte r, byte g, byte b, byte a);
+
+    /// <inheritdoc cref="Color4ub(byte, byte, byte, byte)"/>
+    public static void Color4ub(Color color)
+    {
+        Color4ub(color.R, color.G, color.B, color.A);
+    }
 
     /// <summary>Define one vertex (color) - 3 float</summary>
     [LibraryImport(NativeLibName, EntryPoint = "rlColor3f")]
@@ -249,6 +298,12 @@ public static unsafe partial class Rlgl
     [LibraryImport(NativeLibName, EntryPoint = "rlColor4f")]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial void Color4f(float x, float y, float z, float w);
+
+    /// <inheritdoc cref="Color4f(float, float, float, float)"/>
+    public static void Color4f(Vector4 normalized)
+    {
+        Color4f(normalized.X, normalized.Y, normalized.Z, normalized.W);
+    }
 
 
     // ------------------------------------------------------------------------------------
