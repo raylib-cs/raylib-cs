@@ -20,7 +20,7 @@ public struct PbrLight
 
 public enum PbrLightType
 {
-    Directorional,
+    Directional,
     Point,
     Spot
 }

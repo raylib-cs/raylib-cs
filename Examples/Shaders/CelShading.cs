@@ -99,7 +99,7 @@ public partial class CelShading : IExample
         lights = new Light[MaxLights];
         lights[0] = Rlights.CreateLight(
             0,
-            LightType.Directorional,
+            LightType.Directional,
             new Vector3(50.0f, 50.0f, 50.0f),
             Vector3.Zero,
             Color.White,
