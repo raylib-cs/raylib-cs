@@ -17,7 +17,7 @@ public struct Light
 
 public enum LightType
 {
-    Directorional,
+    Directional,
     Point
 }
 

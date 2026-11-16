@@ -99,7 +99,7 @@ public class MeshInstancing : IExample
         // Create one light
         Rlights.CreateLight(
             0,
-            LightType.Directorional,
+            LightType.Directional,
             new Vector3(50.0f, 50.0f, 0.0f),
             Vector3.Zero,
             Color.White,
